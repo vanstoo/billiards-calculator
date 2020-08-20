@@ -1,0 +1,47 @@
+{
+  "name": "billiards-calculator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "桌球组局签到、计费小程序",
+  "templateInfo": {
+    "name": "wxcloud",
+    "typescript": true,
+    "css": "sass"
+  },
+  "scripts": {
+    "build": "taro build --type weapp",
+    "start": "npm run build -- --watch"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.7.7",
+    "@tarojs/cli": "3.0.7",
+    "@tarojs/components": "3.0.7",
+    "@tarojs/react": "3.0.7",
+    "@tarojs/runtime": "3.0.7",
+    "@tarojs/taro": "3.0.7",
+    "lodash": "4.17.15",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "taro-ui": "^2.3.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.0",
+    "@tarojs/mini-runner": "3.0.7",
+    "@tarojs/webpack-runner": "3.0.7",
+    "@types/react": "^16.9.46",
+    "@types/react-dom": "^16.9.8",
+    "@types/webpack-env": "^1.13.6",
+    "@typescript-eslint/eslint-plugin": "^2.x",
+    "@typescript-eslint/parser": "^2.x",
+    "babel-preset-taro": "3.0.7",
+    "eslint": "^6.8.0",
+    "eslint-config-taro": "3.0.7",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-react": "^7.8.2",
+    "eslint-plugin-react-hooks": "^1.6.1",
+    "stylelint": "9.3.0",
+    "typescript": "^3.9.7"
+  }
+}
