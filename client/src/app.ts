@@ -5,22 +5,22 @@ import './app.scss'
 
 class App extends Component {
 
-  componentDidMount () {
+  componentDidMount() {
     if (process.env.TARO_ENV === 'weapp') {
-      Taro.cloud.init( )
+      Taro.cloud.init()
     }
   }
 
-  componentDidShow () {
+  componentDidShow() {
 
   }
 
-  componentDidHide () {}
+  componentDidHide() { }
 
-  componentDidCatchError () {}
+  componentDidCatchError() { }
 
   // this.props.children 是将要会渲染的页面
-  render () {
+  render() {
     return this.props.children
   }
 }

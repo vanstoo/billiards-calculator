@@ -1,29 +1,29 @@
 import * as React from 'react'
-import  { Component } from 'react'
+import { Component } from 'react'
 import Taro from '@tarojs/taro'
-import { View} from '@tarojs/components'
+import { View } from '@tarojs/components'
 import './index.scss'
 
 import Login from '../../components/login'
 
 export default class Index extends Component {
 
-  componentWillMount () {
+  componentWillMount() {
   }
 
-  componentDidMount () { }
+  componentDidMount() { }
 
-  componentWillUnmount () { }
+  componentWillUnmount() { }
 
-  componentDidShow () { }
+  componentDidShow() { }
 
-  componentDidHide () { }
+  componentDidHide() { }
 
 
-  render () {
+  render() {
     return (
       <View className='index'>
-        <Login/>
+        <Login />
       </View>
     )
   }
