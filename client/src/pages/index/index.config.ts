@@ -1,3 +1,3 @@
 export default {
-  navigationBarTitleText: '云开发 QuickStart'
-}
+  navigationBarTitleText: "不智能计算台费"
+};

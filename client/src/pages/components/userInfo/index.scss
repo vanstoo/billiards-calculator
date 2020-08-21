@@ -1,0 +1,20 @@
+.user-info {
+  margin: 32px 16px;
+  background-color: #fff;
+  padding: 16px;
+
+  .user-box {
+    display: flex;
+    align-items: center;
+
+    .user-name {
+      font-size: 36px;
+      color: #000;
+      margin-left: 32px;
+    }
+  }
+
+  .user-btn {
+    margin: 32px 0;
+  }
+}

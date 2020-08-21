@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "taro build --type weapp",
-    "start": "npm run build -- --watch"
+    "start": "NODE_ENV=production taro build --type weapp --watch"
   },
   "author": "",
   "license": "MIT",
@@ -24,7 +24,7 @@
     "lodash": "4.17.15",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "taro-ui": "^2.3.4"
+    "taro-ui": "^3.0.0-alpha.3"
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",
@@ -42,6 +42,7 @@
     "eslint-plugin-react": "^7.8.2",
     "eslint-plugin-react-hooks": "^1.6.1",
     "stylelint": "9.3.0",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "webpack-bundle-analyzer": "^3.8.0"
   }
 }
