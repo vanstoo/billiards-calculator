@@ -1,0 +1,1 @@
+export { goToMapPage } from "./mapUtils";
