@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, memo } from "react";
 import Taro from "@tarojs/taro";
 import { View } from "@tarojs/components";
 import { AtTabBar } from "taro-ui";
@@ -41,4 +41,4 @@ const Index: React.FC<IndexProps> = () => {
   );
 };
 
-export default Index;
+export default memo(Index);

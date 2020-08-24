@@ -1,5 +1,9 @@
 export default {
-  pages: ["pages/index/index"],
+  pages: [
+    "pages/index/index",
+    "pages/gameInvitation/create/index",
+    "pages/gameInvitation/detail/index"
+  ],
   window: {
     backgroundTextStyle: "light",
     navigationBarBackgroundColor: "#fff",
