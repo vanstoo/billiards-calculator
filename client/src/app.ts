@@ -1,8 +1,10 @@
 import { Component } from "react";
 import Taro from "@tarojs/taro";
 import "./app.scss";
-// import "taro-ui/dist/style/index.scss"; // 全局引入一次即可
 import "./custom-variables.scss";
+import dayjs from "dayjs";
+import "dayjs/locale/zh-cn";
+dayjs.locale("zh-cn");
 
 class App extends Component {
   componentDidMount() {
