@@ -2,9 +2,15 @@ import * as React from "react";
 import { memo, useState } from "react";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { View, Picker } from "@tarojs/components";
-import { AtList, AtListItem, AtTextarea, AtFloatLayout } from "taro-ui";
+import {
+  AtList,
+  AtListItem,
+  AtTextarea,
+  AtFloatLayout,
+  AtButton
+} from "taro-ui";
 import { formatDate, goToMapPage } from "../../../utils";
-import { MapLocationInfo } from "../../../typings";
+import { MapLocationInfo, UserInfo } from "../../../typings";
 import debounce from "lodash.debounce";
 import dayjs from "dayjs";
 import "../index.scss";
@@ -22,15 +28,16 @@ const EmptyLocation: MapLocationInfo = {
 };
 const chooseLocation = Taro.requirePlugin("chooseLocation");
 
+// 发起邀请
 const InvitationCreate: React.FC<InvitationCreateProps> = () => {
-  const [targetTime, setTargetTime] = useState(formatDate(dayjs(), "HH:mm"));
+  const [targetTime, setTargetTime] = useState(formatDate(dayjs(), "HH:mm")); // 目标时间
   const [locationInfo, setLocationInfo] = useState<MapLocationInfo>(
     EmptyLocation
-  );
+  ); // 地址信息
   const [showRemark, setShowRemark] = useState(false);
-
-  const [remark, setRemark] = useState("");
-
+  const [remark, setRemark] = useState(""); // 描述
+  const displayDate = `${formatDate(dayjs())} ${targetTime}`; // 展示时间
+  const userInfo: UserInfo = Taro.getStorageSync("userInfo");
   const onTimeChange = e => {
     console.log(e.detail);
     setTargetTime(e.detail.value);
@@ -44,12 +51,51 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
     }
   });
 
+  // 修改描述
   const handleRemarkChange = debounce(value => {
     setRemark(value);
   }, 300);
 
+  const onSubmit = () => {
+    console.log("onsubmit");
+    if (!locationInfo.latitude) {
+      Taro.showToast({ title: "请先选择约球地点", mask: true, icon: "none" });
+    } else {
+      let param = {
+        type: "create",
+        locationInfo: locationInfo,
+        targetTime: displayDate,
+        remark: remark,
+        creatorName: userInfo?.nickName,
+        creatorAvatarUrl: userInfo?.avatarUrl
+      };
+      console.log(param);
+      Taro.showLoading({ title: "发起约球中...", mask: true });
+      Taro.cloud.callFunction({
+        name: "invitation",
+        data: param,
+        success: ({ result }: { result: any }) => {
+          // console.log(result, "result");
+          Taro.hideLoading();
+          if (result && result._id) {
+            console.log("result._id", result._id);
+            Taro.redirectTo({
+              url: `/pages/gameInvitation/detail/index?invitationId=${result._id}`
+            });
+          } else {
+            Taro.showToast({
+              title: "新增失败，请稍后尝试或联系管理员",
+              mask: true,
+              icon: "none"
+            });
+          }
+        }
+      });
+    }
+  };
+
   return (
-    <View>
+    <View className="new-invitation">
       <View className="form-title">发起约球</View>
       <AtList hasBorder>
         <Picker mode="time" onChange={onTimeChange} value={targetTime}>
@@ -57,7 +103,7 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
             title="约球时间"
             arrow="right"
             iconInfo={{ size: 25, color: "#05f", value: "calendar" }}
-            note={`${formatDate(dayjs())} ${targetTime}`}
+            note={displayDate}
           />
         </Picker>
         <AtListItem
@@ -83,8 +129,15 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
           value={remark}
           onChange={handleRemarkChange}
           maxLength={100}
+          showConfirmBar
+          onConfirm={() => setShowRemark(false)}
         />
       </AtFloatLayout>
+      <View className="fixed-btn">
+        <AtButton type="primary" circle onClick={onSubmit}>
+          发起约球
+        </AtButton>
+      </View>
     </View>
   );
 };

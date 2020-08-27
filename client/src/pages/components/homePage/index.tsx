@@ -12,7 +12,8 @@ const dataList = [
   { label: 1 },
   { label: 1212112 },
   { label: 112112 },
-  { label: 11212 }
+  { label: 11212 },
+  { label: 1121212121212121212 }
 ];
 
 const HomePage: React.FC<HomePageProps> = () => {
@@ -71,7 +72,7 @@ const HomePage: React.FC<HomePageProps> = () => {
         )}
       </CommonScrollView>
       )
-      <View className="fixed-btn">
+      <View className="fixed-btn" style={{ paddingBottom: "170rpx" }}>
         <AtButton
           type="primary"
           circle

@@ -13,7 +13,7 @@ const db = cloud.database()
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  console.log(event, "event")
+  console.log(event, 'event')
   switch (event.type) {
     case 'get': {
       return getUserInfo()
@@ -22,19 +22,21 @@ exports.main = async (event, context) => {
       return createUser(event, context)
     }
     default: {
-      return getUserInfo(event)
+      return null
     }
   }
 }
 
 async function getUserInfo() {
   const {
-    OPENID,
+    OPENID
   } = cloud.getWXContext()
-  const configInfo = await db.collection('login_users')
+  const configInfo = await db
+    .collection('login_users')
     .where({
       userOpenId: OPENID,
-    }).get()
+    })
+    .get()
   return configInfo.data[0]
 }
 

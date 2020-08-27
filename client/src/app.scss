@@ -7,4 +7,13 @@ page {
   color: rgba(102, 102, 102, 1);
   word-break: break-all;
   box-sizing: border-box;
+
+  .fixed-btn {
+    position: fixed;
+    bottom: 50px;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    z-index: 100;
+  }
 }
