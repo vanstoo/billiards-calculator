@@ -1,5 +1,42 @@
 .form-title {
   margin: 16px;
 }
-.new-invitation {
+
+// 列表卡片
+.list-card-box {
+  height: calc(100vh - 130px) !important;
+
+  .list-card {
+    box-sizing: border-box;
+    height: auto;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 32px 32px 0 32px;
+    padding: 26px 32px;
+  }
+
+  .list-item-header {
+    display: flex;
+    align-items: center;
+    font-size: 36px;
+    font-weight: 600;
+    text {
+      margin-left: 32px;
+    }
+  }
+
+  .list-item-content {
+    margin-top: 16px;
+    color: #666;
+    font-size: 26px;
+  }
+
+  .list-item-footer {
+    margin-top: 16px;
+    color: #999;
+    font-size: 24px;
+    display: flex;
+    justify-content: flex-end;
+  }
 }

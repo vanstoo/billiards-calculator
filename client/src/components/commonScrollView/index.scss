@@ -1,0 +1,20 @@
+// 列表卡片
+.list-card-box {
+  height: 100vh;
+  padding-bottom: 1px;
+  word-break: break-all;
+  box-sizing: border-box;
+  color: #333;
+  line-height: 1.5;
+}
+
+.list-last-view {
+  padding-bottom: 50px;
+}
+
+// 列表已经到底
+.no-more-list {
+  text-align: center;
+  margin-top: 32px;
+  color: #999999;
+}

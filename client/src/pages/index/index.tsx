@@ -3,7 +3,8 @@ import { useState, memo } from "react";
 import Taro from "@tarojs/taro";
 import { View } from "@tarojs/components";
 import { AtTabBar } from "taro-ui";
-import { UserInfo, HelpInfo, HomePage } from "../components";
+import { UserInfo, HelpInfo } from "../components";
+import InvitationList from "../gameInvitation/list";
 import "./index.scss";
 
 export interface IndexProps {}
@@ -26,7 +27,7 @@ const Index: React.FC<IndexProps> = () => {
 
   return (
     <View className="home-page">
-      {tabKey === 0 && <HomePage />}
+      {tabKey === 0 && <InvitationList />}
       {tabKey === 1 && <HelpInfo />}
       {tabKey === 2 && <UserInfo />}
       <AtTabBar

@@ -20,6 +20,9 @@ exports.main = async (event, context) => {
     case 'finish': {
       return finishInvitation(event, context)
     }
+    case 'getList': {
+      return getInvitationList(event, context)
+    }
     default: {
       return null
     }
@@ -82,5 +85,18 @@ async function finishInvitation(event, context) {
   return {
     event: event,
     context: context
+  }
+}
+
+// 约球列表
+async function getInvitationList(event, context) {
+  const {
+    OPENID
+  } = cloud.getWXContext()
+  const totolCount = await db.collection('invitation_groups').count()
+  const groups = await db.collection('invitation_groups').orderBy('createTime', 'desc').get()
+  return {
+    list: groups.data,
+    totalCount: totolCount.total
   }
 }

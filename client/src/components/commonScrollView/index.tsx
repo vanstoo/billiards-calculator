@@ -1,6 +1,7 @@
 import * as React from "react";
 import { FC, memo, useEffect, useState } from "react";
 import { ScrollView, View } from "@tarojs/components";
+import "./index.scss";
 
 export interface CommonScrollViewProps {
   listLoding: boolean; // 列表加载状态
