@@ -3,6 +3,7 @@ import { memo, useState } from "react";
 import Taro from "@tarojs/taro";
 import { View } from "@tarojs/components";
 import { AtButton, AtAvatar } from "taro-ui";
+import { UseRequest } from "../../../service";
 import "./index.scss";
 
 export interface UserInfoProps {}
@@ -11,35 +12,43 @@ const UserInfo: React.FC<UserInfoProps> = () => {
   const [userInfo, setUserInfo] = useState(Taro.getStorageSync("userInfo"));
 
   const getUser = ({ detail }) => {
-    // console.log(detail);
-    Taro.showLoading({ title: "获取用户信息中...", mask: true });
-    // 新增/更新用户信息
-    Taro.cloud.callFunction({
-      name: "login",
-      data: {
+    console.log(detail);
+    if (detail.userInfo) {
+      Taro.showLoading({
+        title: "获取用户信息中...",
+        mask: true
+      });
+      // 新增/更新用户信息
+      UseRequest("login", {
         type: "create",
         nickName: detail.userInfo.nickName,
         avatarUrl: detail.userInfo.avatarUrl
-      },
-      success: res => {
+      }).then(res => {
         console.log(res, "result");
         Taro.hideLoading();
-        if (res.result) {
+        if (res) {
           // 更新本地用户信息
-          Taro.showLoading({ title: "获取用户信息中...", mask: true });
-          Taro.cloud.callFunction({
-            name: "login",
-            data: { type: "get" },
-            success: ({ result }) => {
-              console.log(result, " login");
-              Taro.hideLoading();
-              Taro.setStorageSync("userInfo", result);
-              setUserInfo(result);
-            }
+          Taro.showLoading({
+            title: "获取用户信息中...",
+            mask: true
+          });
+          UseRequest("login", {
+            type: "get"
+          }).then(result => {
+            console.log(result, " login");
+            Taro.hideLoading();
+            Taro.setStorageSync("userInfo", result);
+            setUserInfo(result);
           });
         }
-      }
-    });
+      });
+    } else {
+      Taro.showToast({
+        title: "只有授权才可登陆！",
+        mask: true,
+        icon: "none"
+      });
+    }
   };
 
   return (

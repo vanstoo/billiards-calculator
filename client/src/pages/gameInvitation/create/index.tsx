@@ -10,9 +10,11 @@ import {
   AtButton
 } from "taro-ui";
 import { formatDate, goToMapPage } from "../../../utils";
-import { MapLocationInfo, UserInfo } from "../../../typings";
-import debounce from "lodash.debounce";
+import { UseRequest } from "../../../service";
+import debounce from "lodash/debounce";
 import dayjs from "dayjs";
+import { MapLocationInfo, UserInfo } from "../../../typings";
+
 import "../index.scss";
 
 export interface InvitationCreateProps {}
@@ -71,24 +73,15 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
       };
       console.log(param);
       Taro.showLoading({ title: "发起约球中...", mask: true });
-      Taro.cloud.callFunction({
-        name: "invitation",
-        data: param,
-        success: ({ result }: { result: any }) => {
-          // console.log(result, "result");
-          Taro.hideLoading();
-          if (result && result._id) {
-            console.log("result._id", result._id);
-            Taro.redirectTo({
-              url: `/pages/gameInvitation/detail/index?invitationId=${result._id}`
-            });
-          } else {
-            Taro.showToast({
-              title: "新增失败，请稍后尝试或联系管理员",
-              mask: true,
-              icon: "none"
-            });
-          }
+      UseRequest("invitation", param).then(result => {
+        Taro.hideLoading();
+        if (result._id) {
+          console.log("result._id", result._id);
+          Taro.redirectTo({
+            url: `/pages/gameInvitation/detail/index?invitationId=${result._id}`
+          });
+        } else {
+          Taro.showToast({ title: "服务异常", mask: true, icon: "none" });
         }
       });
     }

@@ -93,10 +93,27 @@ async function getInvitationList(event, context) {
   const {
     OPENID
   } = cloud.getWXContext()
+  const {
+    pageNum,
+    pageSize
+  } = event
   const totolCount = await db.collection('invitation_groups').count()
-  const groups = await db.collection('invitation_groups').orderBy('createTime', 'desc').get()
-  return {
-    list: groups.data,
-    totalCount: totolCount.total
+  if (totolCount && totolCount.total) {
+    try {
+      // 分页查询
+      let pageCount = pageSize * (pageNum - 1)
+      const groups = await db.collection('invitation_groups').orderBy('createTime', 'desc').skip(pageCount).limit(pageSize).get()
+      return {
+        list: groups.data,
+        totalCount: totolCount.total,
+        pageNum,
+        pageSize
+      }
+    } catch (error) {
+      console.error(error)
+      return null
+    }
+  } else {
+    return null
   }
 }

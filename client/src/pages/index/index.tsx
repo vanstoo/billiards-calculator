@@ -27,7 +27,7 @@ const Index: React.FC<IndexProps> = () => {
 
   return (
     <View className="home-page">
-      {tabKey === 0 && <InvitationList />}
+      {tabKey === 0 && <InvitationList goToLogin={handleTabClick} />}
       {tabKey === 1 && <HelpInfo />}
       {tabKey === 2 && <UserInfo />}
       <AtTabBar

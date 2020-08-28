@@ -17,3 +17,6 @@ export interface MapLocationInfo {
   province?: string; // 省
   district?: string; // 区
 }
+
+// 云函数方法
+export type RequestApi = "login" | "invitation";

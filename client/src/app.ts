@@ -1,10 +1,11 @@
 import { Component } from "react";
 import Taro from "@tarojs/taro";
-import "./app.scss";
-import "./custom-variables.scss";
+import { UseRequest } from "./service";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 dayjs.locale("zh-cn");
+import "./app.scss";
+import "./custom-variables.scss";
 
 class App extends Component {
   componentDidMount() {
@@ -17,13 +18,11 @@ class App extends Component {
         traceUser: true
       });
     }
-    Taro.cloud.callFunction({
-      name: "login",
-      data: { type: "get" },
-      success: ({ result }) => {
-        // console.log(result, " login");
-        Taro.setStorageSync("userInfo", result);
-      }
+    UseRequest("login", {
+      type: "get"
+    }).then(result => {
+      // console.log(result, " login");
+      Taro.setStorageSync("userInfo", result);
     });
   }
 

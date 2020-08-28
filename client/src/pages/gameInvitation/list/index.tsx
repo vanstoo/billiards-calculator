@@ -4,74 +4,88 @@ import Taro from "@tarojs/taro";
 import { View, Text } from "@tarojs/components";
 import { AtButton, AtAvatar } from "taro-ui";
 import { CommonScrollView, EmptyListView } from "../../../components";
-import { isValidArray, formatDate } from "../../../utils";
+import { UseRequest } from "../../../service";
+import { isValidArray } from "../../../utils";
 import { InvitationListItem } from "../type";
+import { UserInfo } from "../../../typings";
 import "../index.scss";
-export interface HomePageProps {}
 
-const InvitationList: React.FC<HomePageProps> = () => {
-  const [pageNum, setPageNum] = useState(1);
+export interface HomePageProps {
+  goToLogin: (key: number) => void; // 跳转登陆
+}
+const pageSize = 10;
+const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
+  const [current, setCurrent] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasReachBottom, setHasReachBottom] = useState(false);
   const [invitationList, setInvitationList] = useState<InvitationListItem[]>(
     []
   );
 
-  useEffect(() => {
-    console.log(pageNum, "useEffect");
+  const getListByPage = (pageNum: number) => {
     setLoading(true);
     Taro.showLoading({ title: "获取数据中...", mask: true });
-    Taro.cloud.callFunction({
-      name: "invitation",
-      data: {
-        type: "getList",
-        pageNum: pageNum,
-        pageSize: 10
-      },
-      success: ({ result }: { result: any }) => {
-        console.log(result, "result");
-        Taro.hideLoading();
-        setLoading(false);
-        if (result && isValidArray(result.list)) {
-          if (pageNum === 1) {
-            setInvitationList(result.list);
-            setHasReachBottom(result.list.length === result.totalCount);
-          } else {
-            let newList = invitationList.concat(result.list);
-            setInvitationList(invitationList.concat(result.list));
-            setHasReachBottom(newList.length === result.totalCount);
-          }
-        } else {
-          Taro.showToast({
-            title: "获取失败，请稍后尝试或联系管理员",
-            mask: true,
-            icon: "none"
-          });
-        }
+    UseRequest("invitation", {
+      type: "getList",
+      pageNum: pageNum,
+      pageSize: pageSize
+    }).then(result => {
+      console.log(result, "UseRequest");
+      setLoading(false);
+      Taro.hideLoading();
+      if (pageNum === 1) {
+        setInvitationList(result.list);
+        setHasReachBottom(result.list.length === result.totalCount);
+      } else {
+        let newList = invitationList.concat(result.list);
+        console.log(newList, newList.length);
+        setInvitationList(invitationList.concat(result.list));
+        setHasReachBottom(newList.length === result.totalCount);
       }
     });
-  }, [pageNum]);
+  };
+
+  useEffect(() => {
+    console.log(current, "useEffect");
+    getListByPage(current);
+  }, [current]);
 
   // 下拉刷新
   const onScrollToUpper = e => {
-    console.log(e, "到顶了");
-    setPageNum(1);
+    console.log(e, "到顶了", current);
+    if (current === 1) {
+      getListByPage(1);
+    }
+    setCurrent(1);
   };
 
   // 底部滚动刷新
   const onScrollToLower = () => {
     console.log("到底了");
     if (!hasReachBottom) {
-      setPageNum(pageNum + 1);
+      Taro.showLoading({ title: "获取数据中...", mask: true });
+      setCurrent(current + 1);
     } else {
       console.log("数据已经没了");
     }
   };
 
-  const searchListByPage = () => {
-    console.log(pageNum, "searchListByPage");
+  const goToCreateInvitation = () => {
+    let userInfo: UserInfo = Taro.getStorageSync("userInfo");
+    console.log(userInfo);
+    if (userInfo && userInfo.userOpenId) {
+      Taro.navigateTo({ url: "/pages/gameInvitation/create/index" });
+    } else {
+      Taro.showToast({
+        title: "请先授权登陆",
+        icon: "none",
+        mask: true
+      });
+      setTimeout(() => {
+        goToLogin(2);
+      }, 2000);
+    }
   };
-
   return (
     <View className="list-card-box">
       <CommonScrollView
@@ -100,10 +114,7 @@ const InvitationList: React.FC<HomePageProps> = () => {
                   <View>地址：{x?.locationInfo?.address}</View>
                   <View>描述：{x.remark ? x.remark : "—"}</View>
                 </View>
-                <View className="list-item-footer">
-                  {/* {formatDate(x.createTime, "YYYY-MM-DD HH:mm")} */}
-                  {x.targetTime}
-                </View>
+                <View className="list-item-footer">{x.targetTime}</View>
               </View>
             ))}
             <View className="list-last-view" />
@@ -114,13 +125,7 @@ const InvitationList: React.FC<HomePageProps> = () => {
       </CommonScrollView>
       )
       <View className="fixed-btn" style={{ paddingBottom: "170rpx" }}>
-        <AtButton
-          type="primary"
-          circle
-          onClick={() =>
-            Taro.navigateTo({ url: "/pages/gameInvitation/create/index" })
-          }
-        >
+        <AtButton type="primary" circle onClick={goToCreateInvitation}>
           发起约球
         </AtButton>
       </View>

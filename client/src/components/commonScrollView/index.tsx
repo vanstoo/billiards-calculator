@@ -2,6 +2,7 @@ import * as React from "react";
 import { FC, memo, useEffect, useState } from "react";
 import { ScrollView, View } from "@tarojs/components";
 import "./index.scss";
+import debounce from "lodash/debounce";
 
 export interface CommonScrollViewProps {
   listLoding: boolean; // 列表加载状态
@@ -25,12 +26,17 @@ const CommonScrollView: FC<CommonScrollViewProps> = ({
     if (listLoding === false) {
       setIsRefreshing(false);
     }
+    console.log("listLoding", listLoding);
   }, [listLoding]);
 
-  const onRefresherRefresh = (e: any) => {
+  const onRefresherRefresh = debounce((e: any) => {
     setIsRefreshing(true);
     onRefresh(e);
-  };
+  }, 50);
+
+  const onScrollToLowerFunc = debounce((e: any) => {
+    onScrollToLower(e);
+  }, 100);
 
   return (
     <ScrollView
@@ -41,10 +47,12 @@ const CommonScrollView: FC<CommonScrollViewProps> = ({
       refresherTriggered={isRefreshing}
       onRefresherRefresh={onRefresherRefresh}
       lowerThreshold={10}
-      onScrollToLower={onScrollToLower}
+      onScrollToLower={onScrollToLowerFunc}
     >
       {children}
-      {hasReachBottom && <View className="no-more-list">我是有底线的哦</View>}
+      {hasReachBottom && (
+        <View className="no-more-list">数据到底了，别拉了</View>
+      )}
       <View className="list-last-view" />
     </ScrollView>
   );
