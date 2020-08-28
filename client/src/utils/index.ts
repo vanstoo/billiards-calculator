@@ -1,2 +1,2 @@
 export { goToMapPage } from "./mapUtils";
-export { formatDate, isValidArray } from "./dataTrans";
+export { formatDate, isValidArray, returnStatusName } from "./dataTrans";

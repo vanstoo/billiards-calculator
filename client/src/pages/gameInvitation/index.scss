@@ -22,7 +22,18 @@
     font-size: 36px;
     font-weight: 600;
     text {
-      margin-left: 32px;
+      margin: 0 32px;
+      width: 360px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status {
+      color: #05f;
+      font-size: 30px;
+      float: right;
+      width: 100px;
     }
   }
 

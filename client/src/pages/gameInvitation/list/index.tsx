@@ -5,7 +5,7 @@ import { View, Text } from "@tarojs/components";
 import { AtButton, AtAvatar } from "taro-ui";
 import { CommonScrollView, EmptyListView } from "../../../components";
 import { UseRequest } from "../../../service";
-import { isValidArray } from "../../../utils";
+import { isValidArray, returnStatusName } from "../../../utils";
 import { InvitationListItem } from "../type";
 import { UserInfo } from "../../../typings";
 import "../index.scss";
@@ -109,6 +109,7 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
                 <View className="list-item-header">
                   <AtAvatar circle text="头" image={x?.creatorAvatarUrl} />
                   <Text>{x.creatorName}发起的约球</Text>
+                  <View className="status">{returnStatusName(x.status)}</View>
                 </View>
                 <View className="list-item-content">
                   <View>地址：{x?.locationInfo?.address}</View>

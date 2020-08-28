@@ -14,6 +14,9 @@ exports.main = async (event, context) => {
     case 'create': {
       return createInvitation(event, context)
     }
+    case 'getDetail': {
+      return getInvitationDetail(event, context)
+    }
     case 'update': {
       return updateInvitation(event, context)
     }
@@ -46,16 +49,35 @@ async function createInvitation(event, context) {
   try {
     let res = await db.collection('invitation_groups').add({
       data: {
-        createTime: db.serverDate(),
-        creatorName: creatorName,
-        creatorOpenId: OPENID,
-        creatorAvatarUrl: creatorAvatarUrl,
-        locationInfo: locationInfo,
-        remark: remark,
-        targetTime: targetTime,
+        createTime: db.serverDate(), // 创建时间
+        creatorName: creatorName, // 创建人姓名
+        creatorOpenId: OPENID, // 创建人openid
+        creatorAvatarUrl: creatorAvatarUrl, // 创建人头像
+        locationInfo: locationInfo, // 地址信息
+        remark: remark, // 备注
+        targetTime: targetTime, // 约球时间
+        status: "OPENING" // 邀请状态
       },
     })
     return res
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+async function getInvitationDetail(event, context) {
+  const {
+    id,
+  } = event
+  try {
+    const res = await db.collection('invitation_groups')
+      .where({
+        _id: id
+      }).get()
+    return {
+      ...res.data[0],
+    }
   } catch (error) {
     console.error(error)
     return null
@@ -90,9 +112,6 @@ async function finishInvitation(event, context) {
 
 // 约球列表
 async function getInvitationList(event, context) {
-  const {
-    OPENID
-  } = cloud.getWXContext()
   const {
     pageNum,
     pageSize
