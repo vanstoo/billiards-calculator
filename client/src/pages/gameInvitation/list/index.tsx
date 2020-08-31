@@ -6,7 +6,7 @@ import { AtButton, AtAvatar } from "taro-ui";
 import { CommonScrollView, EmptyListView } from "../../../components";
 import { UseRequest } from "../../../service";
 import { isValidArray, returnStatusName } from "../../../utils";
-import { InvitationListItem } from "../type";
+import { InvitationItem } from "../type";
 import { UserInfo } from "../../../typings";
 import "../index.scss";
 
@@ -18,9 +18,7 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
   const [current, setCurrent] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasReachBottom, setHasReachBottom] = useState(false);
-  const [invitationList, setInvitationList] = useState<InvitationListItem[]>(
-    []
-  );
+  const [invitationList, setInvitationList] = useState<InvitationItem[]>([]);
 
   const getListByPage = (pageNum: number) => {
     setLoading(true);

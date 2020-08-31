@@ -16,4 +16,22 @@ page {
     justify-content: center;
     z-index: 100;
   }
+
+  .link-col {
+    color: #05f;
+  }
+
+  .section-content {
+    word-break: break-all;
+    margin-right: 16px;
+  }
+
+  .margin-left-16 {
+    margin-left: 16px;
+  }
+
+  .divider {
+    height: 2px;
+    background-color: #f0f0f0;
+  }
 }
