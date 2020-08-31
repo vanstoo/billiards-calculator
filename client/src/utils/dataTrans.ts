@@ -21,3 +21,16 @@ export const returnStatusName = (status: InvitationStatus) => {
   };
   return obj[status];
 };
+
+// 根据状态返回对应颜色
+export const returnStyleByStatus = (
+  status: InvitationStatus,
+  isColor = false
+) => {
+  let statusObj: { [keys in InvitationStatus]: string } = {
+    OPENING: "#0055FF", // 进行中
+    CANCELLED: "#999999", // 已取消
+    FINISHED: "#00A186" // 完成
+  };
+  return { [isColor ? "color" : "background"]: statusObj[status] || "#d9d9d9" };
+};

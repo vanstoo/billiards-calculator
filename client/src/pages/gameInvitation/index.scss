@@ -30,7 +30,7 @@
     }
 
     .status {
-      color: #05f;
+      color: #999;
       font-size: 30px;
       float: right;
       width: 100px;
@@ -99,5 +99,20 @@
     font-size: 32px;
     color: rgba(51, 51, 51, 1);
     margin: 0;
+  }
+}
+
+// 参与者信息
+.participant-info {
+  .user-info {
+    display: flex;
+    align-items: center;
+    font-size: 36px;
+    color: #000;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text {
+      margin-left: 32px;
+    }
   }
 }

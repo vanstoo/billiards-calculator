@@ -6,14 +6,15 @@ export type InvitationStatus = "OPENING" | "FINISHED" | "CANCELLED";
 // 邀请列表
 export interface InvitationItem {
   _id: string; // 唯一id
-  locationInfo: MapLocationInfo; // 地址信息
-  targetTime: string; // 约球时间
-  remark: string; //  约球备注
-  creatorName: string; // 约球人
-  creatorAvatarUrl: string; // 约球人头像
   createTime: string; // 发起时间
-  status: InvitationStatus; // 邀请状态
+  creatorAvatarUrl: string; // 约球人头像
+  creatorName: string; // 约球人
+  creatorOpenId: string; // 发起人openId
+  locationInfo: MapLocationInfo; // 地址信息
   participants: ParticipantItem[]; // 参与人员
+  remark: string; //  约球备注
+  status: InvitationStatus; // 邀请状态
+  targetTime: string; // 约球时间
 }
 
 export interface ParticipantItem {

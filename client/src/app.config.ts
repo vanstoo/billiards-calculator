@@ -13,7 +13,7 @@ export default {
   cloud: true,
   plugins: {
     chooseLocation: {
-      version: "1.0.3",
+      version: "1.0.5",
       provider: "wx76a9a06e5b4e693e"
     }
   },

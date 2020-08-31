@@ -15,6 +15,10 @@ page {
     width: 100%;
     justify-content: center;
     z-index: 100;
+
+    .at-button {
+      margin: 0 24px;
+    }
   }
 
   .link-col {

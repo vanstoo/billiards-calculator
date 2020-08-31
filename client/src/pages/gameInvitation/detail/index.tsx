@@ -6,11 +6,18 @@ import Taro, {
   useShareAppMessage
 } from "@tarojs/taro";
 import { View, Text } from "@tarojs/components";
+import { AtButton, AtAvatar } from "taro-ui";
 import { SectionItem } from "../../../components";
 import { UseRequest } from "../../../service";
-import { formatDate, returnStatusName, isValidArray } from "../../../utils";
+import {
+  formatDate,
+  returnStatusName,
+  isValidArray,
+  returnStyleByStatus
+} from "../../../utils";
 import { dateFormatToMin } from "../../../constant";
 import { InvitationItem, InvitationStatus } from "../type";
+import { UserInfo } from "../../../typings";
 export interface InvitationDetailProps {}
 
 const EmptyData: InvitationItem = {
@@ -22,12 +29,14 @@ const EmptyData: InvitationItem = {
   creatorAvatarUrl: "",
   createTime: "",
   status: "CANCELLED",
-  participants: []
+  participants: [],
+  creatorOpenId: ""
 };
+
+const userInfo: UserInfo = Taro.getStorageSync("userInfo");
 const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
   const { invitationId } = useRouter().params;
   const [detail, setDetail] = useState<InvitationItem>(EmptyData);
-
   const getDetails = () => {
     Taro.showLoading({
       title: "加载详情中...",
@@ -83,47 +92,113 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
     }
   };
 
-  // 根据状态返回对应颜色
-  const returnStyleByStatus = () => {
-    let statusObj: { [keys in InvitationStatus]: string } = {
-      OPENING: "#0055FF", // 进行中
-      CANCELLED: "#999999", // 已取消
-      FINISHED: "#00A186" // 完成
-    };
-    return { background: statusObj[detail.status] || "#d9d9d9" };
+  const cancelInvitation = () => {
+    UseRequest("invitation", {
+      type: "cancel",
+      id: invitationId
+    }).then(res => {
+      console.log(res);
+      if (res) {
+        Taro.showToast({
+          title: "取消成功",
+          mask: true,
+          duration: 3000
+        });
+        setTimeout(() => {
+          getDetails();
+        }, 2000);
+      }
+    });
   };
 
   return (
-    <View className="detail">
-      <View className="detail-panel" style={returnStyleByStatus()}>
-        <Text>发起时间：{formatDate(detail.createTime, dateFormatToMin)}</Text>
-        <Text>{returnStatusName(detail.status)}</Text>
-      </View>
-      <View className="detail-card">
-        <View className="title">
-          基本信息
-          {/* <View className="link-col">编辑</View> */}
+    <Fragment>
+      <View className="detail">
+        <View
+          className="detail-panel"
+          style={returnStyleByStatus(detail.status)}
+        >
+          <Text>
+            发起时间：{formatDate(detail.createTime, dateFormatToMin)}
+          </Text>
+          <Text>{returnStatusName(detail.status)}</Text>
         </View>
-        <View className="divider" />
-        <SectionItem label="发起人：" content={detail.creatorName} />
-        <SectionItem label="约球时间：" content={detail.targetTime} />
-        <SectionItem
-          label="约球地址："
-          content={`${detail?.locationInfo?.name}（点击查看）`}
-          isLinkCol
-          contentClick={goToMapDetail}
-        />
-        <SectionItem label="描述：" content={detail.remark} />
+        <View className="detail-card">
+          <View className="title">
+            基本信息
+            {/* <View className="link-col">编辑</View> */}
+          </View>
+          <View className="divider" />
+          <SectionItem label="发起人：" content={detail.creatorName} />
+          <SectionItem label="约球时间：" content={detail.targetTime} />
+          <SectionItem
+            label="约球地址："
+            content={`${detail?.locationInfo?.name}（点击查看）`}
+            isLinkCol
+            contentClick={goToMapDetail}
+          />
+          <SectionItem label="描述：" content={detail.remark} />
+        </View>
+        <View className="detail-card">
+          <View className="title">参与人员</View>
+          {isValidArray(detail.participants) && (
+            <Fragment>
+              <View className="divider" />
+              {detail.participants.map((item, index) => {
+                return (
+                  <View className="participant-info" key={index.toString()}>
+                    <View className="user-info">
+                      <AtAvatar circle text="头" image={item?.avatarUrl} />
+                      <Text>{item?.name}</Text>
+                    </View>
+                    <SectionItem label="起始时间：" content={item?.startTime} />
+                    <SectionItem label="结束时间：" content={item?.endTime} />
+                  </View>
+                );
+              })}
+            </Fragment>
+          )}
+        </View>
       </View>
-      <View className="detail-card">
-        <View className="title">参与人员</View>
-        {isValidArray(detail.participants) && (
-          <Fragment>
-            <View className="divider" />
-          </Fragment>
+      <View className="fixed-btn">
+        {/* 约球发起者才可取消或结束 */}
+        {detail.creatorOpenId === userInfo.userOpenId &&
+          detail.status === "OPENING" && (
+            <Fragment>
+              <AtButton
+                type="secondary"
+                size="small"
+                circle
+                onClick={cancelInvitation}
+              >
+                取消
+              </AtButton>
+
+              <AtButton
+                type="primary"
+                size="small"
+                circle
+                onClick={() => console.log(1)}
+              >
+                结束
+              </AtButton>
+            </Fragment>
+          )}
+        {/* 非参与人员才可加入 */}
+        {detail.participants.some(
+          x => x.userOpenId !== userInfo.userOpenId
+        ) && (
+          <AtButton
+            type="primary"
+            size="small"
+            circle
+            onClick={() => console.log(1)}
+          >
+            加我一个
+          </AtButton>
         )}
       </View>
-    </View>
+    </Fragment>
   );
 };
 
