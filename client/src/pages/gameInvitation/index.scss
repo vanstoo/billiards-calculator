@@ -104,15 +104,31 @@
 
 // 参与者信息
 .participant-info {
-  .user-info {
+  margin-bottom: 32px;
+
+  .participant-header {
     display: flex;
-    align-items: center;
-    font-size: 36px;
+    justify-content: space-between;
     color: #000;
-    font-weight: 600;
+    line-height: 1.5;
     margin-bottom: 16px;
-    text {
-      margin-left: 32px;
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      font-size: 36px;
+
+      text {
+        margin-left: 32px;
+        font-weight: 600;
+      }
+    }
+
+    .edit-btn {
+      font-size: 30px;
+      justify-content: flex-end;
+      line-height: 100px;
+      padding: 0 16px;
     }
   }
 }

@@ -13,7 +13,7 @@ const db = cloud.database()
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  console.log(event, 'event')
+  console.info(event, 'event')
   switch (event.type) {
     case 'get': {
       return getUserInfo()
@@ -41,9 +41,9 @@ async function getUserInfo() {
 }
 
 async function createUser(event, context) {
-  // console.log 的内容可以在云开发云函数调用日志查看
-  console.log(event, 'event event')
-  console.log(context, 'context context')
+  // console.info 的内容可以在云开发云函数调用日志查看
+  console.info(event, 'event event')
+  console.info(context, 'context context')
 
   // 获取 WX Context (微信调用上下文)，包括 OPENID、APPID、及 UNIONID（需满足 UNIONID 获取条件）等信息
   const {
@@ -73,8 +73,8 @@ async function createUser(event, context) {
       })
       return true
     } catch (error) {
-      console.log(error)
-      return null
+      console.info(error)
+      return error
     }
   } else {
     try {
@@ -92,8 +92,8 @@ async function createUser(event, context) {
         })
       return true
     } catch (error) {
-      console.log(error)
-      return null
+      console.info(error)
+      return error
     }
   }
 }

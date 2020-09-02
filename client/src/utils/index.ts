@@ -3,5 +3,7 @@ export {
   formatDate,
   isValidArray,
   returnStatusName,
-  returnStyleByStatus
+  returnStyleByStatus,
+  returnNowTime
 } from "./dataTrans";
+export { subscribeInfo } from "./subscribe";

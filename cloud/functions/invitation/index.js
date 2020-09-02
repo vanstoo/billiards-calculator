@@ -5,11 +5,14 @@ cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV,
 })
 
-const db = cloud.database()
+const db = cloud.database({
+  throwOnNotFound: false
+})
+
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  console.log(event, 'event')
+  console.log(event)
   switch (event.type) {
     case 'create': {
       return createInvitation(event, context)
@@ -20,8 +23,14 @@ exports.main = async (event, context) => {
     case 'getList': {
       return getInvitationList(event, context)
     }
-    case 'update': {
-      return updateInvitation(event, context)
+    case 'updateBaseInfo': {
+      return updateInvitationBaseInfo(event, context)
+    }
+    case "addParticipantInfo": {
+      return addParticipantInfo(event, context)
+    }
+    case "updateParticipant": {
+      return updateParticipantInfo(event, context)
     }
     case 'cancel': {
       return cancelInvitation(event, context)
@@ -37,9 +46,17 @@ exports.main = async (event, context) => {
 
 // 发起约球
 async function createInvitation(event, context) {
-  const { OPENID } = cloud.getWXContext()
+  const {
+    OPENID
+  } = cloud.getWXContext()
   console.log(event)
-  const { creatorName, creatorAvatarUrl, locationInfo, remark, targetTime } = event
+  const {
+    creatorName,
+    creatorAvatarUrl,
+    locationInfo,
+    remark,
+    targetTime
+  } = event
   try {
     let res = await db.collection('invitation_groups').add({
       data: {
@@ -51,90 +68,47 @@ async function createInvitation(event, context) {
         remark: remark, // 备注
         targetTime: targetTime, // 约球时间
         status: 'OPENING', // 邀请状态
-        participants: [
-          {
-            name: creatorName, // 参与人姓名
-            avatarUrl: creatorAvatarUrl, // 参与人头像
-            userOpenId: OPENID, // 参与人openid
-            startTime: '', // 开始时间
-            endTime: '', // 结束时间
-          },
-        ],
+        participants: [{
+          name: creatorName, // 参与人姓名
+          avatarUrl: creatorAvatarUrl, // 参与人头像
+          userOpenId: OPENID, // 参与人openid
+          startTime: '', // 开始时间
+          endTime: '', // 结束时间
+        }, ],
       },
     })
     return res
   } catch (error) {
     console.error(error)
-    return null
+    return error
   }
 }
 
 // 根据id获取邀请详情
 async function getInvitationDetail(event, context) {
-  const { id } = event
+  const {
+    id
+  } = event
   try {
     const res = await db
       .collection('invitation_groups')
-      .where({
-        _id: id,
-      })
+      .doc(id)
       .get()
     return {
-      ...res.data[0],
+      ...res.data,
     }
   } catch (error) {
     console.error(error)
-    return null
-  }
-}
-
-// 更新约球
-async function updateInvitation(event, context) {
-  const { OPENID } = cloud.getWXContext()
-  console.log(event)
-  console.log(context)
-  return {
-    event: event,
-    context: context,
-  }
-}
-
-// 取消约球
-async function cancelInvitation(event, context) {
-  const { id } = event
-  console.log(event)
-  try {
-    await db
-      .collection('invitation_groups')
-      .where({
-        _id: id,
-      })
-      .update({
-        data: {
-          status: 'CANCELLED',
-        },
-      })
-    return true
-  } catch (error) {
-    console.error(error)
-    return null
-  }
-}
-
-// 结束约球
-async function finishInvitation(event, context) {
-  const { OPENID } = cloud.getWXContext()
-  console.log(event)
-  console.log(context)
-  return {
-    event: event,
-    context: context,
+    return error
   }
 }
 
 // 约球列表
 async function getInvitationList(event, context) {
-  const { pageNum, pageSize } = event
+  const {
+    pageNum,
+    pageSize
+  } = event
   const totolCount = await db.collection('invitation_groups').count()
   if (totolCount && totolCount.total) {
     try {
@@ -154,9 +128,124 @@ async function getInvitationList(event, context) {
       }
     } catch (error) {
       console.error(error)
-      return null
+      return error
     }
   } else {
     return null
+  }
+}
+
+
+
+// 取消约球
+async function cancelInvitation(event, context) {
+  const {
+    id
+  } = event
+  console.log(event)
+  try {
+    await db
+      .collection('invitation_groups')
+      .doc(id)
+      .update({
+        data: {
+          status: 'CANCELLED',
+        },
+      })
+    return true
+  } catch (error) {
+    console.error(error)
+    return error
+  }
+}
+
+
+// 更新约球基础信息
+async function updateInvitationBaseInfo(event, context) {
+  const {
+    id
+  } = event
+  console.log(event)
+  return {
+    event: event,
+    context: context,
+  }
+}
+
+// 新增参与人
+async function addParticipantInfo(event, context) {
+  const {
+    id,
+    nickName,
+    avatarUrl,
+    startTime,
+    endTime
+  } = event
+  const {
+    OPENID
+  } = cloud.getWXContext()
+  console.log(event)
+  const _ = db.command
+  try {
+    await db
+      .collection('invitation_groups')
+      .doc(id)
+      .update({
+        data: {
+          participants: _.push({
+            each: [{
+              name: nickName, // 参与人姓名
+              avatarUrl: avatarUrl, // 参与人头像
+              userOpenId: OPENID, // 参与人openid
+              startTime: startTime, // 开始时间
+              endTime: endTime, // 结束时间
+            }]
+          })
+        }
+      })
+    return true
+  } catch (error) {
+    console.error(error)
+    return error
+  }
+}
+
+// 更新参与人开始、结束时间
+async function updateParticipantInfo(event, context) {
+  const {
+    id,
+    startTime,
+    endTime,
+    index
+  } = event
+  console.log(event)
+  try {
+    await db
+      .collection('invitation_groups')
+      .doc(id)
+      .update({
+        data: {
+          [`participants.${index}.startTime`]: startTime,
+          [`participants.${index}.endTime`]: endTime,
+        }
+      })
+    return true
+  } catch (error) {
+    console.error(error)
+    return error
+  }
+}
+
+
+
+// 结束约球
+async function finishInvitation(event, context) {
+  const {
+    OPENID
+  } = cloud.getWXContext()
+  console.log(event)
+  return {
+    event: event,
+    context: context,
   }
 }

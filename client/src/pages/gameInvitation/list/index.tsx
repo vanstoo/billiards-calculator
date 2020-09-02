@@ -72,6 +72,7 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
     }
   };
 
+  // 创建约球
   const goToCreateInvitation = () => {
     let userInfo: UserInfo = Taro.getStorageSync("userInfo");
     console.log(userInfo);
@@ -83,8 +84,9 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
         icon: "none",
         mask: true
       });
-      setTimeout(() => {
+      let timer = setTimeout(() => {
         goToLogin(2);
+        clearTimeout(timer);
       }, 2000);
     }
   };

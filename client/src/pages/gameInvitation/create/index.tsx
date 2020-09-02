@@ -9,11 +9,11 @@ import {
   AtFloatLayout,
   AtButton
 } from "taro-ui";
-import { formatDate, goToMapPage } from "../../../utils";
+import { formatDate, goToMapPage, returnNowTime } from "../../../utils";
 import { UseRequest } from "../../../service";
+import { MapLocationInfo, UserInfo } from "../../../typings";
 import debounce from "lodash/debounce";
 import dayjs from "dayjs";
-import { MapLocationInfo, UserInfo } from "../../../typings";
 
 import "../index.scss";
 
@@ -32,7 +32,7 @@ const chooseLocation = Taro.requirePlugin("chooseLocation");
 
 // 发起邀请
 const InvitationCreate: React.FC<InvitationCreateProps> = () => {
-  const [targetTime, setTargetTime] = useState(formatDate(dayjs(), "HH:mm")); // 目标时间
+  const [targetTime, setTargetTime] = useState(returnNowTime()); // 目标时间
   const [locationInfo, setLocationInfo] = useState<MapLocationInfo>(
     EmptyLocation
   ); // 地址信息
@@ -58,7 +58,7 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
     setRemark(value);
   }, 300);
 
-  const onSubmit = () => {
+  const onSubmit = debounce(() => {
     console.log("onsubmit");
     if (!locationInfo.latitude) {
       Taro.showToast({ title: "请先选择约球地点", mask: true, icon: "none" });
@@ -85,7 +85,7 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
         }
       });
     }
-  };
+  }, 300);
 
   return (
     <View className="new-invitation">

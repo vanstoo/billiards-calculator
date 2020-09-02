@@ -3,10 +3,15 @@ import { InvitationStatus } from "../pages/gameInvitation/type";
 
 // 格式化时间
 export const formatDate = (
-  date: string | dayjs.Dayjs | Date | number,
+  date: string | dayjs.Dayjs | Date | number | undefined,
   formatType = "YYYY-MM-DD",
   emptyStr: string = ""
 ): string => (date ? dayjs(date).format(formatType) : emptyStr);
+
+// 返回当前时分
+export const returnNowTime = (
+  time?: string | dayjs.Dayjs | Date | number | undefined
+) => formatDate(time ? time : dayjs(), "HH:mm");
 
 // 是否非空数组
 export const isValidArray = (list: any) =>

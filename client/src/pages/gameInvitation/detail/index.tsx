@@ -8,16 +8,19 @@ import Taro, {
 import { View, Text } from "@tarojs/components";
 import { AtButton, AtAvatar } from "taro-ui";
 import { SectionItem } from "../../../components";
+import { EditSignDate } from "../components";
 import { UseRequest } from "../../../service";
 import {
   formatDate,
   returnStatusName,
   isValidArray,
-  returnStyleByStatus
+  returnStyleByStatus,
+  subscribeInfo
 } from "../../../utils";
 import { dateFormatToMin } from "../../../constant";
-import { InvitationItem, InvitationStatus } from "../type";
+import { InvitationItem, ParticipantItem } from "../type";
 import { UserInfo } from "../../../typings";
+
 export interface InvitationDetailProps {}
 
 const EmptyData: InvitationItem = {
@@ -37,6 +40,8 @@ const userInfo: UserInfo = Taro.getStorageSync("userInfo");
 const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
   const { invitationId } = useRouter().params;
   const [detail, setDetail] = useState<InvitationItem>(EmptyData);
+  const [editRecord, setEditRecord] = useState<ParticipantItem>();
+
   const getDetails = () => {
     Taro.showLoading({
       title: "加载详情中...",
@@ -47,7 +52,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         type: "getDetail",
         id: invitationId
       }).then(res => {
-        console.log(res);
+        // console.log(res);
         Taro.hideLoading();
         Taro.stopPullDownRefresh();
         if (res._id) {
@@ -68,19 +73,16 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
   });
 
   // 分享
-  useShareAppMessage(res => {
-    if (res.from === "button") {
-      // 来自页面内转发按钮
-      console.log(res.target);
-    }
+  useShareAppMessage(() => {
     return {
       title: `${detail.creatorName}向你发起了🎱邀请`,
       path: `/pages/gameInvitation/detail/index?invitationId=${invitationId}`
     };
   });
 
+  // 查看地图
   const goToMapDetail = () => {
-    console.log(detail.locationInfo, "chooseLocation.getLocation()");
+    // console.log(detail.locationInfo, "chooseLocation.getLocation()");
     if (detail.locationInfo) {
       Taro.openLocation(detail.locationInfo);
     } else {
@@ -92,6 +94,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
     }
   };
 
+  // 取消邀请
   const cancelInvitation = () => {
     UseRequest("invitation", {
       type: "cancel",
@@ -104,9 +107,50 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           mask: true,
           duration: 3000
         });
-        setTimeout(() => {
+        let timer = setTimeout(() => {
           getDetails();
+          clearTimeout(timer);
         }, 2000);
+      }
+    });
+  };
+
+  // 确认取消弹窗
+  const showCancelModal = () => {
+    Taro.showModal({
+      content: "确认取消约球吗？",
+      success: res => {
+        if (res.confirm) {
+          cancelInvitation();
+        }
+      }
+    });
+  };
+
+  // 展示编辑时间
+  const showEditTime = (item: ParticipantItem) => {
+    setEditRecord(item);
+  };
+
+  const addPartcapant = () => {
+    console.log("1");
+    let param = {
+      type: "addParticipantInfo",
+      id: invitationId,
+      nickName: userInfo.nickName,
+      avatarUrl: userInfo.avatarUrl,
+      startTime: "",
+      endTime: ""
+    };
+    Taro.showLoading({
+      title: "参与活动中...",
+      mask: true
+    });
+    UseRequest("invitation", param).then(res => {
+      Taro.hideLoading();
+      console.log(res);
+      if (res) {
+        getDetails();
       }
     });
   };
@@ -133,7 +177,10 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           <SectionItem label="约球时间：" content={detail.targetTime} />
           <SectionItem
             label="约球地址："
-            content={`${detail?.locationInfo?.name}（点击查看）`}
+            content={
+              detail.locationInfo?.name &&
+              `${detail.locationInfo?.name}（点击查看）`
+            }
             isLinkCol
             contentClick={goToMapDetail}
           />
@@ -144,36 +191,57 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           {isValidArray(detail.participants) && (
             <Fragment>
               <View className="divider" />
-              {detail.participants.map((item, index) => {
-                return (
-                  <View className="participant-info" key={index.toString()}>
-                    <View className="user-info">
-                      <AtAvatar circle text="头" image={item?.avatarUrl} />
-                      <Text>{item?.name}</Text>
+              {detail.participants.map((item, index) => (
+                <View key={index}>
+                  <View className="participant-info">
+                    <View className="participant-header">
+                      <View className="user-info">
+                        <AtAvatar circle text="头" image={item?.avatarUrl} />
+                        <Text>{item?.name}</Text>
+                      </View>
+                      {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}
+                      {detail.status === "OPENING" &&
+                        (item.userOpenId === userInfo.userOpenId ||
+                          detail.creatorOpenId === userInfo.userOpenId) && (
+                          <View
+                            className="link-col edit-btn"
+                            onClick={() => showEditTime(item)}
+                          >
+                            编辑
+                          </View>
+                        )}
                     </View>
                     <SectionItem label="起始时间：" content={item?.startTime} />
                     <SectionItem label="结束时间：" content={item?.endTime} />
                   </View>
-                );
-              })}
+                  {detail.participants.length - 1 > index && (
+                    <View className="divider" />
+                  )}
+                </View>
+              ))}
             </Fragment>
           )}
         </View>
       </View>
-      <View className="fixed-btn">
-        {/* 约球发起者才可取消或结束 */}
-        {detail.creatorOpenId === userInfo.userOpenId &&
-          detail.status === "OPENING" && (
+      {/* 编辑签到、结束时间 */}
+      {editRecord && (
+        <EditSignDate
+          editRecord={editRecord}
+          invitationId={invitationId}
+          setEditRecord={setEditRecord}
+          participants={detail.participants}
+          refreshAndGetdetail={getDetails}
+        />
+      )}
+      {/* 状态为进行中才可键操作按钮 */}
+      {detail.status === "OPENING" && (
+        <View className="fixed-btn">
+          <AtButton type="secondary" size="small" circle openType="share">
+            分享
+          </AtButton>
+          {/* 约球发起者才可取消或结束 */}
+          {detail.creatorOpenId === userInfo.userOpenId && (
             <Fragment>
-              <AtButton
-                type="secondary"
-                size="small"
-                circle
-                onClick={cancelInvitation}
-              >
-                取消
-              </AtButton>
-
               <AtButton
                 type="primary"
                 size="small"
@@ -182,22 +250,31 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
               >
                 结束
               </AtButton>
+              <AtButton
+                type="secondary"
+                size="small"
+                circle
+                onClick={showCancelModal}
+              >
+                取消
+              </AtButton>
             </Fragment>
           )}
-        {/* 非参与人员才可加入 */}
-        {detail.participants.some(
-          x => x.userOpenId !== userInfo.userOpenId
-        ) && (
-          <AtButton
-            type="primary"
-            size="small"
-            circle
-            onClick={() => console.log(1)}
-          >
-            加我一个
-          </AtButton>
-        )}
-      </View>
+          {/* 非参与人员才可加入 */}
+          {!detail.participants.some(
+            x => x.userOpenId === userInfo.userOpenId
+          ) && (
+            <AtButton
+              type="primary"
+              size="small"
+              circle
+              onClick={addPartcapant}
+            >
+              加我一个
+            </AtButton>
+          )}
+        </View>
+      )}
     </Fragment>
   );
 };
