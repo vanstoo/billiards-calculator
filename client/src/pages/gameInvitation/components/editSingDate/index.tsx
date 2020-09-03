@@ -53,14 +53,15 @@ const EditSignDate: React.FC<EditSignDateProps> = ({
       if (res) {
         Taro.showToast({
           title: "更新成功",
-          mask: true
+          mask: true,
+          duration: 2000
         });
         let timer = setTimeout(() => {
           setEditRecord(undefined);
           clearTimeout(timer);
           Taro.hideLoading();
           refreshAndGetdetail();
-        }, 1000);
+        }, 1500);
       }
     });
   };

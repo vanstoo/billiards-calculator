@@ -38,4 +38,12 @@ page {
     height: 2px;
     background-color: #f0f0f0;
   }
+
+  .at-input--disabled {
+    opacity: 1 !important;
+  }
+
+  .at-input__container {
+    opacity: 1 !important;
+  }
 }

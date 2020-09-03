@@ -8,7 +8,7 @@ import Taro, {
 import { View, Text } from "@tarojs/components";
 import { AtButton, AtAvatar } from "taro-ui";
 import { SectionItem } from "../../../components";
-import { EditSignDate } from "../components";
+import { EditSignDate, ParticipantsView } from "../components";
 import { UseRequest } from "../../../service";
 import {
   formatDate,
@@ -164,6 +164,27 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
     });
   };
 
+  // 跳转完结清算页
+  const goToFinish = () => {
+    console.log(detail.participants);
+    let errorFlag = detail.participants.findIndex(
+      x => !x.startTime || !x.endTime
+    );
+    console.log(detail.participants, errorFlag, "errorFlag");
+    if (errorFlag !== -1) {
+      Taro.showToast({
+        title: `${detail.participants[errorFlag].name}的时间信息不完整，请帮他调整或联系他自己调整后再结束活动`,
+        mask: true,
+        icon: "none"
+      });
+    } else {
+      console.log("唔错");
+      Taro.redirectTo({
+        url: `/pages/gameInvitation/finish/index?invitationId=${invitationId}`
+      });
+    }
+  };
+
   return (
     <Fragment>
       <View className="detail">
@@ -195,42 +216,13 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           />
           <SectionItem label="描述：" content={detail.remark} />
         </View>
-        <View className="detail-card">
-          <View className="title">参与人员</View>
-          {isValidArray(detail.participants) && (
-            <Fragment>
-              <View className="divider" />
-              {detail.participants.map((item, index) => (
-                <View key={index}>
-                  <View className="participant-info">
-                    <View className="participant-header">
-                      <View className="user-info">
-                        <AtAvatar circle text="头" image={item?.avatarUrl} />
-                        <Text>{item?.name}</Text>
-                      </View>
-                      {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}
-                      {detail.status === "OPENING" &&
-                        (item.userOpenId === userInfo.userOpenId ||
-                          detail.creatorOpenId === userInfo.userOpenId) && (
-                          <View
-                            className="link-col edit-btn"
-                            onClick={() => showEditTime(item)}
-                          >
-                            编辑
-                          </View>
-                        )}
-                    </View>
-                    <SectionItem label="起始时间：" content={item?.startTime} />
-                    <SectionItem label="结束时间：" content={item?.endTime} />
-                  </View>
-                  {detail.participants.length - 1 > index && (
-                    <View className="divider" />
-                  )}
-                </View>
-              ))}
-            </Fragment>
-          )}
-        </View>
+        {/* 参与人员 */}
+        <ParticipantsView
+          participants={detail.participants}
+          creatorOpenId={detail.creatorOpenId}
+          showEditTime={showEditTime}
+          status={detail.status}
+        />
       </View>
       {/* 编辑签到、结束时间 */}
       {editRecord && (
@@ -251,12 +243,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           {/* 约球发起者才可取消或结束 */}
           {detail.creatorOpenId === userInfo.userOpenId && (
             <Fragment>
-              <AtButton
-                type="primary"
-                size="small"
-                circle
-                onClick={() => console.log(1)}
-              >
+              <AtButton type="primary" size="small" circle onClick={goToFinish}>
                 结束活动
               </AtButton>
               <AtButton

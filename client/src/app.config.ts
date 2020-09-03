@@ -2,7 +2,8 @@ export default {
   pages: [
     "pages/index/index",
     "pages/gameInvitation/create/index",
-    "pages/gameInvitation/detail/index"
+    "pages/gameInvitation/detail/index",
+    "pages/gameInvitation/finish/index"
   ],
   window: {
     backgroundTextStyle: "light",
