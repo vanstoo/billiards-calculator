@@ -51,6 +51,10 @@ const EditSignDate: React.FC<EditSignDateProps> = ({
     UseRequest("invitation", param).then(res => {
       // console.log(param, "comfirmUpdate", res);
       if (res) {
+        Taro.showToast({
+          title: "更新成功",
+          mask: true
+        });
         let timer = setTimeout(() => {
           setEditRecord(undefined);
           clearTimeout(timer);

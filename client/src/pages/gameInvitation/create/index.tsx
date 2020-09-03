@@ -72,16 +72,24 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
         creatorAvatarUrl: userInfo?.avatarUrl
       };
       console.log(param);
-      Taro.showLoading({ title: "发起约球中...", mask: true });
+      Taro.showLoading({
+        title: "发起约球中...",
+        mask: true
+      });
       UseRequest("invitation", param).then(result => {
-        Taro.hideLoading();
         if (result._id) {
-          console.log("result._id", result._id);
-          Taro.redirectTo({
-            url: `/pages/gameInvitation/detail/index?invitationId=${result._id}`
+          Taro.showToast({
+            title: "发起成功",
+            mask: true
           });
-        } else {
-          Taro.showToast({ title: "服务异常", mask: true, icon: "none" });
+          let timer = setTimeout(() => {
+            console.log("result._id", result._id);
+            Taro.hideLoading();
+            clearTimeout(timer);
+            Taro.redirectTo({
+              url: `/pages/gameInvitation/detail/index?invitationId=${result._id}`
+            });
+          }, 1000);
         }
       });
     }

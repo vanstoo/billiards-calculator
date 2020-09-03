@@ -77,7 +77,9 @@ async function createInvitation(event, context) {
         }, ],
       },
     })
-    return res
+    return {
+      _id: res._id
+    }
   } catch (error) {
     console.error(error)
     return error

@@ -53,9 +53,9 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         id: invitationId
       }).then(res => {
         // console.log(res);
-        Taro.hideLoading();
         Taro.stopPullDownRefresh();
         if (res._id) {
+          Taro.hideLoading();
           setDetail(res);
         }
       });
@@ -96,6 +96,10 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
 
   // 取消邀请
   const cancelInvitation = () => {
+    Taro.showLoading({
+      title: "取消活动中...",
+      mask: true
+    });
     UseRequest("invitation", {
       type: "cancel",
       id: invitationId
@@ -132,8 +136,8 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
     setEditRecord(item);
   };
 
+  // 增加参与者
   const addPartcapant = () => {
-    console.log("1");
     let param = {
       type: "addParticipantInfo",
       id: invitationId,
@@ -147,9 +151,14 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
       mask: true
     });
     UseRequest("invitation", param).then(res => {
-      Taro.hideLoading();
       console.log(res);
       if (res) {
+        Taro.hideLoading();
+        Taro.showToast({
+          title: "参与成功",
+          mask: true,
+          duration: 3000
+        });
         getDetails();
       }
     });
@@ -248,7 +257,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
                 circle
                 onClick={() => console.log(1)}
               >
-                结束
+                结束活动
               </AtButton>
               <AtButton
                 type="secondary"
@@ -256,7 +265,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
                 circle
                 onClick={showCancelModal}
               >
-                取消
+                取消活动
               </AtButton>
             </Fragment>
           )}

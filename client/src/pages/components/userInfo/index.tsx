@@ -15,7 +15,7 @@ const UserInfo: React.FC<UserInfoProps> = () => {
     console.log(detail);
     if (detail.userInfo) {
       Taro.showLoading({
-        title: "获取用户信息中...",
+        title: "更新用户信息中...",
         mask: true
       });
       // 新增/更新用户信息
@@ -25,8 +25,8 @@ const UserInfo: React.FC<UserInfoProps> = () => {
         avatarUrl: detail.userInfo.avatarUrl
       }).then(res => {
         console.log(res, "result");
-        Taro.hideLoading();
         if (res) {
+          Taro.hideLoading();
           // 更新本地用户信息
           Taro.showLoading({
             title: "获取用户信息中...",
