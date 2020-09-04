@@ -12,7 +12,7 @@ const UserInfo: React.FC<UserInfoProps> = () => {
   const [userInfo, setUserInfo] = useState(Taro.getStorageSync("userInfo"));
 
   const getUser = ({ detail }) => {
-    console.log(detail);
+    // console.log(detail);
     if (detail.userInfo) {
       Taro.showLoading({
         title: "更新用户信息中...",
@@ -24,7 +24,7 @@ const UserInfo: React.FC<UserInfoProps> = () => {
         nickName: detail.userInfo.nickName,
         avatarUrl: detail.userInfo.avatarUrl
       }).then(res => {
-        console.log(res, "result");
+        // console.log(res, "result");
         if (res) {
           Taro.hideLoading();
           // 更新本地用户信息
@@ -35,7 +35,7 @@ const UserInfo: React.FC<UserInfoProps> = () => {
           UseRequest("login", {
             type: "get"
           }).then(result => {
-            console.log(result, " login");
+            // console.log(result, " login");
             Taro.hideLoading();
             Taro.setStorageSync("userInfo", result);
             setUserInfo(result);

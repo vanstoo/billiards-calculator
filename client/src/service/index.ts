@@ -10,7 +10,7 @@ export const UseRequest = async (name: RequestApi, data: any) => {
   return Taro.cloud
     .callFunction(option)
     .then((res: any) => {
-      console.log(name, "apiResponse", res);
+      // console.log(name, "apiResponse", res);
       if (res?.result?.errMsg) {
         Taro.showToast({
           title: `获取失败，请稍后尝试或联系管理员，异常信息：${res.result.errMsg}`,
@@ -27,7 +27,7 @@ export const UseRequest = async (name: RequestApi, data: any) => {
       }
     })
     .catch(err => {
-      console.log(err, "ssss");
+      console.log(err, "catctError");
       Taro.showToast({
         title: `获取失败，请稍后尝试或联系管理员`,
         icon: "none",

@@ -4,6 +4,7 @@ export {
   isValidArray,
   returnStatusName,
   returnStyleByStatus,
-  returnNowTime
+  returnNowTime,
+  calNum
 } from "./dataTrans";
 export { subscribeInfo } from "./subscribe";

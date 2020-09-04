@@ -15,6 +15,7 @@ export interface InvitationItem {
   remark: string; //  约球备注
   status: InvitationStatus; // 邀请状态
   targetTime: string; // 约球时间
+  totalFee: number; // 总费用
 }
 
 export interface ParticipantItem {

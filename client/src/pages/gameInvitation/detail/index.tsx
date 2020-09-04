@@ -33,7 +33,8 @@ const EmptyData: InvitationItem = {
   createTime: "",
   status: "CANCELLED",
   participants: [],
-  creatorOpenId: ""
+  creatorOpenId: "",
+  totalFee: 0
 };
 
 const userInfo: UserInfo = Taro.getStorageSync("userInfo");
@@ -68,7 +69,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
 
   // 下拉刷新
   usePullDownRefresh(() => {
-    console.log("onPullDownRefresh");
+    // console.log("onPullDownRefresh");
     getDetails();
   });
 
@@ -104,7 +105,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
       type: "cancel",
       id: invitationId
     }).then(res => {
-      console.log(res);
+      // console.log(res);
       if (res) {
         Taro.showToast({
           title: "取消成功",
@@ -151,7 +152,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
       mask: true
     });
     UseRequest("invitation", param).then(res => {
-      console.log(res);
+      // console.log(res);
       if (res) {
         Taro.hideLoading();
         Taro.showToast({
@@ -166,11 +167,10 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
 
   // 跳转完结清算页
   const goToFinish = () => {
-    console.log(detail.participants);
     let errorFlag = detail.participants.findIndex(
       x => !x.startTime || !x.endTime
     );
-    console.log(detail.participants, errorFlag, "errorFlag");
+    // console.log(detail.participants, errorFlag, "errorFlag");
     if (errorFlag !== -1) {
       Taro.showToast({
         title: `${detail.participants[errorFlag].name}的时间信息不完整，请帮他调整或联系他自己调整后再结束活动`,
@@ -178,7 +178,6 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         icon: "none"
       });
     } else {
-      console.log("唔错");
       Taro.redirectTo({
         url: `/pages/gameInvitation/finish/index?invitationId=${invitationId}`
       });
@@ -222,6 +221,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           creatorOpenId={detail.creatorOpenId}
           showEditTime={showEditTime}
           status={detail.status}
+          totalFee={detail.totalFee}
         />
       </View>
       {/* 编辑签到、结束时间 */}

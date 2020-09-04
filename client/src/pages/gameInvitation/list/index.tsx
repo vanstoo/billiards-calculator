@@ -32,7 +32,7 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
       pageNum: pageNum,
       pageSize: pageSize
     }).then(result => {
-      console.log(result, "UseRequest");
+      // console.log(result, "UseRequest");
       setLoading(false);
       Taro.hideLoading();
       if (pageNum === 1) {
@@ -40,7 +40,7 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
         setHasReachBottom(result.list.length === result.totalCount);
       } else {
         let newList = invitationList.concat(result.list);
-        console.log(newList, newList.length);
+        // console.log(newList, newList.length);
         setInvitationList(invitationList.concat(result.list));
         setHasReachBottom(newList.length === result.totalCount);
       }
@@ -48,13 +48,13 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
   };
 
   useEffect(() => {
-    console.log(current, "useEffect");
+    // console.log(current, "useEffect");
     getListByPage(current);
   }, [current]);
 
   // 下拉刷新
   const onScrollToUpper = e => {
-    console.log(e, "到顶了", current);
+    // console.log(e, "到顶了", current);
     if (current === 1) {
       getListByPage(1);
     }
@@ -63,19 +63,19 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
 
   // 底部滚动刷新
   const onScrollToLower = () => {
-    console.log("到底了");
+    // console.log("到底了");
     if (!hasReachBottom) {
       Taro.showLoading({ title: "获取数据中...", mask: true });
       setCurrent(current + 1);
     } else {
-      console.log("数据已经没了");
+      // console.log("数据已经没了");
     }
   };
 
   // 创建约球
   const goToCreateInvitation = () => {
     let userInfo: UserInfo = Taro.getStorageSync("userInfo");
-    console.log(userInfo);
+    // console.log(userInfo);
     if (userInfo && userInfo.userOpenId) {
       Taro.navigateTo({ url: "/pages/gameInvitation/create/index" });
     } else {
@@ -106,7 +106,7 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
                 className="list-card"
                 onClick={() =>
                   Taro.navigateTo({
-                    url: `/pages/gameInvitation/detail/index?invitationId=${x._id}`
+                    url: `/pages/gameInvitation/finish/index?invitationId=${x._id}`
                   })
                 }
               >

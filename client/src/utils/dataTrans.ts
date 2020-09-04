@@ -3,15 +3,21 @@ import { InvitationStatus } from "../pages/gameInvitation/type";
 
 // 格式化时间
 export const formatDate = (
-  date: string | dayjs.Dayjs | Date | number | undefined,
+  date: string | dayjs.Dayjs | undefined,
   formatType = "YYYY-MM-DD",
   emptyStr: string = ""
-): string => (date ? dayjs(date).format(formatType) : emptyStr);
+): string =>
+  date
+    ? dayjs(date).isValid()
+      ? dayjs(date).format(formatType)
+      : typeof date === "string"
+      ? date
+      : emptyStr
+    : emptyStr;
 
 // 返回当前时分
-export const returnNowTime = (
-  time?: string | dayjs.Dayjs | Date | number | undefined
-) => formatDate(time ? time : dayjs(), "HH:mm");
+export const returnNowTime = (time?: string | dayjs.Dayjs | undefined) =>
+  formatDate(time ? time : dayjs(), "HH:mm");
 
 // 是否非空数组
 export const isValidArray = (list: any) =>
@@ -39,3 +45,7 @@ export const returnStyleByStatus = (
   };
   return { [isColor ? "color" : "background"]: statusObj[status] || "#d9d9d9" };
 };
+
+// 返回精确到某位小数
+export const calNum = (num: number, precision?: number): number =>
+  Number(num.toFixed(precision ? precision : 2));

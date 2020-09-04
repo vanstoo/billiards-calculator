@@ -26,7 +26,7 @@ const CommonScrollView: FC<CommonScrollViewProps> = ({
     if (listLoding === false) {
       setIsRefreshing(false);
     }
-    console.log("listLoding", listLoding);
+    // console.log("listLoding", listLoding);
   }, [listLoding]);
 
   const onRefresherRefresh = debounce((e: any) => {

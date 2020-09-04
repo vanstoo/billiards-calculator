@@ -33,7 +33,7 @@ class App extends Component {
     }
     updateManager.onCheckForUpdate(res => {
       // 请求完新版本信息的回调
-      console.log(res.hasUpdate, "请求完新版本信息的回调");
+      // console.log(res.hasUpdate, "请求完新版本信息的回调");
     });
     updateManager.onUpdateReady(() => {
       Taro.showModal({
