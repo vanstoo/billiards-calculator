@@ -1,199 +1,182 @@
-import * as React from "react";
-import { memo, useEffect, useState, Fragment } from "react";
-import Taro, {
-  useRouter,
-  usePullDownRefresh,
-  useShareAppMessage
-} from "@tarojs/taro";
-import { View, Text } from "@tarojs/components";
-import { AtButton, AtAvatar } from "taro-ui";
-import { SectionItem } from "../../../components";
-import { EditSignDate, ParticipantsView } from "../components";
-import { UseRequest } from "../../../service";
-import {
-  formatDate,
-  returnStatusName,
-  isValidArray,
-  returnStyleByStatus,
-  subscribeInfo
-} from "../../../utils";
-import { dateFormatToMin } from "../../../constant";
-import { InvitationItem, ParticipantItem } from "../type";
-import { UserInfo } from "../../../typings";
+import * as React from 'react'
+import { memo, useEffect, useState, Fragment } from 'react'
+import Taro, { useRouter, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro'
+import { View, Text } from '@tarojs/components'
+import { AtButton, AtAvatar } from 'taro-ui'
+import { SectionItem } from '../../../components'
+import { EditSignDate, ParticipantsView } from '../components'
+import { UseRequest } from '../../../service'
+import { formatDate, returnStatusName, isValidArray, returnStyleByStatus, subscribeInfo } from '../../../utils'
+import { dateFormatToMin } from '../../../constant'
+import { InvitationItem, ParticipantItem } from '../type'
+import { UserInfo } from '../../../typings'
 
 export interface InvitationDetailProps {}
 
 const EmptyData: InvitationItem = {
-  _id: "",
+  _id: '',
   locationInfo: undefined as any,
-  targetTime: "",
-  remark: "",
-  creatorName: "",
-  creatorAvatarUrl: "",
-  createTime: "",
-  status: "CANCELLED",
+  targetTime: '',
+  remark: '',
+  creatorName: '',
+  creatorAvatarUrl: '',
+  createTime: '',
+  status: 'CANCELLED',
   participants: [],
-  creatorOpenId: "",
-  totalFee: 0
-};
+  creatorOpenId: '',
+  totalFee: 0,
+}
 
-const userInfo: UserInfo = Taro.getStorageSync("userInfo");
+const userInfo: UserInfo = Taro.getStorageSync('userInfo')
 const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
-  const { invitationId } = useRouter().params;
-  const [detail, setDetail] = useState<InvitationItem>(EmptyData);
-  const [editRecord, setEditRecord] = useState<ParticipantItem>();
+  const { invitationId } = useRouter().params
+  const [detail, setDetail] = useState<InvitationItem>(EmptyData)
+  const [editRecord, setEditRecord] = useState<ParticipantItem>()
 
   const getDetails = () => {
     Taro.showLoading({
-      title: "加载详情中...",
-      mask: true
-    });
+      title: '加载详情中...',
+      mask: true,
+    })
     if (invitationId) {
-      UseRequest("invitation", {
-        type: "getDetail",
-        id: invitationId
+      UseRequest('invitation', {
+        type: 'getDetail',
+        id: invitationId,
       }).then(res => {
         // console.log(res);
-        Taro.stopPullDownRefresh();
+        Taro.stopPullDownRefresh()
         if (res._id) {
-          Taro.hideLoading();
-          setDetail(res);
+          Taro.hideLoading()
+          setDetail(res)
         }
-      });
+      })
     }
-  };
+  }
 
   useEffect(() => {
-    getDetails();
-  }, [invitationId]);
+    getDetails()
+  }, [invitationId])
 
   // 下拉刷新
   usePullDownRefresh(() => {
     // console.log("onPullDownRefresh");
-    getDetails();
-  });
+    getDetails()
+  })
 
   // 分享
   useShareAppMessage(() => {
     return {
       title: `${detail.creatorName}向你发起了🎱邀请`,
-      path: `/pages/gameInvitation/detail/index?invitationId=${invitationId}`
-    };
-  });
+      path: `/pages/gameInvitation/detail/index?invitationId=${invitationId}`,
+    }
+  })
 
   // 查看地图
   const goToMapDetail = () => {
     // console.log(detail.locationInfo, "chooseLocation.getLocation()");
     if (detail.locationInfo) {
-      Taro.openLocation(detail.locationInfo);
+      Taro.openLocation(detail.locationInfo)
     } else {
       Taro.showToast({
-        title: "地址有误，请重试或联系管理员",
+        title: '地址有误，请重试或联系管理员',
         mask: true,
-        icon: "none"
-      });
+        icon: 'none',
+      })
     }
-  };
+  }
 
   // 取消邀请
   const cancelInvitation = () => {
     Taro.showLoading({
-      title: "取消活动中...",
-      mask: true
-    });
-    UseRequest("invitation", {
-      type: "cancel",
-      id: invitationId
+      title: '取消活动中...',
+      mask: true,
+    })
+    UseRequest('invitation', {
+      type: 'cancel',
+      id: invitationId,
     }).then(res => {
       // console.log(res);
       if (res) {
         Taro.showToast({
-          title: "取消成功",
+          title: '取消成功',
           mask: true,
-          duration: 3000
-        });
+          duration: 3000,
+        })
         let timer = setTimeout(() => {
-          getDetails();
-          clearTimeout(timer);
-        }, 2000);
+          getDetails()
+          clearTimeout(timer)
+        }, 2000)
       }
-    });
-  };
+    })
+  }
 
   // 确认取消弹窗
   const showCancelModal = () => {
     Taro.showModal({
-      content: "确认取消约球吗？",
+      content: '确认取消约球吗？',
       success: res => {
         if (res.confirm) {
-          cancelInvitation();
+          cancelInvitation()
         }
-      }
-    });
-  };
+      },
+    })
+  }
 
   // 展示编辑时间
   const showEditTime = (item: ParticipantItem) => {
-    setEditRecord(item);
-  };
+    setEditRecord(item)
+  }
 
   // 增加参与者
   const addPartcapant = () => {
     let param = {
-      type: "addParticipantInfo",
+      type: 'addParticipantInfo',
       id: invitationId,
       nickName: userInfo.nickName,
       avatarUrl: userInfo.avatarUrl,
-      startTime: "",
-      endTime: ""
-    };
+      startTime: '',
+      endTime: '',
+    }
     Taro.showLoading({
-      title: "参与活动中...",
-      mask: true
-    });
-    UseRequest("invitation", param).then(res => {
+      title: '参与活动中...',
+      mask: true,
+    })
+    UseRequest('invitation', param).then(res => {
       // console.log(res);
       if (res) {
-        Taro.hideLoading();
+        Taro.hideLoading()
         Taro.showToast({
-          title: "参与成功",
+          title: '参与成功',
           mask: true,
-          duration: 3000
-        });
-        getDetails();
+          duration: 3000,
+        })
+        getDetails()
       }
-    });
-  };
+    })
+  }
 
   // 跳转完结清算页
   const goToFinish = () => {
-    let errorFlag = detail.participants.findIndex(
-      x => !x.startTime || !x.endTime
-    );
+    let errorFlag = detail.participants.findIndex(x => !x.startTime || !x.endTime)
     // console.log(detail.participants, errorFlag, "errorFlag");
     if (errorFlag !== -1) {
       Taro.showToast({
         title: `${detail.participants[errorFlag].name}的时间信息不完整，请帮他调整或联系他自己调整后再结束活动`,
         mask: true,
-        icon: "none"
-      });
+        icon: 'none',
+      })
     } else {
       Taro.redirectTo({
-        url: `/pages/gameInvitation/finish/index?invitationId=${invitationId}`
-      });
+        url: `/pages/gameInvitation/finish/index?invitationId=${invitationId}`,
+      })
     }
-  };
+  }
 
   return (
     <Fragment>
       <View className="detail">
-        <View
-          className="detail-panel"
-          style={returnStyleByStatus(detail.status)}
-        >
-          <Text>
-            发起时间：{formatDate(detail.createTime, dateFormatToMin)}
-          </Text>
+        <View className="detail-panel" style={returnStyleByStatus(detail.status)}>
+          <Text>发起时间：{formatDate(detail.createTime, dateFormatToMin)}</Text>
           <Text>{returnStatusName(detail.status)}</Text>
         </View>
         <View className="detail-card">
@@ -206,10 +189,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           <SectionItem label="约球时间：" content={detail.targetTime} />
           <SectionItem
             label="约球地址："
-            content={
-              detail.locationInfo?.name &&
-              `${detail.locationInfo?.name}（点击查看）`
-            }
+            content={detail.locationInfo?.name && `${detail.locationInfo?.name}（点击查看）`}
             isLinkCol
             contentClick={goToMapDetail}
           />
@@ -235,7 +215,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         />
       )}
       {/* 状态为进行中才可键操作按钮 */}
-      {detail.status === "OPENING" && (
+      {detail.status === 'OPENING' && (
         <View className="fixed-btn">
           <AtButton type="secondary" size="small" circle openType="share">
             分享
@@ -246,33 +226,21 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
               <AtButton type="primary" size="small" circle onClick={goToFinish}>
                 结束活动
               </AtButton>
-              <AtButton
-                type="secondary"
-                size="small"
-                circle
-                onClick={showCancelModal}
-              >
+              <AtButton type="secondary" size="small" circle onClick={showCancelModal}>
                 取消活动
               </AtButton>
             </Fragment>
           )}
           {/* 非参与人员才可加入 */}
-          {!detail.participants.some(
-            x => x.userOpenId === userInfo.userOpenId
-          ) && (
-            <AtButton
-              type="primary"
-              size="small"
-              circle
-              onClick={addPartcapant}
-            >
+          {!detail.participants.some(x => x.userOpenId === userInfo.userOpenId) && (
+            <AtButton type="primary" size="small" circle onClick={addPartcapant}>
               加我一个
             </AtButton>
           )}
         </View>
       )}
     </Fragment>
-  );
-};
+  )
+}
 
-export default memo(InvitationDetailView);
+export default memo(InvitationDetailView)

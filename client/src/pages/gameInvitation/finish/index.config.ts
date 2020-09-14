@@ -1,3 +1,3 @@
 export default {
-  navigationBarTitleText: "结束约球"
-};
+  navigationBarTitleText: '结束约球',
+}

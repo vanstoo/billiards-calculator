@@ -1,60 +1,61 @@
-import * as React from "react";
-import { memo, useEffect, useState } from "react";
-import Taro, { useRouter } from "@tarojs/taro";
-import { View } from "@tarojs/components";
-import { AtInput, AtButton } from "taro-ui";
-import { ParticipantsView } from "../components";
-import { UseRequest } from "../../../service";
-import { returnNowTime, formatDate } from "../../../utils";
-import { dateFormatToMin } from "../../../constant";
-import { InvitationItem } from "../type";
-import { UserInfo } from "../../../typings";
-import dayjs from "dayjs";
+import * as React from 'react'
+import { memo, useEffect, useState } from 'react'
+import Taro, { useRouter } from '@tarojs/taro'
+import { View } from '@tarojs/components'
+import { AtInput, AtButton } from 'taro-ui'
+import { ImgUpload } from '../../../components'
+import { ParticipantsView } from '../components'
+import { UseRequest } from '../../../service'
+import { isValidArray, uploadImg } from '../../../utils'
+import { InvitationItem } from '../type'
+import { UserInfo } from '../../../typings'
 
 export interface FinishInvitationProps {}
-const userInfo: UserInfo = Taro.getStorageSync("userInfo");
+
+const userInfo: UserInfo = Taro.getStorageSync('userInfo')
 
 const EmptyData: InvitationItem = {
-  _id: "",
+  _id: '',
   locationInfo: undefined as any,
-  targetTime: "",
-  remark: "",
-  creatorName: "",
-  creatorAvatarUrl: "",
-  createTime: "",
-  status: "CANCELLED",
+  targetTime: '',
+  remark: '',
+  creatorName: '',
+  creatorAvatarUrl: '',
+  createTime: '',
+  status: 'CANCELLED',
   participants: [],
-  creatorOpenId: "",
-  totalFee: 0
-};
+  creatorOpenId: '',
+  totalFee: 0,
+}
 
 // 结束活动
 const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
-  const { invitationId } = useRouter().params;
-  const [detail, setDetail] = useState<InvitationItem>(EmptyData);
-  const [totalFee, setTotalFee] = useState(); // 费用总计
+  const { invitationId } = useRouter().params
+  const [detail, setDetail] = useState<InvitationItem>(EmptyData)
+  const [totalFee, setTotalFee] = useState(undefined) // 费用总计
+  const [uploadList, setUploadList] = useState<string[]>([]) // 费用凭证
 
   const getDetails = () => {
     Taro.showLoading({
-      title: "加载详情中...",
-      mask: true
-    });
+      title: '加载详情中...',
+      mask: true,
+    })
     if (invitationId) {
-      UseRequest("invitation", {
-        type: "getDetail",
-        id: invitationId
+      UseRequest('invitation', {
+        type: 'getDetail',
+        id: invitationId,
       }).then(res => {
         if (res._id) {
-          Taro.hideLoading();
-          setDetail(res);
+          Taro.hideLoading()
+          setDetail(res)
         }
-      });
+      })
     }
-  };
+  }
   // 获取详情
   useEffect(() => {
-    getDetails();
-  }, [invitationId]);
+    getDetails()
+  }, [invitationId])
 
   // 处理时间及占比
   useEffect(() => {
@@ -93,28 +94,49 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
     //   "总分钟"
     // );
     // console.log(newList, "detail.participants");
-  }, [detail]);
+  }, [detail])
 
   // 修改总费用
   const onSumChange = val => {
-    console.log(val);
-    setTotalFee(val);
-  };
+    setTotalFee(val)
+  }
+
+  //多张图片上传
+  const uploadFunc = async (tempFilePaths: string[]) => {
+    console.log(tempFilePaths, 'tempFilePaths')
+    let fileRes = await uploadImg(tempFilePaths, 'billImg')
+    console.log(fileRes, 'fileList')
+    if (fileRes) {
+      setUploadList(uploadList.concat([fileRes]))
+    }
+  }
+
+  //  删除图片
+  const delFileFunc = (fileId: string) => {
+    setUploadList(uploadList.filter(x => x !== fileId))
+  }
 
   const onComfirm = () => {
-    if (!totalFee) {
+    if (!totalFee || totalFee > 99999 || totalFee <= 0) {
       Taro.showToast({
-        title: "请输入正确的总费用",
+        title: '请输入正确的总费用',
         mask: true,
-        icon: "none"
-      });
+        icon: 'none',
+      })
+    } else if (!isValidArray(uploadList)) {
+      Taro.showToast({
+        title: '请上传活动费用凭证',
+        mask: true,
+        icon: 'none',
+      })
     } else {
       let param = {
-        totalFee: totalFee
-      };
-      console.log(param);
+        totalFee: totalFee,
+        billImgs: uploadList,
+      }
+      console.log(param)
     }
-  };
+  }
   return (
     <View className="finish-invitation">
       {/* 参与人员 */}
@@ -136,13 +158,15 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
           required
         />
       </View>
+      <View className="fake-title">活动费用凭证</View>
+      <ImgUpload uploadList={uploadList} uploadFile={uploadFunc} delFileItem={delFileFunc} />
       <View className="fixed-btn">
         <AtButton
           type="secondary"
           circle
           onClick={() =>
             Taro.redirectTo({
-              url: `/pages/gameInvitation/detail/index?invitationId=${invitationId}`
+              url: `/pages/gameInvitation/detail/index?invitationId=${invitationId}`,
             })
           }
         >
@@ -153,7 +177,7 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
         </AtButton>
       </View>
     </View>
-  );
-};
+  )
+}
 
-export default memo(FinishInvitation);
+export default memo(FinishInvitation)
