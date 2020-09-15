@@ -108,7 +108,7 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
                 className="list-card"
                 onClick={() =>
                   Taro.navigateTo({
-                    url: `/pages/gameInvitation/finish/index?invitationId=${x._id}`,
+                    url: `/pages/gameInvitation/detail/index?invitationId=${x._id}`,
                   })
                 }
               >

@@ -2,8 +2,8 @@ import * as React from 'react'
 import { memo, useEffect, useState, Fragment } from 'react'
 import Taro, { useRouter, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
-import { AtButton, AtAvatar } from 'taro-ui'
-import { SectionItem } from '../../../components'
+import { AtButton } from 'taro-ui'
+import { SectionItem, ImgView } from '../../../components'
 import { EditSignDate, ParticipantsView } from '../components'
 import { UseRequest } from '../../../service'
 import { formatDate, returnStatusName, isValidArray, returnStyleByStatus, subscribeInfo } from '../../../utils'
@@ -25,6 +25,7 @@ const EmptyData: InvitationItem = {
   participants: [],
   creatorOpenId: '',
   totalFee: 0,
+  billImgs: [],
 }
 
 const userInfo: UserInfo = Taro.getStorageSync('userInfo')
@@ -73,7 +74,6 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
 
   // 查看地图
   const goToMapDetail = () => {
-    // console.log(detail.locationInfo, "chooseLocation.getLocation()");
     if (detail.locationInfo) {
       Taro.openLocation(detail.locationInfo)
     } else {
@@ -203,7 +203,13 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           status={detail.status}
           totalFee={detail.totalFee}
         />
+        <View className="detail-card">
+          <View className="title">活动费用凭证</View>
+          <View className="divider" />
+          <ImgView uploadList={detail.billImgs} />
+        </View>
       </View>
+
       {/* 编辑签到、结束时间 */}
       {editRecord && (
         <EditSignDate
@@ -214,6 +220,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           refreshAndGetdetail={getDetails}
         />
       )}
+
       {/* 状态为进行中才可键操作按钮 */}
       {detail.status === 'OPENING' && (
         <View className="fixed-btn">

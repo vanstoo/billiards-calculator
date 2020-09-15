@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { memo, Fragment } from 'react'
+import { memo } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 import { chooseImg, isValidArray } from '../../utils'

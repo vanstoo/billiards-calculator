@@ -8,11 +8,8 @@ import { ParticipantsView } from '../components'
 import { UseRequest } from '../../../service'
 import { isValidArray, uploadImg } from '../../../utils'
 import { InvitationItem } from '../type'
-import { UserInfo } from '../../../typings'
 
 export interface FinishInvitationProps {}
-
-const userInfo: UserInfo = Taro.getStorageSync('userInfo')
 
 const EmptyData: InvitationItem = {
   _id: '',
@@ -96,6 +93,13 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
     // console.log(newList, "detail.participants");
   }, [detail])
 
+  // 返回详情
+  const goToDetail = () => {
+    Taro.redirectTo({
+      url: `/pages/gameInvitation/detail/index?invitationId=${invitationId}`,
+    })
+  }
+
   // 修改总费用
   const onSumChange = val => {
     setTotalFee(val)
@@ -117,7 +121,7 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
   }
 
   const onComfirm = () => {
-    if (!totalFee || totalFee > 99999 || totalFee <= 0) {
+    if (!totalFee || isNaN(Number(totalFee)) || totalFee > 99999 || totalFee <= 0) {
       Taro.showToast({
         title: '请输入正确的总费用',
         mask: true,
@@ -129,14 +133,35 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
         mask: true,
         icon: 'none',
       })
+    } else if (isValidArray(uploadList) && uploadList.length > 9) {
+      Taro.showToast({
+        title: '最多上传9张活动费用凭证',
+        mask: true,
+        icon: 'none',
+      })
     } else {
       let param = {
-        totalFee: totalFee,
+        totalFee: Number(totalFee),
         billImgs: uploadList,
+        id: invitationId,
+        type: 'finish',
+      }
+      Taro.showLoading({
+        title: '结束活动中...',
+        mask: true,
+      })
+      if (invitationId) {
+        UseRequest('invitation', param).then(res => {
+          if (res) {
+            Taro.hideLoading()
+            goToDetail()
+          }
+        })
       }
       console.log(param)
     }
   }
+
   return (
     <View className="finish-invitation">
       {/* 参与人员 */}
@@ -161,15 +186,7 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
       <View className="fake-title">活动费用凭证</View>
       <ImgUpload uploadList={uploadList} uploadFile={uploadFunc} delFileItem={delFileFunc} />
       <View className="fixed-btn">
-        <AtButton
-          type="secondary"
-          circle
-          onClick={() =>
-            Taro.redirectTo({
-              url: `/pages/gameInvitation/detail/index?invitationId=${invitationId}`,
-            })
-          }
-        >
+        <AtButton type="secondary" circle onClick={goToDetail}>
           取 消
         </AtButton>
         <AtButton type="primary" circle onClick={onComfirm}>

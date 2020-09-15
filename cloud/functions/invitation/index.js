@@ -14,27 +14,35 @@ const db = cloud.database({
 exports.main = async (event, context) => {
   console.log(event)
   switch (event.type) {
+    // 发起约球
     case 'create': {
       return createInvitation(event, context)
     }
+    // 获取详情
     case 'getDetail': {
       return getInvitationDetail(event, context)
     }
+    // 获取列表
     case 'getList': {
       return getInvitationList(event, context)
     }
+    // 更新基础信息
     case 'updateBaseInfo': {
       return updateInvitationBaseInfo(event, context)
     }
+    // 增加参与者
     case "addParticipantInfo": {
       return addParticipantInfo(event, context)
     }
+    // 更新参与者信息
     case "updateParticipant": {
       return updateParticipantInfo(event, context)
     }
+    // 取消活动
     case 'cancel': {
       return cancelInvitation(event, context)
     }
+    // 结束活动
     case 'finish': {
       return finishInvitation(event, context)
     }
@@ -75,6 +83,8 @@ async function createInvitation(event, context) {
           startTime: '', // 开始时间
           endTime: '', // 结束时间
         }, ],
+        totalFee: null, // 总费用
+        billImgs: [] // 活动费用凭证
       },
     })
     return {
@@ -145,19 +155,32 @@ async function cancelInvitation(event, context) {
     id
   } = event
   console.log(event)
-  try {
-    await db
-      .collection('invitation_groups')
-      .doc(id)
-      .update({
-        data: {
-          status: 'CANCELLED',
-        },
-      })
-    return true
-  } catch (error) {
-    console.error(error)
-    return error
+  let res = await db
+    .collection('invitation_groups')
+    .where({
+      _id: id
+    })
+    .get()
+  console.log(res, "res")
+  if (res.data && res.data[0] && res.data[0].status === "OPENING") {
+    try {
+      await db
+        .collection('invitation_groups')
+        .doc(id)
+        .update({
+          data: {
+            status: 'CANCELLED',
+          },
+        })
+      return true
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  } else {
+    return {
+      errMsg: "当前活动状态有变更，请返回详情页面查看"
+    }
   }
 }
 
@@ -243,11 +266,42 @@ async function updateParticipantInfo(event, context) {
 // 结束约球
 async function finishInvitation(event, context) {
   const {
+    id,
+    totalFee,
+    billImgs,
+  } = event
+  const {
     OPENID
   } = cloud.getWXContext()
   console.log(event)
-  return {
-    event: event,
-    context: context,
+  const _ = db.command
+  let res = await db
+    .collection('invitation_groups')
+    .where({
+      _id: id
+    })
+    .get()
+  console.log(res, "res")
+  if (res.data && res.data[0] && res.data[0].status === "OPENING") {
+    try {
+      await db
+        .collection('invitation_groups')
+        .doc(id)
+        .update({
+          data: {
+            status: "FINISHED",
+            totalFee: totalFee,
+            billImgs: _.push(billImgs)
+          }
+        })
+      return true
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  } else {
+    return {
+      errMsg: "当前活动状态有变更，请返回详情页面查看"
+    }
   }
 }
