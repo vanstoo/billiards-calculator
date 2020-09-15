@@ -9,20 +9,21 @@ import './custom-variables.scss'
 
 class App extends Component {
   componentDidMount() {
-    if (process.env.TARO_ENV === 'weapp') {
-      // let envType =
-      //   process.env.NODE_ENV === "development" ? "test-odvq4" : "prod-ahprr";
-      // console.log(envType, " process.env.NODE_ENV ");
-      Taro.cloud.init({
-        env: 'test-odvq4',
-        traceUser: true,
-      })
-    }
-    UseRequest('login', {
-      type: 'get',
-    }).then(result => {
-      // console.log(result, " login");
-      Taro.setStorageSync('userInfo', result)
+    Taro.getSystemInfo({
+      success: res => {
+        console.log(res.platform)
+        let envType = res.platform === 'devtools' ? 'test-odvq4' : 'prod-ahprr'
+        Taro.cloud.init({
+          env: envType,
+          traceUser: true,
+        })
+        UseRequest('login', {
+          type: 'get',
+        }).then(result => {
+          // console.log(result, " login");
+          Taro.setStorageSync('userInfo', result)
+        })
+      },
     })
   }
 

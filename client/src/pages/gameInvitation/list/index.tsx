@@ -34,14 +34,16 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
       // console.log(result, "UseRequest");
       setLoading(false)
       Taro.hideLoading()
-      if (pageNum === 1) {
-        setInvitationList(result.list)
-        setHasReachBottom(result.list.length === result.totalCount)
-      } else {
-        let newList = invitationList.concat(result.list)
-        // console.log(newList, newList.length);
-        setInvitationList(invitationList.concat(result.list))
-        setHasReachBottom(newList.length === result.totalCount)
+      if (result && result.list) {
+        if (pageNum === 1) {
+          setInvitationList(result.list)
+          setHasReachBottom(result.list.length === result.totalCount)
+        } else {
+          let newList = invitationList.concat(result.list)
+          // console.log(newList, newList.length);
+          setInvitationList(invitationList.concat(result.list))
+          setHasReachBottom(newList.length === result.totalCount)
+        }
       }
     })
   }

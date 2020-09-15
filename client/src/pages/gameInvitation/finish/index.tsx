@@ -176,7 +176,7 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
         <AtInput
           name="sum"
           title="总费用"
-          type="number"
+          type="digit"
           placeholder="请输入总费用"
           value={totalFee}
           onChange={onSumChange}

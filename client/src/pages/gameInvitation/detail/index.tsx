@@ -6,7 +6,7 @@ import { AtButton } from 'taro-ui'
 import { SectionItem, ImgView } from '../../../components'
 import { EditSignDate, ParticipantsView } from '../components'
 import { UseRequest } from '../../../service'
-import { formatDate, returnStatusName, isValidArray, returnStyleByStatus, subscribeInfo } from '../../../utils'
+import { formatDate, returnStatusName, returnStyleByStatus, subscribeInfo } from '../../../utils'
 import { dateFormatToMin } from '../../../constant'
 import { InvitationItem, ParticipantItem } from '../type'
 import { UserInfo } from '../../../typings'
@@ -194,6 +194,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
             contentClick={goToMapDetail}
           />
           <SectionItem label="描述：" content={detail.remark} />
+          {detail.status === 'FINISHED' && <SectionItem label="总费用：" content={`¥ ${detail.totalFee}`} />}
         </View>
         {/* 参与人员 */}
         <ParticipantsView
@@ -203,11 +204,13 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           status={detail.status}
           totalFee={detail.totalFee}
         />
-        <View className="detail-card">
-          <View className="title">活动费用凭证</View>
-          <View className="divider" />
-          <ImgView uploadList={detail.billImgs} />
-        </View>
+        {detail.status === 'FINISHED' && (
+          <View className="detail-card">
+            <View className="title">活动费用凭证</View>
+            <View className="divider" />
+            <ImgView uploadList={detail.billImgs} />
+          </View>
+        )}
       </View>
 
       {/* 编辑签到、结束时间 */}

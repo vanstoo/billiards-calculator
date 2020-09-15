@@ -3,7 +3,7 @@ import { memo } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 import { isValidArray } from '../../utils'
-import '../imgUpload/index.scss'
+import './index.scss'
 
 export interface ImgViewProps {
   uploadList: string[] // 附件列表
@@ -22,7 +22,7 @@ const ImgView: React.SFC<ImgViewProps> = ({ uploadList }) => {
   }
 
   return (
-    <View className="img-upload">
+    <View className="img-view">
       {isValidArray(uploadList) &&
         uploadList.map((item: string, index: number) => {
           return (
