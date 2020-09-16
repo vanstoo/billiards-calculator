@@ -5,16 +5,14 @@ import { View, Text } from '@tarojs/components'
 import { AtButton, AtAvatar } from 'taro-ui'
 import { CommonScrollView, EmptyListView } from '../../../components'
 import { UseRequest } from '../../../service'
-import { isValidArray, returnStatusName, returnStyleByStatus } from '../../../utils'
+import { isValidArray, returnStatusName, returnStyleByStatus, goToLoginPage } from '../../../utils'
 import { InvitationItem } from '../type'
 import { UserInfo } from '../../../typings'
 import '../index.scss'
 
-export interface HomePageProps {
-  goToLogin: (key: number) => void // 跳转登陆
-}
+export interface HomePageProps {}
 const pageSize = 10
-const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
+const InvitationList: React.FC<HomePageProps> = () => {
   const [current, setCurrent] = useState(1)
   const [loading, setLoading] = useState(false)
   const [hasReachBottom, setHasReachBottom] = useState(false)
@@ -79,21 +77,13 @@ const InvitationList: React.FC<HomePageProps> = ({ goToLogin }) => {
   // 创建约球
   const goToCreateInvitation = () => {
     let userInfo: UserInfo = Taro.getStorageSync('userInfo')
-    // console.log(userInfo);
     if (userInfo && userInfo.userOpenId) {
       Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
     } else {
-      Taro.showToast({
-        title: '请先授权登陆',
-        icon: 'none',
-        mask: true,
-      })
-      let timer = setTimeout(() => {
-        goToLogin(2)
-        clearTimeout(timer)
-      }, 2000)
+      goToLoginPage()
     }
   }
+
   return (
     <View className="list-card-box">
       <CommonScrollView

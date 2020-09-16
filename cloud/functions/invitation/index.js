@@ -57,7 +57,6 @@ async function createInvitation(event, context) {
   const {
     OPENID
   } = cloud.getWXContext()
-  console.log(event)
   const {
     creatorName,
     creatorAvatarUrl,
@@ -161,7 +160,7 @@ async function cancelInvitation(event, context) {
       _id: id
     })
     .get()
-  console.log(res, "res")
+  console.info(res, "res")
   if (res.data && res.data[0] && res.data[0].status === "OPENING") {
     try {
       await db
@@ -190,7 +189,6 @@ async function updateInvitationBaseInfo(event, context) {
   const {
     id
   } = event
-  console.log(event)
   return {
     event: event,
     context: context,
@@ -209,30 +207,42 @@ async function addParticipantInfo(event, context) {
   const {
     OPENID
   } = cloud.getWXContext()
-  console.log(event)
   const _ = db.command
-  try {
-    await db
-      .collection('invitation_groups')
-      .doc(id)
-      .update({
-        data: {
-          participants: _.push({
-            each: [{
-              name: nickName, // 参与人姓名
-              avatarUrl: avatarUrl, // 参与人头像
-              userOpenId: OPENID, // 参与人openid
-              startTime: startTime, // 开始时间
-              endTime: endTime, // 结束时间
-            }]
-          })
-        }
-      })
-    return true
-  } catch (error) {
-    console.error(error)
-    return error
+  let res = await db
+    .collection('invitation_groups')
+    .where({
+      _id: id
+    })
+    .get()
+  if (res.data && res.data[0] && res.data[0].participants && !res.data[0].participants.some(x => x.userOpenId === OPENID)) {
+    try {
+      await db
+        .collection('invitation_groups')
+        .doc(id)
+        .update({
+          data: {
+            participants: _.push({
+              each: [{
+                name: nickName, // 参与人姓名
+                avatarUrl: avatarUrl, // 参与人头像
+                userOpenId: OPENID, // 参与人openid
+                startTime: startTime, // 开始时间
+                endTime: endTime, // 结束时间
+              }]
+            })
+          }
+        })
+      return true
+    } catch (error) {
+      console.error(error)
+      return error
+    }
+  } else {
+    return {
+      errMsg: "当前参与人有变更，请刷新页面后重试"
+    }
   }
+
 }
 
 // 更新参与人开始、结束时间
@@ -243,7 +253,6 @@ async function updateParticipantInfo(event, context) {
     endTime,
     index
   } = event
-  console.log(event)
   try {
     await db
       .collection('invitation_groups')
@@ -273,7 +282,6 @@ async function finishInvitation(event, context) {
   const {
     OPENID
   } = cloud.getWXContext()
-  console.log(event)
   const _ = db.command
   let res = await db
     .collection('invitation_groups')
@@ -281,7 +289,7 @@ async function finishInvitation(event, context) {
       _id: id
     })
     .get()
-  console.log(res, "res")
+  console.info(res, "res")
   if (res.data && res.data[0] && res.data[0].status === "OPENING") {
     try {
       await db

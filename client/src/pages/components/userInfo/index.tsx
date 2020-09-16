@@ -4,12 +4,13 @@ import Taro from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtButton, AtAvatar } from 'taro-ui'
 import { UseRequest } from '../../../service'
+import { UserInfo } from '../../../typings'
 import './index.scss'
 
 export interface UserInfoProps {}
 
-const UserInfo: React.FC<UserInfoProps> = () => {
-  const [userInfo, setUserInfo] = useState(Taro.getStorageSync('userInfo'))
+const UserInfoPage: React.FC<UserInfoProps> = () => {
+  const [userInfo, setUserInfo] = useState<UserInfo>(Taro.getStorageSync('userInfo'))
 
   const getUser = ({ detail }) => {
     // console.log(detail);
@@ -57,7 +58,7 @@ const UserInfo: React.FC<UserInfoProps> = () => {
         <AtAvatar circle text="头" image={userInfo?.avatarUrl}></AtAvatar>
         <View className="user-name">{userInfo?.nickName || '—'}</View>
       </View>
-      {!userInfo && (
+      {!userInfo.userOpenId && (
         <AtButton type="primary" openType="getUserInfo" onGetUserInfo={getUser} className="user-btn">
           点击授权登录
         </AtButton>
@@ -66,4 +67,4 @@ const UserInfo: React.FC<UserInfoProps> = () => {
   )
 }
 
-export default memo(UserInfo)
+export default memo(UserInfoPage)

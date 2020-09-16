@@ -6,7 +6,7 @@ import { AtButton } from 'taro-ui'
 import { SectionItem, ImgView } from '../../../components'
 import { EditSignDate, ParticipantsView } from '../components'
 import { UseRequest } from '../../../service'
-import { formatDate, returnStatusName, returnStyleByStatus, subscribeInfo } from '../../../utils'
+import { formatDate, returnStatusName, returnStyleByStatus, goToLoginPage } from '../../../utils'
 import { dateFormatToMin } from '../../../constant'
 import { InvitationItem, ParticipantItem } from '../type'
 import { UserInfo } from '../../../typings'
@@ -28,11 +28,11 @@ const EmptyData: InvitationItem = {
   billImgs: [],
 }
 
-const userInfo: UserInfo = Taro.getStorageSync('userInfo')
 const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
   const { invitationId } = useRouter().params
   const [detail, setDetail] = useState<InvitationItem>(EmptyData)
   const [editRecord, setEditRecord] = useState<ParticipantItem>()
+  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
 
   const getDetails = () => {
     Taro.showLoading({
@@ -129,30 +129,34 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
 
   // 增加参与者
   const addPartcapant = () => {
-    let param = {
-      type: 'addParticipantInfo',
-      id: invitationId,
-      nickName: userInfo.nickName,
-      avatarUrl: userInfo.avatarUrl,
-      startTime: '',
-      endTime: '',
-    }
-    Taro.showLoading({
-      title: '参与活动中...',
-      mask: true,
-    })
-    UseRequest('invitation', param).then(res => {
-      // console.log(res);
-      if (res) {
-        Taro.hideLoading()
-        Taro.showToast({
-          title: '参与成功',
-          mask: true,
-          duration: 3000,
-        })
-        getDetails()
+    if (userInfo.userOpenId) {
+      let param = {
+        type: 'addParticipantInfo',
+        id: invitationId,
+        nickName: userInfo.nickName,
+        avatarUrl: userInfo.avatarUrl,
+        startTime: '',
+        endTime: '',
       }
-    })
+      Taro.showLoading({
+        title: '参与活动中...',
+        mask: true,
+      })
+      UseRequest('invitation', param).then(res => {
+        // console.log(res);
+        if (res) {
+          Taro.hideLoading()
+          Taro.showToast({
+            title: '参与成功',
+            mask: true,
+            duration: 3000,
+          })
+          getDetails()
+        }
+      })
+    } else {
+      goToLoginPage()
+    }
   }
 
   // 跳转完结清算页

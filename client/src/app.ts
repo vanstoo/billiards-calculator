@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import Taro from '@tarojs/taro'
 import { UseRequest } from './service'
+import { goToLoginPage } from './utils'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 dayjs.locale('zh-cn')
@@ -17,17 +18,21 @@ class App extends Component {
           env: envType,
           traceUser: true,
         })
-        UseRequest('login', {
-          type: 'get',
-        }).then(result => {
-          // console.log(result, " login");
-          Taro.setStorageSync('userInfo', result)
-        })
       },
     })
   }
 
   componentDidShow() {
+    UseRequest('login', {
+      type: 'get',
+    }).then(result => {
+      console.log(result, ' login')
+      if (!result) {
+        goToLoginPage()
+      } else {
+        Taro.setStorageSync('userInfo', result)
+      }
+    })
     const updateManager = Taro.getUpdateManager()
     if (typeof updateManager === 'undefined') {
       return

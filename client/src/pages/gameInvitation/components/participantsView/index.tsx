@@ -10,8 +10,6 @@ import { ParticipantItem, InvitationStatus } from '../../type'
 import { UserInfo } from '../../../../typings'
 import dayjs from 'dayjs'
 
-const userInfo: UserInfo = Taro.getStorageSync('userInfo')
-
 export interface ParticipantsViewProps {
   participants: ParticipantItem[]
   creatorOpenId: string // 发起者openid
@@ -36,6 +34,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
 }) => {
   const [particapantList, setParticapantList] = useState<ParticipantView[]>([])
   const [totalTime, setTotalTime] = useState(0)
+  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
 
   // 处理时间及占比
   useEffect(() => {
