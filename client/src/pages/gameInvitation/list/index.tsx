@@ -9,6 +9,7 @@ import { isValidArray, returnStatusName, returnStyleByStatus, goToLoginPage } fr
 import { InvitationItem } from '../type'
 import { UserInfo } from '../../../typings'
 import '../index.scss'
+import dayjs from 'dayjs'
 
 export interface HomePageProps {}
 const pageSize = 10
@@ -125,11 +126,13 @@ const InvitationList: React.FC<HomePageProps> = () => {
         )}
       </CommonScrollView>
       )
-      <View className="fixed-btn" style={{ paddingBottom: '170rpx' }}>
-        <AtButton type="primary" circle onClick={goToCreateInvitation}>
-          发起约球
-        </AtButton>
-      </View>
+      {dayjs().isAfter(dayjs('2020-09-20')) && (
+        <View className="fixed-btn" style={{ paddingBottom: '170rpx' }}>
+          <AtButton type="primary" circle onClick={goToCreateInvitation}>
+            发起约球
+          </AtButton>
+        </View>
+      )}
     </View>
   )
 }
