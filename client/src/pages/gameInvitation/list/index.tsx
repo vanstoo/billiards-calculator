@@ -126,7 +126,6 @@ const InvitationList: React.FC<HomePageProps> = () => {
           <EmptyListView />
         )}
       </CommonScrollView>
-      )
       {userInfo.hasCreatePerm && (
         <View className="fixed-btn" style={{ paddingBottom: '170rpx' }}>
           <AtButton type="primary" circle onClick={goToCreateInvitation}>

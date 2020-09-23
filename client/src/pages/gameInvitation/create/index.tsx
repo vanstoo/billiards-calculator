@@ -26,12 +26,18 @@ const chooseLocation = Taro.requirePlugin('chooseLocation')
 
 // 发起邀请
 const InvitationCreate: React.FC<InvitationCreateProps> = () => {
+  const [targetDate, setTargetDate] = useState(formatDate(dayjs()))
   const [targetTime, setTargetTime] = useState(returnNowTime()) // 目标时间
   const [locationInfo, setLocationInfo] = useState<MapLocationInfo>(EmptyLocation) // 地址信息
   const [showRemark, setShowRemark] = useState(false)
   const [remark, setRemark] = useState('') // 描述
-  const displayDate = `${formatDate(dayjs())} ${targetTime}` // 展示时间
   const userInfo: UserInfo = Taro.getStorageSync('userInfo')
+
+  const onDateChange = e => {
+    console.log(e.detail, 'onDateChange')
+    setTargetDate(e.detail.value)
+  }
+
   const onTimeChange = e => {
     console.log(e.detail)
     setTargetTime(e.detail.value)
@@ -62,7 +68,7 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
       let param = {
         type: 'create',
         locationInfo: locationInfo,
-        targetTime: displayDate,
+        targetTime: `${targetDate} ${targetTime}`,
         remark: remark,
         creatorName: userInfo?.nickName,
         creatorAvatarUrl: userInfo?.avatarUrl,
@@ -96,12 +102,20 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
       <View className="new-invitation">
         <View className="form-title">发起约球</View>
         <AtList hasBorder>
+          <Picker mode="date" onChange={onDateChange} value={targetDate}>
+            <AtListItem
+              title="约球日期"
+              arrow="right"
+              iconInfo={{ size: 25, color: '#05f', value: 'calendar' }}
+              note={targetDate}
+            />
+          </Picker>
           <Picker mode="time" onChange={onTimeChange} value={targetTime}>
             <AtListItem
               title="约球时间"
               arrow="right"
-              iconInfo={{ size: 25, color: '#05f', value: 'calendar' }}
-              note={displayDate}
+              iconInfo={{ size: 25, color: '#05f', value: 'clock' }}
+              note={targetTime}
             />
           </Picker>
           <AtListItem
