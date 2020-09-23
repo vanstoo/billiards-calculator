@@ -91,48 +91,52 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
     }
   }, 300)
 
-  return (
-    <View className="new-invitation">
-      <View className="form-title">发起约球</View>
-      <AtList hasBorder>
-        <Picker mode="time" onChange={onTimeChange} value={targetTime}>
+  if (userInfo.hasCreatePerm) {
+    return (
+      <View className="new-invitation">
+        <View className="form-title">发起约球</View>
+        <AtList hasBorder>
+          <Picker mode="time" onChange={onTimeChange} value={targetTime}>
+            <AtListItem
+              title="约球时间"
+              arrow="right"
+              iconInfo={{ size: 25, color: '#05f', value: 'calendar' }}
+              note={displayDate}
+            />
+          </Picker>
           <AtListItem
-            title="约球时间"
+            title="约球地点"
             arrow="right"
-            iconInfo={{ size: 25, color: '#05f', value: 'calendar' }}
-            note={displayDate}
+            iconInfo={{ size: 25, color: '#05f', value: 'map-pin' }}
+            onClick={goToMapPage}
+            note={`${locationInfo ? locationInfo.name : ''}`}
           />
-        </Picker>
-        <AtListItem
-          title="约球地点"
-          arrow="right"
-          iconInfo={{ size: 25, color: '#05f', value: 'map-pin' }}
-          onClick={goToMapPage}
-          note={`${locationInfo ? locationInfo.name : ''}`}
-        />
-        <AtListItem
-          title="描述信息"
-          iconInfo={{ size: 25, color: '#05f', value: 'message' }}
-          onClick={() => setShowRemark(true)}
-          note={remark}
-        />
-      </AtList>
-      <AtFloatLayout isOpened={showRemark} title="描述信息" onClose={() => setShowRemark(false)}>
-        <AtTextarea
-          value={remark}
-          onChange={handleRemarkChange}
-          maxLength={100}
-          showConfirmBar
-          onConfirm={() => setShowRemark(false)}
-        />
-      </AtFloatLayout>
-      <View className="fixed-btn">
-        <AtButton type="primary" circle onClick={onSubmit}>
-          发起约球
-        </AtButton>
+          <AtListItem
+            title="描述信息"
+            iconInfo={{ size: 25, color: '#05f', value: 'message' }}
+            onClick={() => setShowRemark(true)}
+            note={remark}
+          />
+        </AtList>
+        <AtFloatLayout isOpened={showRemark} title="描述信息" onClose={() => setShowRemark(false)}>
+          <AtTextarea
+            value={remark}
+            onChange={handleRemarkChange}
+            maxLength={100}
+            showConfirmBar
+            onConfirm={() => setShowRemark(false)}
+          />
+        </AtFloatLayout>
+        <View className="fixed-btn">
+          <AtButton type="primary" circle onClick={onSubmit}>
+            发起约球
+          </AtButton>
+        </View>
       </View>
-    </View>
-  )
+    )
+  } else {
+    return null
+  }
 }
 
 export default memo(InvitationCreate)

@@ -64,35 +64,48 @@ async function createInvitation(event, context) {
     remark,
     targetTime
   } = event
-  try {
-    let res = await db.collection('invitation_groups').add({
-      data: {
-        createTime: db.serverDate(), // 创建时间
-        creatorName: creatorName, // 创建人姓名
-        creatorOpenId: OPENID, // 创建人openid
-        creatorAvatarUrl: creatorAvatarUrl, // 创建人头像
-        locationInfo: locationInfo, // 地址信息
-        remark: remark, // 备注
-        targetTime: targetTime, // 约球时间
-        status: 'OPENING', // 邀请状态
-        participants: [{
-          name: creatorName, // 参与人姓名
-          avatarUrl: creatorAvatarUrl, // 参与人头像
-          userOpenId: OPENID, // 参与人openid
-          startTime: '', // 开始时间
-          endTime: '', // 结束时间
-        }, ],
-        totalFee: null, // 总费用
-        billImgs: [] // 活动费用凭证
-      },
+  let loginUsers = await db
+    .collection('login_users')
+    .where({
+      userOpenId: OPENID,
     })
-    return {
-      _id: res._id
+    .get()
+  if (loginUsers.data && loginUsers.data[0] && loginUsers.data[0].hasCreatePerm) {
+    try {
+      let res = await db.collection('invitation_groups').add({
+        data: {
+          createTime: db.serverDate(), // 创建时间
+          creatorName: creatorName, // 创建人姓名
+          creatorOpenId: OPENID, // 创建人openid
+          creatorAvatarUrl: creatorAvatarUrl, // 创建人头像
+          locationInfo: locationInfo, // 地址信息
+          remark: remark, // 备注
+          targetTime: targetTime, // 约球时间
+          status: 'OPENING', // 邀请状态
+          participants: [{
+            name: creatorName, // 参与人姓名
+            avatarUrl: creatorAvatarUrl, // 参与人头像
+            userOpenId: OPENID, // 参与人openid
+            startTime: '', // 开始时间
+            endTime: '', // 结束时间
+          }, ],
+          totalFee: null, // 总费用
+          billImgs: [] // 活动费用凭证
+        },
+      })
+      return {
+        _id: res._id
+      }
+    } catch (error) {
+      console.error(error)
+      return error
     }
-  } catch (error) {
-    console.error(error)
-    return error
+  } else {
+    return {
+      errMsg: "暂无权限，请联系管理员"
+    }
   }
+
 }
 
 // 根据id获取邀请详情

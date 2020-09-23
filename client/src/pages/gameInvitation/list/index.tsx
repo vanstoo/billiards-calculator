@@ -9,16 +9,16 @@ import { isValidArray, returnStatusName, returnStyleByStatus, goToLoginPage } fr
 import { InvitationItem } from '../type'
 import { UserInfo } from '../../../typings'
 import '../index.scss'
-import dayjs from 'dayjs'
 
 export interface HomePageProps {}
+
 const pageSize = 10
 const InvitationList: React.FC<HomePageProps> = () => {
   const [current, setCurrent] = useState(1)
   const [loading, setLoading] = useState(false)
   const [hasReachBottom, setHasReachBottom] = useState(false)
   const [invitationList, setInvitationList] = useState<InvitationItem[]>([])
-
+  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
   const getListByPage = (pageNum: number) => {
     setLoading(true)
     Taro.showLoading({
@@ -77,9 +77,10 @@ const InvitationList: React.FC<HomePageProps> = () => {
 
   // 创建约球
   const goToCreateInvitation = () => {
-    let userInfo: UserInfo = Taro.getStorageSync('userInfo')
-    if (userInfo && userInfo.userOpenId) {
-      Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
+    if (userInfo) {
+      if (userInfo.hasCreatePerm && userInfo.userOpenId) {
+        Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
+      }
     } else {
       goToLoginPage()
     }
@@ -126,7 +127,7 @@ const InvitationList: React.FC<HomePageProps> = () => {
         )}
       </CommonScrollView>
       )
-      {dayjs().isAfter(dayjs('2020-09-20')) && (
+      {userInfo.hasCreatePerm && (
         <View className="fixed-btn" style={{ paddingBottom: '170rpx' }}>
           <AtButton type="primary" circle onClick={goToCreateInvitation}>
             发起约球

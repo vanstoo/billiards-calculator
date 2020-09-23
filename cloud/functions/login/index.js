@@ -64,11 +64,12 @@ async function createUser(event, context) {
     try {
       await db.collection('login_users').add({
         data: {
-          createTime: db.serverDate(),
-          updateTime: db.serverDate(),
-          userOpenId: OPENID,
-          nickName: event.nickName,
-          avatarUrl: event.avatarUrl,
+          createTime: db.serverDate(), // 创建时间
+          updateTime: db.serverDate(), // 更新时间
+          userOpenId: OPENID, // openID
+          nickName: event.nickName, // 昵称
+          avatarUrl: event.avatarUrl, // 头像
+          hasCreatePerm: false, // 默认无创建权限
         },
       })
       return true

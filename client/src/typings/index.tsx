@@ -5,6 +5,7 @@ export interface UserInfo {
   userOpenId: string // 用户openId
   nickName: string // 用户昵称
   avatarUrl: string // 用户头像
+  hasCreatePerm: boolean // 是否有新增权限
 }
 
 // 地址信息
