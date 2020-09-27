@@ -7,8 +7,8 @@ export const goToLoginPage = () => {
     mask: true,
   })
   let timer = setTimeout(() => {
-    Taro.navigateTo({ url: '/pages/index/index?defaultKey=2' })
     Taro.removeStorageSync('userInfo')
     clearTimeout(timer)
+    Taro.navigateTo({ url: '/pages/index/index?defaultKey=2' })
   }, 2000)
 }

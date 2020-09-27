@@ -143,7 +143,6 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         mask: true,
       })
       UseRequest('invitation', param).then(res => {
-        // console.log(res);
         if (res) {
           Taro.hideLoading()
           Taro.showToast({
@@ -151,7 +150,10 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
             mask: true,
             duration: 3000,
           })
-          getDetails()
+          let timer = setTimeout(() => {
+            getDetails()
+            clearTimeout(timer)
+          }, 2000)
         }
       })
     } else {
@@ -221,7 +223,6 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
       {editRecord && (
         <EditSignDate
           editRecord={editRecord}
-          invitationId={invitationId}
           setEditRecord={setEditRecord}
           participants={detail.participants}
           refreshAndGetdetail={getDetails}
@@ -235,7 +236,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
             分享
           </AtButton>
           {/* 约球发起者才可取消或结束 */}
-          {detail.creatorOpenId === userInfo.userOpenId && (
+          {userInfo.hasCreatePerm && detail.creatorOpenId === userInfo.userOpenId && (
             <Fragment>
               <AtButton type="primary" size="small" circle onClick={goToFinish}>
                 结束活动

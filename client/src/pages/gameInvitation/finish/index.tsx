@@ -8,6 +8,7 @@ import { ParticipantsView } from '../components'
 import { UseRequest } from '../../../service'
 import { isValidArray, uploadImg } from '../../../utils'
 import { InvitationItem } from '../type'
+import { UserInfo } from '../../../typings'
 
 export interface FinishInvitationProps {}
 
@@ -23,6 +24,7 @@ const EmptyData: InvitationItem = {
   participants: [],
   creatorOpenId: '',
   totalFee: 0,
+  billImgs: [],
 }
 
 // 结束活动
@@ -31,6 +33,7 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
   const [detail, setDetail] = useState<InvitationItem>(EmptyData)
   const [totalFee, setTotalFee] = useState(undefined) // 费用总计
   const [uploadList, setUploadList] = useState<string[]>([]) // 费用凭证
+  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
 
   const getDetails = () => {
     Taro.showLoading({
@@ -53,45 +56,6 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
   useEffect(() => {
     getDetails()
   }, [invitationId])
-
-  // 处理时间及占比
-  useEffect(() => {
-    // console.log(detail.participants, "detail.participants");
-    // let startTimeArr: string[] = [];
-    // let endTimeArr: string[] = [];
-    // let newList = detail.participants.map(({ startTime, endTime, ...val }) => {
-    //   //
-    //   let newStartTime = formatDate(
-    //     dayjs(`${formatDate(detail.createTime)} ${startTime}`),
-    //     dateFormatToMin
-    //   );
-    //   let newEndTime = formatDate(
-    //     dayjs(`${formatDate(detail.createTime)} ${endTime}`),
-    //     dateFormatToMin
-    //   );
-    //   if (dayjs(newEndTime).isBefore(dayjs(newStartTime))) {
-    //     newEndTime = formatDate(dayjs(newEndTime).add(1, "d"), dateFormatToMin);
-    //   }
-    //   startTimeArr.push(newStartTime);
-    //   endTimeArr.push(newEndTime);
-    //   return {
-    //     startTime: newStartTime,
-    //     endTime: newEndTime,
-    //     ...val
-    //   };
-    // });
-    // // 开始时间从小到大排序 结束时间从大到小排序
-    // startTimeArr.sort((a, b) => dayjs(a).unix() - dayjs(b).unix());
-    // endTimeArr.sort((a, b) => dayjs(b).unix() - dayjs(a).unix());
-    // console.log(startTimeArr, "startTimeArr");
-    // console.log(endTimeArr, "endTimeArr");
-    // setFinishTime(endTimeArr[0]);
-    // console.log(
-    //   dayjs(endTimeArr[0]).diff(dayjs(startTimeArr[0]), "m"),
-    //   "总分钟"
-    // );
-    // console.log(newList, "detail.participants");
-  }, [detail])
 
   // 返回详情
   const goToDetail = () => {
@@ -162,39 +126,43 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
     }
   }
 
-  return (
-    <View className="finish-invitation">
-      {/* 参与人员 */}
-      <ParticipantsView
-        participants={detail.participants}
-        creatorOpenId={detail.creatorOpenId}
-        status={detail.status}
-        hideEditbtn
-        totalFee={isNaN(Number(totalFee)) ? 0 : Number(totalFee)}
-      />
-      <View className="detail-card finish-form">
-        <AtInput
-          name="sum"
-          title="总费用"
-          type="digit"
-          placeholder="请输入总费用"
-          value={totalFee}
-          onChange={onSumChange}
-          required
+  if (userInfo.hasCreatePerm) {
+    return (
+      <View className="finish-invitation">
+        {/* 参与人员 */}
+        <ParticipantsView
+          participants={detail.participants}
+          creatorOpenId={detail.creatorOpenId}
+          status={detail.status}
+          hideEditbtn
+          totalFee={isNaN(Number(totalFee)) ? 0 : Number(totalFee)}
         />
+        <View className="detail-card finish-form">
+          <AtInput
+            name="sum"
+            title="总费用"
+            type="digit"
+            placeholder="请输入总费用"
+            value={totalFee}
+            onChange={onSumChange}
+            required
+          />
+        </View>
+        <View className="fake-title">活动费用凭证</View>
+        <ImgUpload uploadList={uploadList} uploadFile={uploadFunc} delFileItem={delFileFunc} />
+        <View className="fixed-btn">
+          <AtButton type="secondary" circle onClick={goToDetail}>
+            取 消
+          </AtButton>
+          <AtButton type="primary" circle onClick={onComfirm}>
+            确 认
+          </AtButton>
+        </View>
       </View>
-      <View className="fake-title">活动费用凭证</View>
-      <ImgUpload uploadList={uploadList} uploadFile={uploadFunc} delFileItem={delFileFunc} />
-      <View className="fixed-btn">
-        <AtButton type="secondary" circle onClick={goToDetail}>
-          取 消
-        </AtButton>
-        <AtButton type="primary" circle onClick={onComfirm}>
-          确 认
-        </AtButton>
-      </View>
-    </View>
-  )
+    )
+  } else {
+    return null
+  }
 }
 
 export default memo(FinishInvitation)

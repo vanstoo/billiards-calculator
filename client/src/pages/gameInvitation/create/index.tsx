@@ -22,6 +22,7 @@ const EmptyLocation: MapLocationInfo = {
   name: '',
   province: '',
 }
+
 const chooseLocation = Taro.requirePlugin('chooseLocation')
 
 // 发起邀请

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { memo, useState } from 'react'
-import Taro from '@tarojs/taro'
+import Taro, { useRouter } from '@tarojs/taro'
 import { View, Picker } from '@tarojs/components'
 import { AtButton, AtFloatLayout, AtList, AtListItem } from 'taro-ui'
 import { returnNowTime } from '../../../../utils'
@@ -9,7 +9,6 @@ import { ParticipantItem } from '../../type'
 import cloneDeep from 'lodash/cloneDeep'
 
 export interface EditSignDateProps {
-  invitationId: string
   editRecord: ParticipantItem // 正在编辑的信息
   setEditRecord: (val: any) => void // 修改父层信息
   participants: ParticipantItem[] // 全部数据
@@ -18,12 +17,12 @@ export interface EditSignDateProps {
 
 // 编辑开始、结束时间
 const EditSignDate: React.FC<EditSignDateProps> = ({
-  invitationId,
   editRecord,
   setEditRecord,
   participants,
   refreshAndGetdetail,
 }) => {
+  const { invitationId } = useRouter().params
   const [record, setRecord] = useState<ParticipantItem>(editRecord)
   const onTimeChange = (time: string, type: 'start' | 'end') => {
     let newRecord = cloneDeep(record)
@@ -44,8 +43,14 @@ const EditSignDate: React.FC<EditSignDateProps> = ({
     let param = {
       type: 'updateParticipant',
       id: invitationId,
-      startTime: record.startTime,
-      endTime: record.endTime,
+      startTime:
+        record.startTime && record.startTime.length > 5
+          ? record.startTime.substring(record.startTime.length - 5)
+          : record.startTime,
+      endTime:
+        record.endTime && record.endTime.length > 5
+          ? record.endTime.substring(record.endTime.length - 5)
+          : record.endTime,
       index: participants.findIndex(x => x.userOpenId === record.userOpenId),
     }
     UseRequest('invitation', param).then(res => {
