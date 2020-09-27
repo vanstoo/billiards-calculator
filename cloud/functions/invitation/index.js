@@ -38,6 +38,10 @@ exports.main = async (event, context) => {
     case "updateParticipant": {
       return updateParticipantInfo(event, context)
     }
+    // 增加管理员
+    case "addAdminUser": {
+      return addAdminUser(event, context)
+    }
     // 取消活动
     case 'cancel': {
       return cancelInvitation(event, context)
@@ -90,7 +94,8 @@ async function createInvitation(event, context) {
             endTime: '', // 结束时间
           }, ],
           totalFee: null, // 总费用
-          billImgs: [] // 活动费用凭证
+          billImgs: [], // 活动费用凭证
+          adminUsers: [OPENID] // 有操作权限的用户集合
         },
       })
       return {
@@ -324,5 +329,27 @@ async function finishInvitation(event, context) {
     return {
       errMsg: "当前活动状态有变更，请返回详情页面查看"
     }
+  }
+}
+
+async function addAdminUser(event, context) {
+  const {
+    id,
+    userId,
+  } = event
+  const _ = db.command
+  try {
+    await db
+      .collection('invitation_groups')
+      .doc(id)
+      .update({
+        data: {
+          adminUsers: _.push([userId])
+        }
+      })
+    return true
+  } catch (error) {
+    console.error(error)
+    return error
   }
 }

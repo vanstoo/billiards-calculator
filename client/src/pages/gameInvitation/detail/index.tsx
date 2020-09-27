@@ -26,6 +26,7 @@ const EmptyData: InvitationItem = {
   creatorOpenId: '',
   totalFee: 0,
   billImgs: [],
+  adminUsers: [],
 }
 
 const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
@@ -178,6 +179,32 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
     }
   }
 
+  const addAdminUsers = (item: ParticipantItem) => {
+    Taro.showLoading({
+      title: '添加管理员中...',
+      mask: true,
+    })
+    let param = {
+      type: 'addAdminUser',
+      id: invitationId,
+      userId: item.userOpenId,
+    }
+    UseRequest('invitation', param).then(res => {
+      // console.log(res);
+      if (res) {
+        Taro.showToast({
+          title: '添加成功',
+          mask: true,
+          duration: 3000,
+        })
+        let timer = setTimeout(() => {
+          getDetails()
+          clearTimeout(timer)
+        }, 2000)
+      }
+    })
+  }
+
   return (
     <Fragment>
       <View className="detail">
@@ -205,10 +232,11 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         {/* 参与人员 */}
         <ParticipantsView
           participants={detail.participants}
-          creatorOpenId={detail.creatorOpenId}
+          adminUsers={detail.adminUsers}
           showEditTime={showEditTime}
           status={detail.status}
           totalFee={detail.totalFee}
+          addAdminUsers={addAdminUsers}
         />
         {detail.status === 'FINISHED' && (
           <View className="detail-card">
@@ -236,7 +264,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
             分享
           </AtButton>
           {/* 约球发起者才可取消或结束 */}
-          {userInfo.hasCreatePerm && detail.creatorOpenId === userInfo.userOpenId && (
+          {userInfo.hasCreatePerm && detail.adminUsers.includes(userInfo.userOpenId) && (
             <Fragment>
               <AtButton type="primary" size="small" circle onClick={goToFinish}>
                 结束活动

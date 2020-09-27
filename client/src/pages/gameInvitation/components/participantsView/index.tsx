@@ -12,11 +12,12 @@ import dayjs from 'dayjs'
 
 export interface ParticipantsViewProps {
   participants: ParticipantItem[]
-  creatorOpenId: string // 发起者openid
   status: InvitationStatus // 状态
   hideEditbtn?: boolean // 不展示编辑按钮
   showEditTime?: (item: ParticipantItem) => void // 编辑时间
   totalFee: number // 总费用
+  adminUsers: string[] // 管理员集合
+  addAdminUsers?: (item: ParticipantItem) => void // 添加管理员
 }
 
 interface ParticipantView extends ParticipantItem {
@@ -26,16 +27,16 @@ interface ParticipantView extends ParticipantItem {
 // 活动参与人
 const ParticipantsView: React.FC<ParticipantsViewProps> = ({
   participants = [],
-  creatorOpenId,
   showEditTime = () => console.log(1),
   status,
   hideEditbtn = false,
   totalFee = 0,
+  adminUsers = [],
+  addAdminUsers = () => console.log(1),
 }) => {
   const [particapantList, setParticapantList] = useState<ParticipantView[]>([])
   const [totalTime, setTotalTime] = useState(0)
   const userInfo: UserInfo = Taro.getStorageSync('userInfo')
-
   // 处理时间及占比
   useEffect(() => {
     let startTimeArr: string[] = []
@@ -85,9 +86,9 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
 
   // 返回时长与占比文字
   const returnDurationAndPercent = (duration: number) => {
-    console.log(duration, 'item?.duration')
+    // console.log(duration, 'item?.duration')
     if (totalTime && totalTime > 0) {
-      console.log((duration / totalTime) * 100)
+      // console.log((duration / totalTime) * 100)
       return `${duration}分钟/${calNum(returnPercent(duration) * 100)}%`
     } else {
       return `${duration}分钟/ 0%`
@@ -97,6 +98,27 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
   // 返回单人费用
   const returnsingleFee = (duration: number) => {
     return Math.round(totalFee * returnPercent(duration))
+  }
+
+  // 返回最大宽度（默认390rpx
+  const returnMaxWidthStyle = () => {
+    if (hideEditbtn || status !== 'OPENING') {
+      return { maxWidth: '500rpx' }
+    } else if (adminUsers.includes(userInfo.userOpenId)) {
+      return { maxWidth: '300rpx' }
+    }
+  }
+
+  const showAuthModal = (item: ParticipantItem) => {
+    // 确认取消弹窗
+    Taro.showModal({
+      content: `确认授予${item.name}管理员权限吗？授予后${item.name}可取消、结束活动及编辑每个参与者的起始/结束时间`,
+      success: res => {
+        if (res.confirm) {
+          addAdminUsers(item)
+        }
+      },
+    })
   }
 
   return (
@@ -112,14 +134,21 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
                   <View className="participant-header">
                     <View className="user-info">
                       <AtAvatar circle text="头" image={item?.avatarUrl} />
-                      <Text>{item?.name}</Text>
+                      <Text style={returnMaxWidthStyle()}>{item?.name}</Text>
                     </View>
                     {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}
                     {!hideEditbtn &&
                       status === 'OPENING' &&
-                      (item.userOpenId === userInfo.userOpenId || creatorOpenId === userInfo.userOpenId) && (
-                        <View className="link-col edit-btn" onClick={() => showEditTime(item)}>
-                          编辑
+                      (item.userOpenId === userInfo.userOpenId || adminUsers.includes(userInfo.userOpenId)) && (
+                        <View className="operate-btns">
+                          {adminUsers.includes(userInfo.userOpenId) && !adminUsers.includes(item.userOpenId) && (
+                            <View className="link-col edit-btn" onClick={() => showAuthModal(item)}>
+                              授权
+                            </View>
+                          )}
+                          <View className="link-col edit-btn" onClick={() => showEditTime(item)}>
+                            编辑
+                          </View>
                         </View>
                       )}
                   </View>

@@ -6,6 +6,7 @@ export type InvitationStatus = 'OPENING' | 'FINISHED' | 'CANCELLED'
 // 邀请列表
 export interface InvitationItem {
   _id: string // 唯一id
+  adminUsers: string[] // 管理员用户
   billImgs: string[] // 活动费用凭证图片
   createTime: string // 发起时间
   creatorAvatarUrl: string // 约球人头像

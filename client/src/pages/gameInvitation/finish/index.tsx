@@ -25,6 +25,7 @@ const EmptyData: InvitationItem = {
   creatorOpenId: '',
   totalFee: 0,
   billImgs: [],
+  adminUsers: [],
 }
 
 // 结束活动
@@ -132,7 +133,7 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
         {/* 参与人员 */}
         <ParticipantsView
           participants={detail.participants}
-          creatorOpenId={detail.creatorOpenId}
+          adminUsers={detail.adminUsers}
           status={detail.status}
           hideEditbtn
           totalFee={isNaN(Number(totalFee)) ? 0 : Number(totalFee)}

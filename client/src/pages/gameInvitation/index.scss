@@ -117,18 +117,28 @@
       display: flex;
       align-items: center;
       font-size: 36px;
+      flex-shrink: 0;
 
       text {
+        font-size: 28px;
         margin-left: 32px;
         font-weight: 600;
+        max-width: 380px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
-    .edit-btn {
-      font-size: 30px;
-      justify-content: flex-end;
-      line-height: 100px;
-      padding: 0 16px;
+    .operate-btns {
+      display: flex;
+
+      .edit-btn {
+        font-size: 30px;
+        justify-content: flex-end;
+        line-height: 100px;
+        padding: 0 16px;
+      }
     }
   }
 }
