@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import Taro from '@tarojs/taro'
 import { UseRequest } from './service'
-import { goToLoginPage } from './utils'
+import { goToLoginPage, formatDate } from './utils'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 dayjs.locale('zh-cn')
@@ -30,7 +30,12 @@ class App extends Component {
       if (!result) {
         goToLoginPage()
       } else {
-        Taro.setStorageSync('userInfo', result)
+        if (dayjs().isAfter(formatDate(result.updateTime), 'month')) {
+          Taro.setStorageSync('userInfo', {})
+          goToLoginPage()
+        } else {
+          Taro.setStorageSync('userInfo', result)
+        }
       }
     })
     const updateManager = Taro.getUpdateManager()
