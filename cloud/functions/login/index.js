@@ -21,6 +21,12 @@ exports.main = async (event, context) => {
     case 'create': {
       return createUser(event, context)
     }
+    case 'search': {
+      return searchUsers(event)
+    }
+    case 'updateAuth': {
+      return updateUserAuth(event)
+    }
     default: {
       return null
     }
@@ -28,9 +34,7 @@ exports.main = async (event, context) => {
 }
 
 async function getUserInfo() {
-  const {
-    OPENID
-  } = cloud.getWXContext()
+  const { OPENID } = cloud.getWXContext()
   const configInfo = await db
     .collection('login_users')
     .where({
@@ -46,12 +50,7 @@ async function createUser(event, context) {
   console.info(context, 'context context')
 
   // 获取 WX Context (微信调用上下文)，包括 OPENID、APPID、及 UNIONID（需满足 UNIONID 获取条件）等信息
-  const {
-    OPENID,
-    APPID,
-    UNIONID,
-    ENV
-  } = cloud.getWXContext()
+  const { OPENID, APPID, UNIONID, ENV } = cloud.getWXContext()
 
   // 获取login_users下是否已经存在openId
   let loginUsers = await db
@@ -96,5 +95,43 @@ async function createUser(event, context) {
       console.info(error)
       return error
     }
+  }
+}
+
+async function searchUsers(event) {
+  try {
+    // 根据fuzzyName获取login_users下未开通权限用户
+    let loginUsers = await db
+      .collection('login_users')
+      .where({
+        nickName: {
+          $regex: '.*' + event.fuzzyName + '.*',
+          $options: 'i',
+        },
+        hasCreatePerm: false,
+      })
+      .limit(5)
+      .get()
+    return (loginUsers && loginUsers.data) || []
+  } catch (error) {
+    return error
+  }
+}
+
+async function updateUserAuth(event) {
+  try {
+    await db
+      .collection('login_users')
+      .where({
+        userOpenId: event.targetId,
+      })
+      .update({
+        data: {
+          hasCreatePerm: true,
+        },
+      })
+    return true
+  } catch (error) {
+    return error
   }
 }
