@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { memo, Fragment, useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View, Text, ScrollView } from '@tarojs/components'
 import { AtAvatar } from 'taro-ui'
 import { SectionItem } from '../../../../components'
 import { isValidArray, formatDate, calNum } from '../../../../utils'
@@ -34,6 +34,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
   adminUsers = [],
   addAdminUsers = () => console.log(1),
 }) => {
+  const [viewMode, setViewMode] = useState<'detail' | 'list'>('detail')
   const [particapantList, setParticapantList] = useState<ParticipantView[]>([])
   const [totalTime, setTotalTime] = useState(0)
   const userInfo: UserInfo = Taro.getStorageSync('userInfo')
@@ -121,45 +122,83 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
     })
   }
 
+  const changeViewMode = () => {
+    setViewMode(viewMode === 'detail' ? 'list' : 'detail')
+  }
+
   return (
     <View style={{ marginTop: '1px' }}>
       <View className="detail-card">
-        <View className="title">参与人员</View>
+        <View className="title">
+          参与人员
+          <View className="right-btn" onClick={changeViewMode}>
+            切换视图
+          </View>
+        </View>
         {isValidArray(particapantList) && (
           <Fragment>
             <View className="divider" />
-            {particapantList.map((item, index) => (
-              <View key={index}>
-                <View className="participant-info">
-                  <View className="participant-header">
-                    <View className="user-info">
-                      <AtAvatar circle text="头" image={item?.avatarUrl} />
-                      <Text style={returnMaxWidthStyle()}>{item?.name}</Text>
-                    </View>
-                    {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}
-                    {!hideEditbtn &&
-                      status === 'OPENING' &&
-                      (item.userOpenId === userInfo.userOpenId || adminUsers.includes(userInfo.userOpenId)) && (
-                        <View className="operate-btns">
-                          {adminUsers.includes(userInfo.userOpenId) && !adminUsers.includes(item.userOpenId) && (
-                            <View className="link-col edit-btn" onClick={() => showAuthModal(item)}>
-                              授权
+            {viewMode === 'detail' ? (
+              particapantList.map((item, index) => (
+                <View key={index}>
+                  <View className="participant-info">
+                    <View className="participant-header">
+                      <View className="user-info">
+                        <AtAvatar circle text="头" image={item?.avatarUrl} />
+                        <Text style={returnMaxWidthStyle()}>{item?.name}</Text>
+                      </View>
+                      {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}
+                      {!hideEditbtn &&
+                        status === 'OPENING' &&
+                        (item.userOpenId === userInfo.userOpenId || adminUsers.includes(userInfo.userOpenId)) && (
+                          <View className="operate-btns">
+                            {adminUsers.includes(userInfo.userOpenId) && !adminUsers.includes(item.userOpenId) && (
+                              <View className="link-col edit-btn" onClick={() => showAuthModal(item)}>
+                                授权
+                              </View>
+                            )}
+                            <View className="link-col edit-btn" onClick={() => showEditTime(item)}>
+                              编辑
                             </View>
-                          )}
-                          <View className="link-col edit-btn" onClick={() => showEditTime(item)}>
-                            编辑
                           </View>
-                        </View>
-                      )}
+                        )}
+                    </View>
+                    <SectionItem label="起始时间：" content={formatDate(item?.startTime, 'HH:mm')} />
+                    <SectionItem label="结束时间：" content={formatDate(item?.endTime, 'HH:mm')} />
+                    <SectionItem label="时长/占比：" content={returnDurationAndPercent(item?.duration)} />
+                    {totalFee ? <SectionItem label="费用" content={returnsingleFee(item?.duration)} /> : null}
                   </View>
-                  <SectionItem label="起始时间：" content={formatDate(item?.startTime, 'HH:mm')} />
-                  <SectionItem label="结束时间：" content={formatDate(item?.endTime, 'HH:mm')} />
-                  <SectionItem label="时长/占比：" content={returnDurationAndPercent(item?.duration)} />
-                  {totalFee ? <SectionItem label="费用" content={returnsingleFee(item?.duration)} /> : null}
+                  {particapantList.length - 1 > index && <View className="divider" />}
                 </View>
-                {particapantList.length - 1 > index && <View className="divider" />}
-              </View>
-            ))}
+              ))
+            ) : (
+              <ScrollView scrollY scrollX className="participant-info-table">
+                <View className="tr">
+                  <Text className="th">姓名</Text>
+                  <Text className="th">费用</Text>
+                  <Text className="th">时间</Text>
+                  <Text className="th">时长/占比</Text>
+                </View>
+                {particapantList.map((item, index) => {
+                  return (
+                    <View className="tr" key={index}>
+                      <Text className="td" user-select>
+                        {item?.name}
+                      </Text>
+                      <Text className="td" user-select>
+                        {returnsingleFee(item?.duration)}
+                      </Text>
+                      <Text className="td" user-select>
+                        {formatDate(item?.startTime, 'HH:mm')}~{formatDate(item?.endTime, 'HH:mm')}
+                      </Text>
+                      <Text className="td" user-select>
+                        {returnDurationAndPercent(item?.duration)}
+                      </Text>
+                    </View>
+                  )
+                })}
+              </ScrollView>
+            )}
           </Fragment>
         )}
       </View>

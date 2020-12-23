@@ -88,6 +88,10 @@
     display: flex;
     justify-content: space-between;
     color: rgba(51, 51, 51, 1);
+
+    .right-btn {
+      color: #05f;
+    }
   }
 
   .divider {
@@ -139,6 +143,51 @@
         line-height: 100px;
         padding: 0 16px;
       }
+    }
+  }
+}
+
+// 参与者信息列表模式
+.participant-info-table {
+  .tr {
+    background-color: #fff;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    min-height: 64px;
+    border-bottom: 2px solid rgba(248, 248, 250, 1);
+    width: 700px;
+
+    .th {
+      width: 210px;
+      color: #999;
+      display: flex;
+      align-items: center;
+      padding-right: 10px;
+    }
+
+    .td {
+      width: 210px;
+      color: #333;
+      background-color: #fff;
+      align-items: center;
+      padding-right: 10px;
+    }
+
+    .th:nth-child(2),
+    .td:nth-child(2) {
+      width: 100px;
+    }
+
+    .th:nth-child(3),
+    .td:nth-child(3) {
+      width: 150px;
+    }
+
+    .th:last-child,
+    .td:last-child {
+      width: 200px;
+      padding-right: 0;
     }
   }
 }
