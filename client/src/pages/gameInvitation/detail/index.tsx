@@ -6,7 +6,7 @@ import { AtButton } from 'taro-ui'
 import { SectionItem, ImgView } from '../../../components'
 import { EditSignDate, ParticipantsView } from '../components'
 import { UseRequest } from '../../../service'
-import { formatDate, returnStatusName, returnStyleByStatus, goToLoginPage } from '../../../utils'
+import { formatDate, returnStatusName, returnStyleByStatus, goToLoginPage, compareDateRange } from '../../../utils'
 import { dateFormatToMin } from '../../../constant'
 import { InvitationItem, ParticipantItem } from '../type'
 import { UserInfo } from '../../../typings'
@@ -27,6 +27,7 @@ const EmptyData: InvitationItem = {
   totalFee: 0,
   billImgs: [],
   adminUsers: [],
+  lastUpdateTime: '',
 }
 
 const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
@@ -282,6 +283,16 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           )}
         </View>
       )}
+      {/* 创建者可在结束一天内修改费用 */}
+      {userInfo.hasCreatePerm &&
+        detail.status === 'FINISHED' &&
+        compareDateRange(detail.createTime, detail.lastUpdateTime) && (
+          <View className="fixed-btn">
+            <AtButton type="primary" size="small" circle onClick={goToFinish}>
+              修改费用
+            </AtButton>
+          </View>
+        )}
     </Fragment>
   )
 }

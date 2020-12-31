@@ -6,9 +6,8 @@ cloud.init({
 })
 
 const db = cloud.database({
-  throwOnNotFound: false
+  throwOnNotFound: false,
 })
-
 
 // 云函数入口函数
 exports.main = async (event, context) => {
@@ -31,15 +30,15 @@ exports.main = async (event, context) => {
       return updateInvitationBaseInfo(event, context)
     }
     // 增加参与者
-    case "addParticipantInfo": {
+    case 'addParticipantInfo': {
       return addParticipantInfo(event, context)
     }
     // 更新参与者信息
-    case "updateParticipant": {
+    case 'updateParticipant': {
       return updateParticipantInfo(event, context)
     }
     // 增加管理员
-    case "addAdminUser": {
+    case 'addAdminUser': {
       return addAdminUser(event, context)
     }
     // 取消活动
@@ -58,16 +57,8 @@ exports.main = async (event, context) => {
 
 // 发起约球
 async function createInvitation(event, context) {
-  const {
-    OPENID
-  } = cloud.getWXContext()
-  const {
-    creatorName,
-    creatorAvatarUrl,
-    locationInfo,
-    remark,
-    targetTime
-  } = event
+  const { OPENID } = cloud.getWXContext()
+  const { creatorName, creatorAvatarUrl, locationInfo, remark, targetTime } = event
   let loginUsers = await db
     .collection('login_users')
     .where({
@@ -86,20 +77,23 @@ async function createInvitation(event, context) {
           remark: remark, // 备注
           targetTime: targetTime, // 约球时间
           status: 'OPENING', // 邀请状态
-          participants: [{
-            name: creatorName, // 参与人姓名
-            avatarUrl: creatorAvatarUrl, // 参与人头像
-            userOpenId: OPENID, // 参与人openid
-            startTime: '', // 开始时间
-            endTime: '', // 结束时间
-          }, ],
+          participants: [
+            {
+              name: creatorName, // 参与人姓名
+              avatarUrl: creatorAvatarUrl, // 参与人头像
+              userOpenId: OPENID, // 参与人openid
+              startTime: '', // 开始时间
+              endTime: '', // 结束时间
+            },
+          ],
           totalFee: null, // 总费用
           billImgs: [], // 活动费用凭证
-          adminUsers: [OPENID] // 有操作权限的用户集合
+          adminUsers: [OPENID], // 有操作权限的用户集合
+          lastUpdateTime: db.serverDate(), // 最后更新时间
         },
       })
       return {
-        _id: res._id
+        _id: res._id,
       }
     } catch (error) {
       console.error(error)
@@ -107,22 +101,16 @@ async function createInvitation(event, context) {
     }
   } else {
     return {
-      errMsg: "暂无权限，请联系管理员"
+      errMsg: '暂无权限，请联系管理员',
     }
   }
-
 }
 
 // 根据id获取邀请详情
 async function getInvitationDetail(event, context) {
-  const {
-    id
-  } = event
+  const { id } = event
   try {
-    const res = await db
-      .collection('invitation_groups')
-      .doc(id)
-      .get()
+    const res = await db.collection('invitation_groups').doc(id).get()
     return {
       ...res.data,
     }
@@ -134,10 +122,7 @@ async function getInvitationDetail(event, context) {
 
 // 约球列表
 async function getInvitationList(event, context) {
-  const {
-    pageNum,
-    pageSize
-  } = event
+  const { pageNum, pageSize } = event
   const totolCount = await db.collection('invitation_groups').count()
   if (totolCount && totolCount.total) {
     try {
@@ -164,22 +149,18 @@ async function getInvitationList(event, context) {
   }
 }
 
-
-
 // 取消约球
 async function cancelInvitation(event, context) {
-  const {
-    id
-  } = event
+  const { id } = event
   console.log(event)
   let res = await db
     .collection('invitation_groups')
     .where({
-      _id: id
+      _id: id,
     })
     .get()
-  console.info(res, "res")
-  if (res.data && res.data[0] && res.data[0].status === "OPENING") {
+  console.info(res, 'res')
+  if (res.data && res.data[0] && res.data[0].status === 'OPENING') {
     try {
       await db
         .collection('invitation_groups')
@@ -187,6 +168,7 @@ async function cancelInvitation(event, context) {
         .update({
           data: {
             status: 'CANCELLED',
+            lastUpdateTime: db.serverDate(), // 最后更新时间
           },
         })
       return true
@@ -196,17 +178,14 @@ async function cancelInvitation(event, context) {
     }
   } else {
     return {
-      errMsg: "当前活动状态有变更，请返回详情页面查看"
+      errMsg: '当前活动状态有变更，请返回详情页面查看',
     }
   }
 }
 
-
 // 更新约球基础信息
 async function updateInvitationBaseInfo(event, context) {
-  const {
-    id
-  } = event
+  const { id } = event
   return {
     event: event,
     context: context,
@@ -215,24 +194,21 @@ async function updateInvitationBaseInfo(event, context) {
 
 // 新增参与人
 async function addParticipantInfo(event, context) {
-  const {
-    id,
-    nickName,
-    avatarUrl,
-    startTime,
-    endTime
-  } = event
-  const {
-    OPENID
-  } = cloud.getWXContext()
+  const { id, nickName, avatarUrl, startTime, endTime } = event
+  const { OPENID } = cloud.getWXContext()
   const _ = db.command
   let res = await db
     .collection('invitation_groups')
     .where({
-      _id: id
+      _id: id,
     })
     .get()
-  if (res.data && res.data[0] && res.data[0].participants && !res.data[0].participants.some(x => x.userOpenId === OPENID)) {
+  if (
+    res.data &&
+    res.data[0] &&
+    res.data[0].participants &&
+    !res.data[0].participants.some((x) => x.userOpenId === OPENID)
+  ) {
     try {
       await db
         .collection('invitation_groups')
@@ -240,15 +216,17 @@ async function addParticipantInfo(event, context) {
         .update({
           data: {
             participants: _.push({
-              each: [{
-                name: nickName, // 参与人姓名
-                avatarUrl: avatarUrl, // 参与人头像
-                userOpenId: OPENID, // 参与人openid
-                startTime: startTime, // 开始时间
-                endTime: endTime, // 结束时间
-              }]
-            })
-          }
+              each: [
+                {
+                  name: nickName, // 参与人姓名
+                  avatarUrl: avatarUrl, // 参与人头像
+                  userOpenId: OPENID, // 参与人openid
+                  startTime: startTime, // 开始时间
+                  endTime: endTime, // 结束时间
+                },
+              ],
+            }),
+          },
         })
       return true
     } catch (error) {
@@ -257,20 +235,14 @@ async function addParticipantInfo(event, context) {
     }
   } else {
     return {
-      errMsg: "当前参与人有变更，请刷新页面后重试"
+      errMsg: '当前参与人有变更，请刷新页面后重试',
     }
   }
-
 }
 
 // 更新参与人开始、结束时间
 async function updateParticipantInfo(event, context) {
-  const {
-    id,
-    startTime,
-    endTime,
-    index
-  } = event
+  const { id, startTime, endTime, index } = event
   try {
     await db
       .collection('invitation_groups')
@@ -279,7 +251,7 @@ async function updateParticipantInfo(event, context) {
         data: {
           [`participants.${index}.startTime`]: startTime,
           [`participants.${index}.endTime`]: endTime,
-        }
+        },
       })
     return true
   } catch (error) {
@@ -288,37 +260,28 @@ async function updateParticipantInfo(event, context) {
   }
 }
 
-
-
 // 结束约球
 async function finishInvitation(event, context) {
-  const {
-    id,
-    totalFee,
-    billImgs,
-  } = event
-  const {
-    OPENID
-  } = cloud.getWXContext()
-  const _ = db.command
+  const { id, totalFee, billImgs } = event
   let res = await db
     .collection('invitation_groups')
     .where({
-      _id: id
+      _id: id,
     })
     .get()
-  console.info(res, "res")
-  if (res.data && res.data[0] && res.data[0].status === "OPENING") {
+  console.info(res, 'res')
+  if (res.data && res.data[0] && ['OPENING', 'FINISHED'].includes(res.data[0].status)) {
     try {
       await db
         .collection('invitation_groups')
         .doc(id)
         .update({
           data: {
-            status: "FINISHED",
+            status: 'FINISHED',
             totalFee: totalFee,
-            billImgs: _.push(billImgs)
-          }
+            billImgs: billImgs,
+            lastUpdateTime: db.serverDate(), // 最后更新时间
+          },
         })
       return true
     } catch (error) {
@@ -327,16 +290,13 @@ async function finishInvitation(event, context) {
     }
   } else {
     return {
-      errMsg: "当前活动状态有变更，请返回详情页面查看"
+      errMsg: '当前活动状态有变更，请返回详情页面查看',
     }
   }
 }
 
 async function addAdminUser(event, context) {
-  const {
-    id,
-    userId,
-  } = event
+  const { id, userId } = event
   const _ = db.command
   try {
     await db
@@ -344,8 +304,8 @@ async function addAdminUser(event, context) {
       .doc(id)
       .update({
         data: {
-          adminUsers: _.push([userId])
-        }
+          adminUsers: _.push([userId]),
+        },
       })
     return true
   } catch (error) {

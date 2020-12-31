@@ -12,6 +12,7 @@ export interface InvitationItem {
   creatorAvatarUrl: string // 约球人头像
   creatorName: string // 约球人
   creatorOpenId: string // 发起人openId
+  lastUpdateTime: string // 最后更新时间
   locationInfo: MapLocationInfo // 地址信息
   participants: ParticipantItem[] // 参与人员
   remark: string //  约球备注

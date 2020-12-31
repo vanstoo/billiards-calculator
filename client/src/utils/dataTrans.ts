@@ -43,3 +43,17 @@ export const returnStyleByStatus = (status: InvitationStatus, isColor = false) =
 
 // 返回精确到某位小数
 export const calNum = (num: number, precision?: number): number => Number(num.toFixed(precision ? precision : 2))
+
+// 两个时间间隔是否在X天内
+export const compareDateRange = (
+  startDate: string | dayjs.Dayjs | undefined,
+  endDate: string | dayjs.Dayjs | undefined,
+  range: number = 1,
+) => {
+  if (startDate && endDate) {
+    return dayjs(startDate)
+      .add(range, 'day')
+      .isAfter(dayjs(endDate), 'second')
+  }
+  return false
+}

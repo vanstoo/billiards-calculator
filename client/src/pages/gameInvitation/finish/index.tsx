@@ -26,6 +26,7 @@ const EmptyData: InvitationItem = {
   totalFee: 0,
   billImgs: [],
   adminUsers: [],
+  lastUpdateTime: '',
 }
 
 // 结束活动
@@ -49,6 +50,8 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
         if (res._id) {
           Taro.hideLoading()
           setDetail(res)
+          setTotalFee(res.totalFee)
+          setUploadList(res.billImgs)
         }
       })
     }
