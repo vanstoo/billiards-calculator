@@ -45,15 +45,11 @@ export const returnStyleByStatus = (status: InvitationStatus, isColor = false) =
 export const calNum = (num: number, precision?: number): number => Number(num.toFixed(precision ? precision : 2))
 
 // 两个时间间隔是否在X天内
-export const compareDateRange = (
-  startDate: string | dayjs.Dayjs | undefined,
-  endDate: string | dayjs.Dayjs | undefined,
-  range: number = 1,
-) => {
-  if (startDate && endDate) {
-    return dayjs(startDate)
+export const compareDateRange = (targeTime: string | dayjs.Dayjs | undefined, range: number = 1) => {
+  if (targeTime) {
+    return dayjs(targeTime)
       .add(range, 'day')
-      .isAfter(dayjs(endDate), 'second')
+      .isAfter(dayjs(), 'second')
   }
   return false
 }
