@@ -284,13 +284,15 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         </View>
       )}
       {/* 创建者可在结束(最后更新时间)一天内修改费用 */}
-      {userInfo.hasCreatePerm && detail.status === 'FINISHED' && compareDateRange(detail.lastUpdateTime) && (
-        <View className="fixed-btn">
-          <AtButton type="primary" size="small" circle onClick={goToFinish}>
-            修改费用
-          </AtButton>
-        </View>
-      )}
+      {userInfo?.userOpenId === detail.creatorOpenId &&
+        detail.status === 'FINISHED' &&
+        compareDateRange(detail.lastUpdateTime) && (
+          <View className="fixed-btn">
+            <AtButton type="primary" size="small" circle onClick={goToFinish}>
+              修改费用
+            </AtButton>
+          </View>
+        )}
     </Fragment>
   )
 }
