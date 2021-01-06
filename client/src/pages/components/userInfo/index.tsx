@@ -65,7 +65,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
       )}
       {userInfo.hasCreatePerm && (
         <AtButton className="user-btn" onClick={() => Taro.navigateTo({ url: '/pages/assignAuth/index' })}>
-          新用户授权
+          给新用户授权
         </AtButton>
       )}
     </View>
