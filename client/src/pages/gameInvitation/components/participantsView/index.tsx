@@ -76,6 +76,12 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
     setParticapantList(newList)
   }, [participants])
 
+  useEffect(() => {
+    if (status === 'FINISHED') {
+      setViewMode('list')
+    }
+  }, [status])
+
   // 返回占比
   const returnPercent = (duration: number) => {
     if (totalTime && totalTime > 0) {

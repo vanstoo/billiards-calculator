@@ -40,6 +40,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
             Taro.hideLoading()
             Taro.setStorageSync('userInfo', result)
             setUserInfo(result)
+            Taro.redirectTo({ url: '/pages/index/index?defaultKey=0' })
           })
         }
       })
