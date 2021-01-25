@@ -18,6 +18,7 @@ export interface ParticipantsViewProps {
   totalFee: number // 总费用
   adminUsers: string[] // 管理员集合
   addAdminUsers?: (item: ParticipantItem) => void // 添加管理员
+  mode: 'detail' | 'list' // 预览模式
 }
 
 interface ParticipantView extends ParticipantItem {
@@ -33,8 +34,9 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
   totalFee = 0,
   adminUsers = [],
   addAdminUsers = () => console.log(1),
+  mode = 'detail',
 }) => {
-  const [viewMode, setViewMode] = useState<'detail' | 'list'>('detail')
+  const [viewMode, setViewMode] = useState(mode)
   const [particapantList, setParticapantList] = useState<ParticipantView[]>([])
   const [totalTime, setTotalTime] = useState(0)
   const userInfo: UserInfo = Taro.getStorageSync('userInfo')
@@ -128,9 +130,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
     })
   }
 
-  const changeViewMode = () => {
-    setViewMode(viewMode === 'detail' ? 'list' : 'detail')
-  }
+  const changeViewMode = () => setViewMode(viewMode === 'detail' ? 'list' : 'detail')
 
   return (
     <View style={{ marginTop: '1px' }}>

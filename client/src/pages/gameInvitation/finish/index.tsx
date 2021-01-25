@@ -140,6 +140,7 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
           status={detail.status}
           hideEditbtn
           totalFee={isNaN(Number(totalFee)) ? 0 : Number(totalFee)}
+          mode="list"
         />
         <View className="detail-card finish-form">
           <AtInput

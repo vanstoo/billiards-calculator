@@ -238,6 +238,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           status={detail.status}
           totalFee={detail.totalFee}
           addAdminUsers={addAdminUsers}
+          mode="detail"
         />
         {detail.status === 'FINISHED' && (
           <View className="detail-card">
@@ -257,42 +258,41 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           refreshAndGetdetail={getDetails}
         />
       )}
-
-      {/* 状态为进行中才可键操作按钮 */}
-      {detail.status === 'OPENING' && (
-        <View className="fixed-btn">
-          <AtButton type="secondary" size="small" circle openType="share">
-            分享
-          </AtButton>
-          {/* 约球发起者才可取消或结束 */}
-          {userInfo.hasCreatePerm && detail.adminUsers.includes(userInfo.userOpenId) && (
-            <Fragment>
-              <AtButton type="primary" size="small" circle onClick={goToFinish}>
-                结束活动
+      <View className="fixed-btn">
+        <AtButton type="secondary" size="small" circle openType="share">
+          分享
+        </AtButton>
+        {/* 状态为进行中才可键操作活动状态及参加活动 */}
+        {detail.status === 'OPENING' && (
+          <Fragment>
+            {/* 约球发起者才可取消或结束 */}
+            {userInfo.hasCreatePerm && detail.adminUsers.includes(userInfo.userOpenId) && (
+              <Fragment>
+                <AtButton type="primary" size="small" circle onClick={goToFinish}>
+                  结束活动
+                </AtButton>
+                <AtButton type="secondary" size="small" circle onClick={showCancelModal}>
+                  取消活动
+                </AtButton>
+              </Fragment>
+            )}
+            {/* 非参与人员才可加入 */}
+            {!detail.participants.some(x => x.userOpenId === userInfo.userOpenId) && (
+              <AtButton type="primary" size="small" circle onClick={addPartcapant}>
+                加我一个
               </AtButton>
-              <AtButton type="secondary" size="small" circle onClick={showCancelModal}>
-                取消活动
-              </AtButton>
-            </Fragment>
-          )}
-          {/* 非参与人员才可加入 */}
-          {!detail.participants.some(x => x.userOpenId === userInfo.userOpenId) && (
-            <AtButton type="primary" size="small" circle onClick={addPartcapant}>
-              加我一个
-            </AtButton>
-          )}
-        </View>
-      )}
-      {/* 创建者可在结束(最后更新时间)一天内修改费用 */}
-      {userInfo?.userOpenId === detail.creatorOpenId &&
-        detail.status === 'FINISHED' &&
-        compareDateRange(detail.lastUpdateTime) && (
-          <View className="fixed-btn">
+            )}
+          </Fragment>
+        )}
+        {/* 创建者可在结束(最后更新时间)一天内修改费用 */}
+        {detail.status === 'FINISHED' &&
+          userInfo?.userOpenId === detail.creatorOpenId &&
+          compareDateRange(detail.lastUpdateTime) && (
             <AtButton type="primary" size="small" circle onClick={goToFinish}>
               修改费用
             </AtButton>
-          </View>
-        )}
+          )}
+      </View>
     </Fragment>
   )
 }
