@@ -42,7 +42,7 @@
   "compileType": "miniprogram",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
-  "libVersion": "2.12.1",
+  "libVersion": "2.16.0",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
   "condition": {}
 }
