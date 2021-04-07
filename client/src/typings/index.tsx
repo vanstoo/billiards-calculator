@@ -20,4 +20,4 @@ export interface MapLocationInfo {
 }
 
 // 云函数方法
-export type RequestApi = 'login' | 'invitation'
+export type RequestApi = 'login' | 'invitation' | 'participant'

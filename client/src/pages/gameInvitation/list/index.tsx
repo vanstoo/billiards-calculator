@@ -86,6 +86,11 @@ const InvitationList: React.FC<HomePageProps> = () => {
     }
   }
 
+  const batchAdd = () => {
+    UseRequest('participant', {
+      type: 'batchAddParticipantInfo',
+    })
+  }
   return (
     <View className="list-card-box">
       <CommonScrollView

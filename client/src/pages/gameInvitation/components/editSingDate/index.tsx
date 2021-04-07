@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { memo, useState } from 'react'
-import Taro, { useRouter } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
 import { View, Picker } from '@tarojs/components'
 import { AtButton, AtFloatLayout, AtList, AtListItem } from 'taro-ui'
 import { returnNowTime } from '../../../../utils'
@@ -22,7 +22,6 @@ const EditSignDate: React.FC<EditSignDateProps> = ({
   participants,
   refreshAndGetdetail,
 }) => {
-  const { invitationId } = useRouter().params
   const [record, setRecord] = useState<ParticipantItem>(editRecord)
   const onTimeChange = (time: string, type: 'start' | 'end') => {
     let newRecord = cloneDeep(record)
@@ -42,7 +41,8 @@ const EditSignDate: React.FC<EditSignDateProps> = ({
     })
     let param = {
       type: 'updateParticipant',
-      id: invitationId,
+      id: record._id,
+      // 将时间格式化成 时:分
       startTime:
         record.startTime && record.startTime.length > 5
           ? record.startTime.substring(record.startTime.length - 5)
@@ -53,7 +53,7 @@ const EditSignDate: React.FC<EditSignDateProps> = ({
           : record.endTime,
       index: participants.findIndex(x => x.userOpenId === record.userOpenId),
     }
-    UseRequest('invitation', param).then(res => {
+    UseRequest('participant', param).then(res => {
       // console.log(param, "comfirmUpdate", res);
       if (res) {
         Taro.showToast({

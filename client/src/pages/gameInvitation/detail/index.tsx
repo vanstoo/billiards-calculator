@@ -134,7 +134,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
     if (userInfo.userOpenId) {
       let param = {
         type: 'addParticipantInfo',
-        id: invitationId,
+        invitationId: invitationId,
         nickName: userInfo.nickName,
         avatarUrl: userInfo.avatarUrl,
         startTime: '',
@@ -144,7 +144,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         title: '参与活动中...',
         mask: true,
       })
-      UseRequest('invitation', param).then(res => {
+      UseRequest('participant', param).then(res => {
         if (res) {
           Taro.hideLoading()
           Taro.showToast({
