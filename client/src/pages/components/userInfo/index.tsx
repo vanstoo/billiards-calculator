@@ -117,7 +117,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
             )
           }
         })
-        console.log(arr, 'arr')
+        // console.log(arr, 'arr')
         console.log(JSON.stringify(arr), 'arr')
       }
     })
@@ -178,7 +178,11 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
             <View className="info-value">{participantsListCount}</View>
             <View className="info-label">我参与的</View>
           </View>
-          <View className="info-item" hoverClass="item-hovered" hoverStayTime={200} onClick={getAndFormatParticipants}>
+          <View
+            className="info-item"
+            // hoverClass="item-hovered" hoverStayTime={200}
+            // onClick={getAndFormatParticipants}
+          >
             <View className="info-value">{calNum(playDuration / 60)}</View>
             <View className="info-label">打球时长(小时)</View>
           </View>
@@ -190,8 +194,8 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
           <View className="service-box">
             <View
               className="service-item"
-              // hoverClass="item-hovered"
-              // hoverStayTime={200}
+              hoverClass="item-hovered"
+              hoverStayTime={200}
               onClick={() => Taro.navigateTo({ url: '/pages/assignAuth/index' })}
             >
               <AtIcon value="lock" size="30" />
