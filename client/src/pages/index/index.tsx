@@ -25,7 +25,7 @@ const Index: React.FC<IndexProps> = () => {
   const userInfo: UserInfoType = Taro.getStorageSync('userInfo')
 
   useEffect(() => {
-    console.log(defaultKey, 'defaultKey')
+    // console.log(defaultKey, 'defaultKey')
     if (defaultKey) {
       setTabKey(Number(defaultKey))
     }
