@@ -123,15 +123,6 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
     })
   }
 
-  // // 获取并格式化所有人参与人数据
-  // const getCombainList = () => {
-  //   UseRequest('invitation', {
-  //     type: 'getCombineList',
-  //   }).then(result => {
-  //     console.log(result)
-  //   })
-  // }
-
   // 跳转到我发起/我参与的活动列表页面
   const goToGameInvitationList = (type: 'creator' | 'participant') => {
     let param = type === 'creator' ? 'searchByCreator=true' : 'searchByParticipants=true'
