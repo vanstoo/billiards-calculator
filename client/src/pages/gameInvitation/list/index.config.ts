@@ -1,5 +1,3 @@
 export default {
-  usingComponents: {
-    chooseLocation: "plugin://chooseLocation/index"
-  }
-};
+  navigationBarTitleText: '约球列表',
+}

@@ -1,5 +1,7 @@
 import dayjs from 'dayjs'
 import { InvitationStatus } from '../pages/gameInvitation/type'
+import { dateFormatToMin } from '../constant'
+import { ParticipantItem } from '../pages/gameInvitation/type'
 
 // 格式化时间
 export const formatDate = (
@@ -52,4 +54,39 @@ export const compareDateRange = (targeTime: string | dayjs.Dayjs | undefined, ra
       .isAfter(dayjs(), 'second')
   }
   return false
+}
+
+// 返回每条参与信息的时长及总时长
+export const calDurationByParticipants = (participants: ParticipantItem[]) => {
+  let durationSum = 0 // 总时间
+  let newList = participants.map(({ startTime, endTime, ...val }) => {
+    // 处理起始时间
+    let newStartTime = startTime
+    if (newStartTime) {
+      newStartTime = formatDate(dayjs(`${formatDate(dayjs())} ${startTime}`), dateFormatToMin)
+    }
+    let newEndTime = endTime
+    if (newEndTime) {
+      newEndTime = formatDate(dayjs(`${formatDate(dayjs())} ${endTime}`), dateFormatToMin)
+      // 若起始时间都存在 判断结束时间是否为第二天
+      if (newStartTime && dayjs(newEndTime).isBefore(dayjs(newStartTime))) {
+        newEndTime = formatDate(dayjs(newEndTime).add(1, 'd'), dateFormatToMin)
+      }
+    }
+    // 起始时间都存在时计算时间差
+    let timeDuration = newEndTime && newStartTime ? dayjs(newEndTime).diff(dayjs(newStartTime), 'm') : 0
+    return {
+      startTime: newStartTime,
+      endTime: newEndTime,
+      duration: timeDuration, // 分钟数
+      ...val,
+    }
+  })
+  newList.forEach(x => {
+    durationSum += x.duration
+  })
+  return {
+    newList,
+    durationSum,
+  }
 }

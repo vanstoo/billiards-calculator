@@ -4,6 +4,7 @@ export default {
     'pages/gameInvitation/create/index',
     'pages/gameInvitation/detail/index',
     'pages/gameInvitation/finish/index',
+    'pages/gameInvitation/list/index',
     'pages/assignAuth/index',
   ],
   window: {
