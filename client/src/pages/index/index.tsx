@@ -2,9 +2,12 @@ import * as React from 'react'
 import { useState, memo, useEffect } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View } from '@tarojs/components'
-import { AtTabBar } from 'taro-ui'
+import { AtTabBar, AtButton } from 'taro-ui'
 import { UserInfo, HelpInfo } from '../components'
-import InvitationList from '../gameInvitation/list'
+import { InvitationList } from '../gameInvitation/components'
+import { UserInfo as UserInfoType } from '../../typings'
+import { goToLoginPage } from '../../utils'
+
 import './index.scss'
 
 export interface IndexProps {}
@@ -19,6 +22,7 @@ const tabMenu = [
 const Index: React.FC<IndexProps> = () => {
   const [tabKey, setTabKey] = useState<number>(0)
   const { defaultKey } = useRouter().params
+  const userInfo: UserInfoType = Taro.getStorageSync('userInfo')
 
   useEffect(() => {
     console.log(defaultKey, 'defaultKey')
@@ -33,9 +37,31 @@ const Index: React.FC<IndexProps> = () => {
     setTabKey(value)
   }
 
+  // 创建约球
+  const goToCreateInvitation = () => {
+    if (userInfo) {
+      if (userInfo.hasCreatePerm && userInfo.userOpenId) {
+        Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
+      }
+    } else {
+      goToLoginPage()
+    }
+  }
+
   return (
     <View className="home-page">
-      {tabKey === 0 && <InvitationList />}
+      {tabKey === 0 && (
+        <View className="initation-list-box">
+          <InvitationList />
+          {userInfo.hasCreatePerm && (
+            <View className="fixed-btn" style={{ paddingBottom: '170rpx' }}>
+              <AtButton type="primary" circle onClick={goToCreateInvitation}>
+                发起约球
+              </AtButton>
+            </View>
+          )}
+        </View>
+      )}
       {tabKey === 1 && <HelpInfo />}
       {tabKey === 2 && <UserInfo />}
       <AtTabBar

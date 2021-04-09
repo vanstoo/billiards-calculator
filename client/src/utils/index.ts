@@ -7,6 +7,7 @@ export {
   returnNowTime,
   calNum,
   compareDateRange,
+  calDurationByParticipants,
 } from './dataTrans'
 export { subscribeInfo } from './subscribe'
 export { chooseImg, uploadImg } from './upload'

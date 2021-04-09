@@ -21,11 +21,6 @@ exports.main = async (event, context) => {
     case 'updateParticipant': {
       return updateParticipantInfo(event, context)
     }
-    // 批量新增更新参与者信息
-    case 'batchAddParticipantInfo': {
-      return batchAddParticipantInfo(event, context)
-    }
-
     default: {
       return null
     }
@@ -85,39 +80,4 @@ async function updateParticipantInfo(event, context) {
     console.error(error)
     return error
   }
-}
-
-// 新增参与人
-async function batchAddParticipantInfo(event, context) {
-  const _ = db.command
-  const { data } = await db.collection('invitation_groups').orderBy('createTime', 'desc').get()
-  let arr = []
-  data.map((x) => {
-    if (x.participants) {
-      arr = arr.concat(
-        x.participants.map((y) => ({
-          ...y,
-          invitationId: x._id,
-          createTime: x.lastUpdateTime,
-          totalFee: x.totalFee,
-        })),
-      )
-    }
-  })
-  try {
-    // arr.forEach(async (element) => {
-    //   await db.collection('participants_info').add({
-    //     data: element,
-    //   })
-    //   return
-    // })
-    return {
-      arr,
-    }
-  } catch (error) {
-    console.error(error)
-    return error
-  }
-
-  return true
 }

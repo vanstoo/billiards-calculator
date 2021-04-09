@@ -4,7 +4,7 @@ import Taro from '@tarojs/taro'
 import { View, Text, ScrollView } from '@tarojs/components'
 import { AtAvatar } from 'taro-ui'
 import { SectionItem } from '../../../../components'
-import { isValidArray, formatDate, calNum } from '../../../../utils'
+import { isValidArray, formatDate, calNum, calDurationByParticipants } from '../../../../utils'
 import { dateFormatToMin } from '../../../../constant'
 import { ParticipantItem, InvitationStatus } from '../../type'
 import { UserInfo } from '../../../../typings'
@@ -42,39 +42,8 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
   const userInfo: UserInfo = Taro.getStorageSync('userInfo')
   // 处理时间及占比
   useEffect(() => {
-    let startTimeArr: string[] = []
-    let endTimeArr: string[] = []
-    let newList = participants.map(({ startTime, endTime, ...val }) => {
-      // 处理起始时间
-      let newStartTime = startTime
-      if (newStartTime) {
-        newStartTime = formatDate(dayjs(`${formatDate(dayjs())} ${startTime}`), dateFormatToMin)
-      }
-      let newEndTime = endTime
-      if (newEndTime) {
-        newEndTime = formatDate(dayjs(`${formatDate(dayjs())} ${endTime}`), dateFormatToMin)
-        // 若起始时间都存在 判断结束时间是否为第二天
-        if (newStartTime && dayjs(newEndTime).isBefore(dayjs(newStartTime))) {
-          newEndTime = formatDate(dayjs(newEndTime).add(1, 'd'), dateFormatToMin)
-        }
-      }
-      startTimeArr.push(newStartTime)
-      endTimeArr.push(newEndTime)
-      // 起始时间都存在时计算时间差
-      let timeDuration = newEndTime && newStartTime ? dayjs(newEndTime).diff(dayjs(newStartTime), 'm') : 0
-      return {
-        startTime: newStartTime,
-        endTime: newEndTime,
-        duration: timeDuration,
-        ...val,
-      }
-    })
-    // 计算总时间
-    let timeSum = 0
-    newList.forEach(x => {
-      timeSum += x.duration
-    })
-    setTotalTime(timeSum)
+    const { durationSum, newList } = calDurationByParticipants(participants)
+    setTotalTime(durationSum)
     setParticapantList(newList)
   }, [participants])
 

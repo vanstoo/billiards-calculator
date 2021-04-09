@@ -41,6 +41,18 @@ exports.main = async (event, context) => {
     case 'finish': {
       return finishInvitation(event, context)
     }
+    // 获取自己发起的活动数量
+    case 'getListCountByCreator': {
+      return getInvitationListByCreatorCount(event, context)
+    }
+    // 获取自己参与的活动数量
+    case 'getListCountByParticipants': {
+      return getInvitationListByParticipants(event, context)
+    }
+    // 获取状态为结束并组合了参与人信息的活动列表
+    case 'getCombineList': {
+      return getInvitationListCombineParticipants(event, context)
+    }
     default: {
       return null
     }
@@ -77,6 +89,7 @@ async function createInvitation(event, context) {
       })
       await db.collection('participants_info').add({
         data: {
+          createTime: db.serverDate(), // 创建时间
           invitationId: res._id,
           name: creatorName, // 参与人姓名
           avatarUrl: creatorAvatarUrl, // 参与人头像
@@ -121,21 +134,43 @@ async function getInvitationDetail(event, context) {
 
 // 约球列表
 async function getInvitationList(event, context) {
-  const { pageNum, pageSize } = event
-  const totolCount = await db.collection('invitation_groups').count()
-  if (totolCount && totolCount.total) {
+  const { OPENID } = cloud.getWXContext()
+  const { pageNum, pageSize, searchByCreator, searchByParticipants } = event
+  const _ = db.command
+  let searchParam = {}
+  let res = {}
+  // 根据参与人搜索
+  if (searchByParticipants) {
+    // 获取匹配的活动id
+    let partRes = await db.collection('participants_info').where({ userOpenId: OPENID }).get()
+    if (partRes && partRes.data) {
+      // 列表长度则为参与的活动长度
+      res.total = partRes.data.length
+      let arr = partRes.data.map((x) => x.invitationId)
+      // console.warn('searchByParticipants', partRes.data.length, 'arr====', arr)
+      searchParam._id = _.in(arr) // 根据invitationId搜索匹配的活动列表
+    }
+  } else {
+    // 根据创建人搜索
+    if (searchByCreator) {
+      searchParam.creatorOpenId = OPENID
+    }
+    res = await db.collection('invitation_groups').where(searchParam).count()
+  }
+  if (res && res.total) {
     try {
       // 分页查询
       let pageCount = pageSize * (pageNum - 1)
       const groups = await db
         .collection('invitation_groups')
+        .where(searchParam)
         .orderBy('createTime', 'desc')
         .skip(pageCount)
         .limit(pageSize)
         .get()
       return {
         list: groups.data,
-        totalCount: totolCount.total,
+        totalCount: res.total,
         pageNum,
         pageSize,
       }
@@ -226,6 +261,7 @@ async function finishInvitation(event, context) {
   }
 }
 
+// 增加当前活动管理员
 async function addAdminUser(event, context) {
   const { id, userId } = event
   const _ = db.command
@@ -242,5 +278,52 @@ async function addAdminUser(event, context) {
   } catch (error) {
     console.error(error)
     return error
+  }
+}
+
+async function getInvitationListByCreatorCount(event, context) {
+  const { OPENID } = cloud.getWXContext()
+  const res = await db.collection('invitation_groups').where({ creatorOpenId: OPENID }).count()
+  return {
+    total: res.total,
+  }
+}
+
+async function getInvitationListByParticipants(event, context) {
+  const { OPENID } = cloud.getWXContext()
+  const res = await db.collection('participants_info').where({ userOpenId: OPENID }).count()
+  return {
+    total: res.total,
+  }
+}
+
+async function getInvitationListCombineParticipants(event, context) {
+  const { OPENID } = cloud.getWXContext()
+  const _ = db.command
+  const $ = db.command.aggregate
+  try {
+    let res = await db
+      .collection('participants_info') // 所有参与人信息
+      .aggregate() // 聚合
+      .match({ userOpenId: OPENID }) // 过滤当前人的参加信息
+      .lookup({
+        from: 'invitation_groups', // 联合活动表
+        localField: 'invitationId',
+        foreignField: '_id',
+        as: 'details', // 将活动数据塞进details数组
+      })
+      .unwind('$details') // 拍平details（正常一条参加信息对应就一个活动
+      .match({ [`details.status`]: 'FINISHED' }) // 过滤非完结状态的活动
+      .limit(100000)
+      .end()
+      .then((reuslt) => reuslt)
+    return {
+      list: res.list,
+    }
+  } catch (error) {
+    console.warn(error)
+    return {
+      errMsg: '查询失败',
+    }
   }
 }

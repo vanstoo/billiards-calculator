@@ -2,10 +2,12 @@
   margin: 16px;
 }
 
+.initation-list-box {
+  height: calc(100vh - 130px);
+}
+
 // 列表卡片
 .list-card-box {
-  height: calc(100vh - 130px) !important;
-
   .list-card {
     box-sizing: border-box;
     height: auto;
