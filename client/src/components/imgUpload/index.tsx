@@ -13,7 +13,7 @@ export interface ImgUploadProps {
 
 export interface ImgUploadProps {}
 
-const ImgUpload: React.SFC<ImgUploadProps> = ({ uploadList, delFileItem, uploadFile }) => {
+const ImgUpload: React.FC<ImgUploadProps> = ({ uploadList, delFileItem, uploadFile }) => {
   // 预览图片
   const previewImage = (index: number) => {
     let previewList = uploadList

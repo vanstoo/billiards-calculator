@@ -11,7 +11,7 @@ export interface ImgViewProps {
 
 export interface ImgViewProps {}
 
-const ImgView: React.SFC<ImgViewProps> = ({ uploadList }) => {
+const ImgView: React.FC<ImgViewProps> = ({ uploadList }) => {
   // 预览图片
   const previewImage = (index: number) => {
     let previewList = uploadList

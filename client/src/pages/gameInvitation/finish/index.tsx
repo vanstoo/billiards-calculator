@@ -30,7 +30,7 @@ const EmptyData: InvitationItem = {
 }
 
 // 结束活动
-const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
+const FinishInvitation: React.FC<FinishInvitationProps> = () => {
   const { invitationId } = useRouter().params
   const [detail, setDetail] = useState<InvitationItem>(EmptyData)
   const [totalFee, setTotalFee] = useState(undefined) // 费用总计
@@ -78,8 +78,8 @@ const FinishInvitation: React.SFC<FinishInvitationProps> = () => {
     console.log(tempFilePaths, 'tempFilePaths')
     let fileRes = await uploadImg(tempFilePaths, 'billImg')
     console.log(fileRes, 'fileList')
-    if (fileRes) {
-      setUploadList(uploadList.concat([fileRes]))
+    if (isValidArray(fileRes)) {
+      setUploadList(uploadList.concat(fileRes))
     }
   }
 
