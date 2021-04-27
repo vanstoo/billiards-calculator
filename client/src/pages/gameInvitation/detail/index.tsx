@@ -28,6 +28,7 @@ const EmptyData: InvitationItem = {
   billImgs: [],
   adminUsers: [],
   lastUpdateTime: '',
+  excelFileId: '',
 }
 
 const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
@@ -205,6 +206,45 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
       }
     })
   }
+  const showDownLoadExcelModal = () => {
+    Taro.showModal({
+      content:
+        '因微信限制，下载excel文件只会将下载地址自动拷贝到剪贴板，请去手机浏览器内复制链接后访问下载(safari内可选择打开方式为number表格))',
+      success: res => {
+        if (res.confirm) {
+          downLoadExcel()
+        }
+      },
+    })
+  }
+
+  // 获取真实下载地址
+  const downLoadExcel = () => {
+    Taro.cloud
+      .getTempFileURL({ fileList: [detail.excelFileId] })
+      .then(res => {
+        console.log(res)
+        // get temp file path
+        Taro.setClipboardData({
+          data: res.fileList[0].tempFileURL,
+        }).then(() => {
+          Taro.showToast({
+            title: `下载链接已复制到剪贴板。`,
+            icon: 'none',
+            duration: 1500,
+          })
+        })
+      })
+      .catch(error => {
+        // handle error
+        Taro.showToast({
+          title: '获取链接失败',
+          icon: 'none',
+          mask: true,
+          duration: 3000,
+        })
+      })
+  }
 
   return (
     <Fragment>
@@ -214,10 +254,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
           <Text>{returnStatusName(detail.status)}</Text>
         </View>
         <View className="detail-card">
-          <View className="title">
-            基本信息
-            {/* <View className="link-col">编辑</View> */}
-          </View>
+          <View className="title">基本信息</View>
           <View className="divider" />
           <SectionItem label="发起人：" content={detail.creatorName} />
           <SectionItem label="约球时间：" content={detail.targetTime} />
@@ -284,6 +321,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
             )}
           </Fragment>
         )}
+
         {/* 创建者可在结束(最后更新时间)一天内修改费用 */}
         {detail.status === 'FINISHED' &&
           userInfo?.userOpenId === detail.creatorOpenId &&
@@ -292,6 +330,12 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
               修改费用
             </AtButton>
           )}
+
+        {detail.excelFileId && (
+          <AtButton type="secondary" size="small" circle onClick={showDownLoadExcelModal}>
+            下载excel
+          </AtButton>
+        )}
       </View>
     </Fragment>
   )

@@ -235,9 +235,17 @@ async function finishInvitation(event, context) {
       _id: id,
     })
     .get()
-  console.info(res, 'res')
+  // console.info(res, 'res')
   if (res.data && res.data[0] && ['OPENING', 'FINISHED'].includes(res.data[0].status)) {
     try {
+      let fileRes = await cloud.callFunction({
+        name: 'excel',
+        data: {
+          type: 'createExcel',
+          id: id,
+          totalFee: totalFee,
+        },
+      })
       await db
         .collection('invitation_groups')
         .doc(id)
@@ -247,6 +255,7 @@ async function finishInvitation(event, context) {
             totalFee: totalFee,
             billImgs: billImgs,
             lastUpdateTime: db.serverDate(), // 最后更新时间
+            excelFileId: fileRes ? (fileRes.result ? fileRes.result.fileID : '') : '',
           },
         })
       return true
@@ -316,7 +325,7 @@ async function getInvitationListCombineParticipants(event, context) {
       .match({ [`details.status`]: 'FINISHED' }) // 过滤非完结状态的活动
       .limit(100000)
       .end()
-      .then((reuslt) => reuslt)
+      .then((result) => result)
     return {
       list: res.list,
     }
