@@ -16,7 +16,7 @@ export default {
   cloud: true,
   plugins: {
     chooseLocation: {
-      version: '1.0.5',
+      version: '1.0.6',
       provider: 'wx76a9a06e5b4e693e',
     },
   },
