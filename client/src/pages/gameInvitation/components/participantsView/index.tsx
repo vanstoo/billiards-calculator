@@ -5,10 +5,8 @@ import { View, Text, ScrollView } from '@tarojs/components'
 import { AtAvatar } from 'taro-ui'
 import { SectionItem } from '../../../../components'
 import { isValidArray, formatDate, calNum, calDurationByParticipants } from '../../../../utils'
-import { dateFormatToMin } from '../../../../constant'
 import { ParticipantItem, InvitationStatus } from '../../type'
 import { UserInfo } from '../../../../typings'
-import dayjs from 'dayjs'
 
 export interface ParticipantsViewProps {
   participants: ParticipantItem[]

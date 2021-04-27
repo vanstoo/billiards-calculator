@@ -19,6 +19,7 @@ export interface InvitationItem {
   status: InvitationStatus // 邀请状态
   targetTime: string // 约球时间
   totalFee: number // 总费用
+  excelFileId: string // 参与人信息excel信息
 }
 
 // 参与人员
