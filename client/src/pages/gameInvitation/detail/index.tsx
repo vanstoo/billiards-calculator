@@ -206,10 +206,11 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
       }
     })
   }
+
   const showDownLoadExcelModal = () => {
     Taro.showModal({
       content:
-        '因微信限制，下载excel文件只会将下载地址自动拷贝到剪贴板，请去手机浏览器内复制链接后访问下载(safari内可选择打开方式为number表格))',
+        '因小程序限制，下载excel文件只会将下载地址自动拷贝到剪贴板，请去手机任意浏览器内复制链接后跳转查看(safari内可选择打开方式为Numbers表格)',
       success: res => {
         if (res.confirm) {
           downLoadExcel()
