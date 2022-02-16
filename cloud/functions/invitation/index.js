@@ -11,7 +11,7 @@ const db = cloud.database({
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  console.log(event)
+  console.info(event)
   switch (event.type) {
     // 发起约球
     case 'create': {
@@ -142,12 +142,19 @@ async function getInvitationList(event, context) {
   // 根据参与人搜索
   if (searchByParticipants) {
     // 获取匹配的活动id
-    let partRes = await db.collection('participants_info').where({ userOpenId: OPENID }).get()
-    if (partRes && partRes.data) {
+    let partRes = await db
+      .collection('participants_info')
+      .aggregate()
+      .match({ userOpenId: OPENID })
+      .limit(10000)
+      .end()
+      .then((result) => result)
+    // console.info(partRes, 'partRes')
+    if (partRes && partRes.list) {
       // 列表长度则为参与的活动长度
-      res.total = partRes.data.length
-      let arr = partRes.data.map((x) => x.invitationId)
-      // console.warn('searchByParticipants', partRes.data.length, 'arr====', arr)
+      res.total = partRes.list.length
+      let arr = partRes.list.map((x) => x.invitationId)
+      // console.info('searchByParticipants', partRes.list.length, 'arr====', arr)
       searchParam._id = _.in(arr) // 根据invitationId搜索匹配的活动列表
     }
   } else {
@@ -161,6 +168,7 @@ async function getInvitationList(event, context) {
     try {
       // 分页查询
       let pageCount = pageSize * (pageNum - 1)
+      // console.info(searchParam, 'searchParam')
       const groups = await db
         .collection('invitation_groups')
         .where(searchParam)
@@ -186,7 +194,7 @@ async function getInvitationList(event, context) {
 // 取消约球
 async function cancelInvitation(event, context) {
   const { id } = event
-  console.log(event)
+  console.info(event)
   let res = await db
     .collection('invitation_groups')
     .where({
