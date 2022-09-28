@@ -1,0 +1,13 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "billiards-calculator-aliyun",
+  "description": "使用aliyun的服务",
+  "appid": "touristappid",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram"
+}
