@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@alicloud/mpserverless-sdk@3.1.1":
+  version "3.1.1"
+  resolved "https://registry.npmmirror.com/@alicloud/mpserverless-sdk/-/mpserverless-sdk-3.1.1.tgz#65be98fa3dd4dadad076a1c7895d1b791e966328"
+  integrity sha512-ERyGk6FPduBJh0U+edyKq3zyKB2ScEj0Bv7ReY4yUGPrzePMyLDFVvBgFwheemyodyDYpcXgZaQfox5V/ernrA==
+
 "@ampproject/remapping@^2.1.0":
   version "2.2.0"
   resolved "https://registry.npmmirror.com/@ampproject/remapping/-/remapping-2.2.0.tgz#56c133824780de3174aed5ab6834f3026790154d"
