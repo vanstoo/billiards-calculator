@@ -3,6 +3,7 @@
   "projectname": "billiards-calculator-aliyun",
   "setting": {
     "compileHotReLoad": true,
-    "urlCheck": true
+    "urlCheck": true,
+    "bigPackageSizeSupport": true
   }
 }
