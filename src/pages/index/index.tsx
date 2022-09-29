@@ -36,7 +36,7 @@ const Index: FC<IndexProps> = () => {
   const goToCreateInvitation = () => {
     if (userInfo) {
       if (userInfo.hasCreatePerm && userInfo.userOpenId) {
-        Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
+        // Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
       }
     } else {
       goToLoginPage()

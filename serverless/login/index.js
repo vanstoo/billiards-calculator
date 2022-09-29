@@ -1,29 +1,24 @@
-// ctx.logger.info('invoke args: %j', ctx.args)
-
 module.exports = async ctx => {
   let type = ctx.args.type
-  // 获取用户openid
-  const userOpenId = await getUserOpenId(ctx)
-  if (!userOpenId) {
-    return null
-  } else {
-    switch (type) {
-      // 获取openId
-      case 'get': {
-        return getUserInfo(ctx, userOpenId)
-      }
-      case 'create': {
-        return createUser(ctx, userOpenId)
-      }
-      case 'search': {
-        return searchUsers(ctx, userOpenId)
-      }
-      case 'updateAuth': {
-        return updateUserAuth(ctx, userOpenId)
-      }
-      default: {
-        return null
-      }
+  switch (type) {
+    // 获取openId
+    case 'get':
+    case 'create': {
+      const userOpenId = await getUserOpenId(ctx)
+      return userOpenId
+        ? type == 'get'
+          ? getUserInfo(ctx, userOpenId)
+          : createUser(ctx, userOpenId)
+        : '不存在openId,出错了'
+    }
+    case 'search': {
+      return searchUsers(ctx)
+    }
+    case 'updateAuth': {
+      return updateUserAuth(ctx)
+    }
+    default: {
+      return null
     }
   }
 }
@@ -81,6 +76,41 @@ const createUser = async (ctx, userOpenId) => {
   }
 }
 
-const searchUsers = async (ctx, userOpenId) => {}
+const searchUsers = async ctx => {
+  const { fuzzyName } = ctx.args
+  try {
+    // 根据fuzzyName获取login_users下未开通权限用户
+    let loginUsers = await ctx.mpserverless.db.collection('login_users').find(
+      {
+        nickName: {
+          $regex: '.*' + fuzzyName + '.*',
+          $options: 'i',
+        },
+        hasCreatePerm: false,
+      },
+      { limit: 5 },
+    )
+    return (loginUsers && loginUsers.result) || []
+  } catch (error) {
+    return error
+  }
+}
 
-const updateUserAuth = async (ctx, userOpenId) => {}
+const updateUserAuth = async ctx => {
+  const { targetId } = ctx.args
+  try {
+    await ctx.mpserverless.db.collection('login_users').findOneAndUpdate(
+      {
+        userOpenId: targetId,
+      },
+      {
+        $set: {
+          hasCreatePerm: true,
+        },
+      },
+    )
+    return true
+  } catch (error) {
+    return error
+  }
+}

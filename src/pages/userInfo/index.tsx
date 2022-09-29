@@ -129,7 +129,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
   // 跳转到我发起/我参与的活动列表页面
   const goToGameInvitationList = (type: 'creator' | 'participant') => {
     let param = type === 'creator' ? 'searchByCreator=true' : 'searchByParticipants=true'
-    Taro.navigateTo({ url: `/pages/gameInvitation/list/index?${param}=true` })
+    // Taro.navigateTo({ url: `/pages/gameInvitation/list/index?${param}=true` })
   }
 
   // 无权限页面

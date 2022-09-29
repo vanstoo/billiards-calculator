@@ -1,4 +1,5 @@
 const path = require('path')
+
 const config = {
   projectName: 'billiards-calculator-aliyun',
   date: '2022-9-28',
