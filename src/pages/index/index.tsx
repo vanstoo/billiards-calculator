@@ -1,32 +1,73 @@
-import { Component, PropsWithChildren } from 'react'
-import { View, Text } from '@tarojs/components'
-import { AtButton } from 'taro-ui'
+import { FC, useState, memo, useEffect } from 'react'
+import Taro, { useRouter } from '@tarojs/taro'
+import { View } from '@tarojs/components'
+import { AtTabBar, AtButton } from 'taro-ui'
+import UserInfo from '../userInfo'
+// import { InvitationList } from '../gameInvitation/components'
+import { UserInfo as UserInfoType } from '@/typings'
+import { goToLoginPage } from '@/utils'
 
-export default class Index extends Component<PropsWithChildren> {
-  componentWillMount() {}
+interface IndexProps {}
 
-  componentDidMount() {}
+const tabMenu = [
+  { title: '首页', iconType: 'home' },
+  { title: '信息', iconType: 'user' },
+]
 
-  componentWillUnmount() {}
+const Index: FC<IndexProps> = () => {
+  const [tabKey, setTabKey] = useState<number>(0)
+  const { defaultKey } = useRouter().params
+  const userInfo: UserInfoType = Taro.getStorageSync('userInfo')
 
-  componentDidShow() {}
+  useEffect(() => {
+    // console.log(defaultKey, 'defaultKey')
+    if (defaultKey) {
+      setTabKey(Number(defaultKey))
+    }
+  }, [defaultKey])
 
-  componentDidHide() {}
-
-  render() {
-    return (
-      <View className="index">
-        <Text>Hello world!</Text>
-        <AtButton type="primary">I need Taro UI</AtButton>
-        <Text>Taro UI 支持 Vue 了吗？</Text>
-        <AtButton type="primary" circle>
-          支持
-        </AtButton>
-        <Text>共建？</Text>
-        <AtButton type="secondary" circle>
-          来
-        </AtButton>
-      </View>
-    )
+  // tab 切换
+  const handleTabClick = (value: number) => {
+    // console.log(value, typeof value);
+    setTabKey(value)
   }
+
+  // 创建约球
+  const goToCreateInvitation = () => {
+    if (userInfo) {
+      if (userInfo.hasCreatePerm && userInfo.userOpenId) {
+        Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
+      }
+    } else {
+      goToLoginPage()
+    }
+  }
+
+  return (
+    <View className="home-page">
+      {tabKey === 0 && (
+        <View className="initation-list-box">
+          {/* <InvitationList /> */}
+          {userInfo.hasCreatePerm && (
+            <View className="fixed-btn" style={{ paddingBottom: '170rpx' }}>
+              <AtButton type="primary" circle onClick={goToCreateInvitation}>
+                发起约球
+              </AtButton>
+            </View>
+          )}
+        </View>
+      )}
+      {tabKey === 1 && <UserInfo />}
+      <AtTabBar
+        color="#999"
+        selectedColor="#0055ff"
+        fixed
+        tabList={tabMenu}
+        onClick={handleTabClick}
+        current={tabKey}
+      />
+    </View>
+  )
 }
+
+export default memo(Index)

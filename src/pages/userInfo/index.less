@@ -1,0 +1,98 @@
+.no-permission-page {
+  height: 100vh;
+  padding: 80px 64px;
+  background-color: #fff;
+  text-align: center;
+  color: '#999';
+  image {
+    height: 445px;
+    width: 538px;
+  }
+  .user-btn {
+    margin: 48px 0;
+  }
+}
+
+.user-page {
+  .user-info {
+    margin: 32px 16px;
+    background-color: #fff;
+    padding: 32px;
+    border-radius: 24px 80px 24px 24px;
+
+    .user-box {
+      display: flex;
+      align-items: center;
+      margin-bottom: 32px;
+
+      .user-name {
+        font-size: 40px;
+        color: #333;
+        margin-left: 32px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .invitation-info {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+
+    .info-item {
+      color: #666;
+      font-size: 24px;
+      padding: 16px;
+      min-width: 160px;
+      border-radius: 16px;
+
+      .info-value {
+        color: #333;
+        font-size: 36px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .user-service {
+    padding: 16px 32px;
+    width: 100%;
+    box-sizing: border-box;
+
+    .service-title {
+      color: #222;
+      font-size: 32px;
+      font-weight: 600;
+    }
+
+    .service-box {
+      display: flex;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+
+      .service-item {
+        box-sizing: border-box;
+        width: 30%;
+        color: #666;
+        font-size: 22px;
+        padding: 24px;
+        border-radius: 16px;
+        text-align: center;
+
+        .at-icon {
+          margin-bottom: 8px;
+        }
+      }
+
+      .service-item:nth-child(3n-1) {
+        color: black;
+        margin: 0 5%;
+      }
+    }
+  }
+}
+
+.item-hovered {
+  opacity: 0.8;
+  background-color: #f0f0f0;
+}

@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '首页',
+  navigationBarTitleText: '不智能计算台费',
 })
