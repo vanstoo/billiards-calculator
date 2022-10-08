@@ -1,5 +1,11 @@
 export default defineAppConfig({
-  pages: ['pages/index/index', 'pages/assignAuth/index'],
+  pages: [
+    'pages/index/index',
+    'pages/assignAuth/index',
+    'pages/gameInvitation/create/index',
+    'pages/gameInvitation/detail/index',
+    'pages/gameInvitation/list/index',
+  ],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',

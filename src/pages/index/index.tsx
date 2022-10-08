@@ -3,7 +3,7 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtTabBar, AtButton } from 'taro-ui'
 import UserInfo from '../userInfo'
-// import { InvitationList } from '../gameInvitation/components'
+import { InvitationList } from '../gameInvitation/components'
 import { UserInfo as UserInfoType } from '@/typings'
 import { goToLoginPage } from '@/utils'
 
@@ -36,7 +36,7 @@ const Index: FC<IndexProps> = () => {
   const goToCreateInvitation = () => {
     if (userInfo) {
       if (userInfo.hasCreatePerm && userInfo.userOpenId) {
-        // Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
+        Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
       }
     } else {
       goToLoginPage()
@@ -47,7 +47,7 @@ const Index: FC<IndexProps> = () => {
     <View className="home-page">
       {tabKey === 0 && (
         <View className="initation-list-box">
-          {/* <InvitationList /> */}
+          <InvitationList />
           {userInfo.hasCreatePerm && (
             <View className="fixed-btn" style={{ paddingBottom: '170rpx' }}>
               <AtButton type="primary" circle onClick={goToCreateInvitation}>

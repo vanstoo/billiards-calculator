@@ -1,0 +1,26 @@
+.img-view {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  box-sizing: border-box;
+
+  image {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-size: cover;
+    text-align: center;
+    width: calc((100vw - 192px) / 3);
+    height: calc((100vw - 192px) / 3);
+  }
+
+  .img-item {
+    position: relative;
+    margin-top: 32px;
+    margin-right: 32px;
+
+    &:nth-of-type(3n) {
+      margin-right: 0;
+    }
+  }
+}
