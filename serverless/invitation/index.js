@@ -114,7 +114,7 @@ const createInvitation = async ctx => {
         _id: res.result.insertedId,
       }
     } catch (error) {
-      console.error(error)
+      ctx.logger.error(error)
       return error
     }
   } else {
@@ -159,7 +159,7 @@ const getInvitationDetail = async ctx => {
       errMsg: '不存在详情,出错了',
     }
   } catch (error) {
-    console.error(error)
+    ctx.logger.error(error)
     return error
   }
 }
@@ -227,7 +227,7 @@ const getInvitationList = async ctx => {
         pageSize,
       }
     } catch (error) {
-      console.error(error)
+      ctx.logger.error(error)
       return error
     }
   } else {
@@ -247,7 +247,7 @@ const addAdminUser = async ctx => {
     )
     return true
   } catch (error) {
-    console.error(error)
+    ctx.logger.error(error)
     return error
   }
 }
@@ -270,7 +270,34 @@ const cancelInvitation = async ctx => {
     )
     return true
   } catch (error) {
-    console.error(error)
+    ctx.logger.error(error)
+    return error
+  }
+}
+
+// 结束约球
+const finishInvitation = async ctx => {
+  const { id, totalFee, billImgs, updateTime } = ctx.args
+  try {
+    await ctx.mpserverless.db.collection('invitation_groups').findOneAndUpdate(
+      {
+        _id: id,
+        status: {
+          $in: ['OPENING', 'FINISHED'],
+        },
+      },
+      {
+        $set: {
+          status: 'FINISHED',
+          totalFee: totalFee,
+          billImgs: billImgs,
+          lastUpdateTime: updateTime, // 最后更新时间
+        },
+      },
+    )
+    return true
+  } catch (error) {
+    ctx.logger.error(error, 'finishInvitationerror')
     return error
   }
 }

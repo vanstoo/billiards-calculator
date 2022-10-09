@@ -5,6 +5,7 @@ export default defineAppConfig({
     'pages/gameInvitation/create/index',
     'pages/gameInvitation/detail/index',
     'pages/gameInvitation/list/index',
+    'pages/gameInvitation/finish/index',
   ],
   window: {
     backgroundTextStyle: 'light',

@@ -1,5 +1,5 @@
-import dayjs from 'dayjs'
 import Taro from '@tarojs/taro'
+import { MPServerless } from '@alicloud/mpserverless-sdk/dist/esm/mpserverless'
 
 // 上传图片
 export const chooseImg = (callback: Function, onlyCamera: boolean = false) => {
@@ -22,20 +22,18 @@ export const chooseImg = (callback: Function, onlyCamera: boolean = false) => {
 }
 
 // 上传图片
-export const uploadImg = (filePath: string[], folderName: 'billImg'): Promise<string[]> => {
+export const uploadImg = (filePath: string[]): Promise<string[]> => {
+  const mpServerless: MPServerless = Taro.getApp()?.$app?.mpServerless || ''
   Taro.showLoading({
     title: '上传中',
     mask: true,
   })
-  let task = filePath.map((file, index) => {
-    let cloudFilePath = `${folderName}/file${index + 1}_${dayjs().valueOf()}.jpg` // 时间戳作为路径
+  let task = filePath.map(file => {
     return new Promise((resolve, reject) => {
-      Taro.cloud.uploadFile({
-        cloudPath: cloudFilePath,
-        filePath: file,
-        success: res => resolve(res.fileID),
-        fail: res => reject(new Error(res?.errMsg ? res?.errMsg : '上传失败')),
-      })
+      mpServerless.file
+        .uploadFile({ filePath: file })
+        .then(res => resolve(res.fileUrl))
+        .catch(() => reject(new Error('上传失败')))
     })
   })
   return Promise.all(task)
