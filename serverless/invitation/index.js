@@ -13,10 +13,6 @@ module.exports = async ctx => {
     case 'getList': {
       return getInvitationList(ctx)
     }
-    // 更新基础信息
-    case 'updateBaseInfo': {
-      return updateInvitationBaseInfo(ctx)
-    }
     // 增加管理员
     case 'addAdminUser': {
       return addAdminUser(ctx)
@@ -236,5 +232,45 @@ const getInvitationList = async ctx => {
     }
   } else {
     return null
+  }
+}
+
+// 增加当前活动管理员
+const addAdminUser = async ctx => {
+  const { id, userId } = ctx.args
+  try {
+    await ctx.mpserverless.db.collection('invitation_groups').updateOne(
+      { _id: id },
+      {
+        $addToSet: { adminUsers: userId },
+      },
+    )
+    return true
+  } catch (error) {
+    console.error(error)
+    return error
+  }
+}
+
+// 取消约球
+const cancelInvitation = async ctx => {
+  const { id, updateTime } = ctx.args
+  try {
+    await ctx.mpserverless.db.collection('invitation_groups').findOneAndUpdate(
+      {
+        _id: id,
+        status: 'OPENING',
+      },
+      {
+        $set: {
+          status: 'CANCELLED',
+          lastUpdateTime: updateTime, // 最后更新时间
+        },
+      },
+    )
+    return true
+  } catch (error) {
+    console.error(error)
+    return error
   }
 }

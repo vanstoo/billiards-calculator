@@ -10,6 +10,7 @@ import { formatDate, returnStatusName, returnStyleByStatus, goToLoginPage, compa
 import { dateFormatToMin } from '@/constant'
 import { InvitationItem, ParticipantItem } from '../type'
 import { UserInfo } from '@/typings'
+import dayjs from 'dayjs'
 
 export interface InvitationDetailProps {}
 
@@ -18,6 +19,7 @@ const EmptyData: InvitationItem = {
   locationInfo: undefined as any,
   targetTime: '',
   remark: '',
+  creatorAvatarUrl: '',
   creatorName: '',
   createTime: '',
   status: 'CANCELLED',
@@ -96,6 +98,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
     UseRequest('invitation', {
       type: 'cancel',
       id: invitationId,
+      updateTime: new Date(dayjs().valueOf()),
     }).then(res => {
       // console.log(res);
       if (res) {
@@ -135,10 +138,10 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
       let param = {
         type: 'addParticipantInfo',
         invitationId: invitationId,
-        nickName: userInfo.nickName,
-        avatarUrl: userInfo.avatarUrl,
         startTime: '',
         endTime: '',
+        OPENID: userInfo.userOpenId,
+        updateTime: new Date(dayjs().valueOf()),
       }
       Taro.showLoading({
         title: '参与活动中...',

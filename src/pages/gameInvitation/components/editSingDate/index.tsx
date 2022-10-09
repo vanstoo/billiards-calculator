@@ -7,7 +7,7 @@ import { returnNowTime } from '@/utils'
 import { UseRequest } from '@/hooks'
 import { ParticipantItem } from '../../type'
 import cloneDeep from 'lodash/cloneDeep'
-
+import dayjs from 'dayjs'
 export interface EditSignDateProps {
   editRecord: ParticipantItem // 正在编辑的信息
   setEditRecord: (val: any) => void // 修改父层信息
@@ -52,6 +52,7 @@ const EditSignDate: React.FC<EditSignDateProps> = ({
           ? record.endTime.substring(record.endTime.length - 5)
           : record.endTime,
       index: participants.findIndex(x => x.userOpenId === record.userOpenId),
+      updateTime: new Date(dayjs().valueOf()),
     }
     UseRequest('participant', param).then(res => {
       // console.log(param, "comfirmUpdate", res);
