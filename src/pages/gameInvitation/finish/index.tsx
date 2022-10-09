@@ -28,7 +28,7 @@ const EmptyData: InvitationItem = {
   billImgs: [],
   adminUsers: [],
   lastUpdateTime: '',
-  excelFileId: '',
+  excelFileUrl: '',
 }
 
 // 结束活动

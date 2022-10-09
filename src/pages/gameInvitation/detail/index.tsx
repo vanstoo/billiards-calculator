@@ -29,7 +29,7 @@ const EmptyData: InvitationItem = {
   billImgs: [],
   adminUsers: [],
   lastUpdateTime: '',
-  excelFileId: '',
+  excelFileUrl: '',
 }
 
 const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
@@ -209,6 +209,25 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
     })
   }
 
+  const createExcelById = () => {
+    UseRequest('excel', {
+      type: 'createExcel',
+      id: invitationId,
+    }).then(res => {
+      if (res) {
+        Taro.showToast({
+          title: '生成成功',
+          mask: true,
+          duration: 3000,
+        })
+        let timer = setTimeout(() => {
+          getDetails()
+          clearTimeout(timer)
+        }, 2000)
+      }
+    })
+  }
+
   const showDownLoadExcelModal = () => {
     Taro.showModal({
       content:
@@ -223,30 +242,15 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
 
   // 获取真实下载地址
   const downLoadExcel = () => {
-    Taro.cloud
-      .getTempFileURL({ fileList: [detail.excelFileId] })
-      .then(res => {
-        console.log(res)
-        // get temp file path
-        Taro.setClipboardData({
-          data: res.fileList[0].tempFileURL,
-        }).then(() => {
-          Taro.showToast({
-            title: `下载链接已复制到剪贴板。`,
-            icon: 'none',
-            duration: 1500,
-          })
-        })
+    Taro.setClipboardData({
+      data: detail.excelFileUrl,
+    }).then(() => {
+      Taro.showToast({
+        title: `下载链接已复制到剪贴板。`,
+        icon: 'none',
+        duration: 1500,
       })
-      .catch(error => {
-        // handle error
-        Taro.showToast({
-          title: '获取链接失败',
-          icon: 'none',
-          mask: true,
-          duration: 3000,
-        })
-      })
+    })
   }
 
   return (
@@ -333,12 +337,16 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
               修改费用
             </AtButton>
           )}
-
-        {detail.excelFileId && (
-          <AtButton type="secondary" size="small" circle onClick={showDownLoadExcelModal}>
-            下载excel
-          </AtButton>
-        )}
+        {detail.status === 'FINISHED' &&
+          (detail.excelFileUrl ? (
+            <AtButton type="secondary" size="small" circle onClick={showDownLoadExcelModal}>
+              下载excel
+            </AtButton>
+          ) : (
+            <AtButton type="secondary" size="small" circle onClick={createExcelById}>
+              生成excel
+            </AtButton>
+          ))}
       </View>
     </Fragment>
   )
