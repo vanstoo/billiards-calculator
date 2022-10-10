@@ -145,7 +145,16 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
             <View className="info-value">{participantsListCount}</View>
             <View className="info-label">我参与的</View>
           </View>
-          <View className="info-item">
+          <View
+            className="info-item"
+            onClick={() =>
+              Taro.showToast({
+                title: '暂不支持（懒得做）',
+                mask: true,
+                icon: 'none',
+              })
+            }
+          >
             <View className="info-value">{calNum(playDuration / 60)}</View>
             <View className="info-label">打球时长(小时)</View>
           </View>
