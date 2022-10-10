@@ -18,24 +18,26 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
   const [playDuration, setPlayDuration] = useState(0) // 打球时长
 
   useEffect(() => {
-    // // 获取发起数量
-    // UseRequest('invitation', {
-    //   type: 'getListCountByCreator',
-    // }).then(res => {
-    //   // console.log(res, 'getListCountByCreator')
-    //   if (res) {
-    //     setCreatorListcount(res?.total)
-    //   }
-    // })
-    // // 获取参加数量
-    // UseRequest('invitation', {
-    //   type: 'getListCountByParticipants',
-    // }).then(res => {
-    //   // console.log(res, 'getListCountByParticipants')
-    //   if (res) {
-    //     setParticipantsListCount(res?.total)
-    //   }
-    // })
+    // 获取发起数量
+    UseRequest('invitation', {
+      type: 'getListCountByCreator',
+      userOpenId: userInfo.userOpenId,
+    }).then(res => {
+      // console.log(res, 'getListCountByCreator')
+      if (res) {
+        setCreatorListcount(res?.total)
+      }
+    })
+    // 获取参加数量
+    UseRequest('invitation', {
+      type: 'getListCountByParticipants',
+      userOpenId: userInfo.userOpenId,
+    }).then(res => {
+      // console.log(res, 'getListCountByParticipants')
+      if (res) {
+        setParticipantsListCount(res?.total)
+      }
+    })
     // // 获取打球时长
     // UseRequest('invitation', {
     //   type: 'getCombineList',
@@ -97,39 +99,10 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
     })
   }
 
-  // 获取并格式化所有人参与人数据
-  const getAndFormatParticipants = () => {
-    // UseRequest('invitation', {
-    //   type: 'getList',
-    //   pageNum: 1,
-    //   pageSize: 1000,
-    //   searchByCreator: false,
-    //   searchByParticipants: false,
-    // }).then(result => {
-    //   if (result && result.list) {
-    //     let arr = []
-    //     result.list.map(x => {
-    //       if (x.participants) {
-    //         arr = arr.concat(
-    //           x.participants.map(y => ({
-    //             ...y,
-    //             invitationId: x._id,
-    //             createTime: x.lastUpdateTime,
-    //             updateTime: x.lastUpdateTime,
-    //           })),
-    //         )
-    //       }
-    //     })
-    //     // console.log(arr, 'arr')
-    //     console.log(JSON.stringify(arr), 'arr')
-    //   }
-    // })
-  }
-
   // 跳转到我发起/我参与的活动列表页面
   const goToGameInvitationList = (type: 'creator' | 'participant') => {
     let param = type === 'creator' ? 'searchByCreator=true' : 'searchByParticipants=true'
-    // Taro.navigateTo({ url: `/pages/gameInvitation/list/index?${param}=true` })
+    Taro.navigateTo({ url: `/pages/gameInvitation/list/index?${param}=true` })
   }
 
   // 无权限页面
@@ -172,11 +145,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
             <View className="info-value">{participantsListCount}</View>
             <View className="info-label">我参与的</View>
           </View>
-          <View
-            className="info-item"
-            // hoverClass="item-hovered" hoverStayTime={200}
-            // onClick={getAndFormatParticipants}
-          >
+          <View className="info-item">
             <View className="info-value">{calNum(playDuration / 60)}</View>
             <View className="info-label">打球时长(小时)</View>
           </View>

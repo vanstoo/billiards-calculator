@@ -169,34 +169,28 @@ const getInvitationList = async ctx => {
   ctx.logger.info('createInvitation userOpenId', userOpenId)
   const { pageNum, pageSize, searchByCreator, searchByParticipants } = ctx.args
   let searchParam = {}
-  let res = {}
+  let totalCount = 0
   // 根据参与人搜索
   if (searchByParticipants) {
-    // // 获取匹配的活动id
-    // let partRes = await db
-    //   .collection('participants_info')
-    //   .aggregate()
-    //   .match({ userOpenId: userOpenId })
-    //   .limit(10000)
-    //   .end()
-    //   .then(result => result)
-    // // console.info(partRes, 'partRes')
-    // if (partRes && partRes.list) {
-    //   // 列表长度则为参与的活动长度
-    //   res.total = partRes.list.length
-    //   let arr = partRes.list.map(x => x.invitationId)
-    //   // console.info('searchByParticipants', partRes.list.length, 'arr====', arr)
-    //   searchParam._id = _.in(arr) // 根据invitationId搜索匹配的活动列表
-    // }
+    // 获取匹配的活动id （查询的文档数量限制，最大值和默认值均为500。）
+    let partRes = await ctx.mpserverless.db.collection('participants_info').find({ userOpenId: userOpenId })
+    if (partRes && partRes.result) {
+      // 列表长度则为参与的活动长度
+      totalCount = partRes.result.length || 0
+      let arr = partRes.result.map(x => x.invitationId)
+      // console.info('searchByParticipants', partRes.list.length, 'arr====', arr)
+      searchParam._id = { $in: arr } // 根据invitationId搜索匹配的活动列表
+    }
   } else {
     // 根据创建人搜索
     if (searchByCreator) {
       searchParam.creatorOpenId = userOpenId
     }
-    res = await ctx.mpserverless.db.collection('invitation_groups').count(searchParam)
+    let res = await ctx.mpserverless.db.collection('invitation_groups').count(searchParam)
+    totalCount = res.result || 0
+    ctx.logger.info('getInvitationList res', res)
   }
-  ctx.logger.info('getInvitationList res', res)
-  if (res && res.result) {
+  if (totalCount > 0) {
     try {
       // 分页查询
       let pageCount = pageSize * (pageNum - 1)
@@ -222,7 +216,7 @@ const getInvitationList = async ctx => {
       })
       return {
         list: list,
-        totalCount: res.result,
+        totalCount: totalCount,
         pageNum,
         pageSize,
       }
@@ -299,5 +293,21 @@ const finishInvitation = async ctx => {
   } catch (error) {
     ctx.logger.error(error, 'finishInvitationerror')
     return error
+  }
+}
+
+const getInvitationListByCreatorCount = async ctx => {
+  const { userOpenId } = ctx.args
+  const res = await ctx.mpserverless.db.collection('invitation_groups').count({ creatorOpenId: userOpenId })
+  return {
+    total: res.result,
+  }
+}
+
+const getInvitationListByParticipants = async ctx => {
+  const { userOpenId } = ctx.args
+  const res = await ctx.mpserverless.db.collection('participants_info').count({ userOpenId })
+  return {
+    total: res.result,
   }
 }
