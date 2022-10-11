@@ -36,13 +36,15 @@ const ImgUpload: React.FC<ImgUploadProps> = ({ uploadList, delFileItem, uploadFi
             </View>
           )
         })}
-      <View className="img-item">
-        <Image
-          src="https://alyqfqjsix.cdn.bspapp.com/ALYQFQJSIX-9fdd81ce-5fdd-4699-b24d-c74bf4be872f/2b2df056-2d29-400b-8e94-f0133c3cf542.png"
-          onClick={() => chooseImg(uploadFile)}
-          mode="aspectFill"
-        />
-      </View>
+      {uploadList?.length < 3 && (
+        <View className="img-item">
+          <Image
+            src="https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/b6d6a4b6-e69f-4910-b390-0d38a3af7b6c.png"
+            onClick={() => chooseImg(uploadFile)}
+            mode="aspectFill"
+          />
+        </View>
+      )}
     </View>
   )
 }

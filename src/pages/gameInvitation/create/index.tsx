@@ -85,8 +85,10 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
   }, 300)
 
   const chooseLocation = () => {
-    wx.chooseLocation().then(res => {
-      setLocationInfo(res)
+    wx.chooseLocation({
+      success: res => {
+        setLocationInfo(res)
+      },
     })
   }
 

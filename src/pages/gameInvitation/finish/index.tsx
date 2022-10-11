@@ -103,9 +103,9 @@ const FinishInvitation: React.FC<FinishInvitationProps> = () => {
         mask: true,
         icon: 'none',
       })
-    } else if (isValidArray(uploadList) && uploadList.length > 9) {
+    } else if (isValidArray(uploadList) && uploadList.length > 3) {
       Taro.showToast({
-        title: '最多上传9张活动费用凭证',
+        title: '最多上传3张活动费用凭证',
         mask: true,
         icon: 'none',
       })

@@ -10,7 +10,7 @@
     "compileHotReLoad": false,
     "postcss": false,
     "preloadBackgroundData": false,
-    "minified": false,
+    "minified": true,
     "newFeature": true,
     "autoAudits": false,
     "coverView": true,
@@ -21,7 +21,9 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "minifyWXML": true,
+    "uglifyFileName": false
   },
   "compileType": "miniprogram",
   "simulatorType": "wechat",

@@ -8,7 +8,7 @@ export const chooseImg = (callback: Function, onlyCamera: boolean = false) => {
     success: (res: any) => {
       if (!res.cancel) {
         Taro.chooseImage({
-          count: 9,
+          count: 3,
           sizeType: ['compressed'], // 默认传压缩图
           sourceType: res.tapIndex === 0 ? ['camera'] : ['album'],
           success: imgRes => {

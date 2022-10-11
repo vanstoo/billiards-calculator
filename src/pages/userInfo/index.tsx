@@ -109,7 +109,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
   if (!userInfo.userOpenId) {
     return (
       <View className="no-permission-page">
-        <Image src="https://alyqfqjsix.cdn.bspapp.com/ALYQFQJSIX-9fdd81ce-5fdd-4699-b24d-c74bf4be872f/8dfc8233-96ab-478e-ac28-26dff4f6afea.svg" />
+        <Image src="https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/bdb255d2-e26e-4b02-a2c0-19bd397860ea.svg" />
         <View>暂无权限</View>
         <AtButton type="primary" onClick={getUserProfile} className="user-btn">
           点击授权登录
