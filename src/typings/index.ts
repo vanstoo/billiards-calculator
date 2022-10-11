@@ -14,9 +14,6 @@ export interface MapLocationInfo {
   latitude: number // 维度
   longitude: number // 经度
   address: string // 位置地址
-  city: string // 位置所在城市
-  province?: string // 省
-  district?: string // 区
 }
 
 // 云函数方法

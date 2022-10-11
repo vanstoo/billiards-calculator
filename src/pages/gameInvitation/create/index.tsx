@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { memo, useState } from 'react'
-import Taro, { useDidShow } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
 import { View, Picker } from '@tarojs/components'
 import { AtList, AtListItem, AtTextarea, AtFloatLayout, AtButton } from 'taro-ui'
-import { formatDate, goToMapPage, returnNowTime } from '@/utils'
+import { formatDate, returnNowTime } from '@/utils'
 import { UseRequest } from '@/hooks'
 import { MapLocationInfo, UserInfo } from '@/typings'
 import debounce from 'lodash/debounce'
@@ -14,15 +14,10 @@ export interface InvitationCreateProps {}
 
 const EmptyLocation: MapLocationInfo = {
   address: '',
-  city: '',
-  district: '',
   latitude: 0,
   longitude: 0,
   name: '',
-  province: '',
 }
-
-const chooseLocation = Taro.requirePlugin('chooseLocation')
 
 // 发起邀请
 const InvitationCreate: React.FC<InvitationCreateProps> = () => {
@@ -42,14 +37,6 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
     console.log(e.detail)
     setTargetTime(e.detail.value)
   }
-
-  useDidShow(() => {
-    console.log(chooseLocation.getLocation(), 'const location')
-    let info: MapLocationInfo = chooseLocation.getLocation()
-    if (info) {
-      setLocationInfo(info)
-    }
-  })
 
   // 修改描述
   const handleRemarkChange = debounce(value => {
@@ -97,6 +84,12 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
     }
   }, 300)
 
+  const chooseLocation = () => {
+    wx.chooseLocation().then(res => {
+      setLocationInfo(res)
+    })
+  }
+
   if (userInfo.hasCreatePerm) {
     return (
       <View className="new-invitation">
@@ -122,7 +115,7 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
             title="约球地点"
             arrow="right"
             iconInfo={{ size: 25, color: '#05f', value: 'map-pin' }}
-            onClick={goToMapPage}
+            onClick={chooseLocation}
             note={`${locationInfo ? locationInfo.name : ''}`}
           />
           <AtListItem
