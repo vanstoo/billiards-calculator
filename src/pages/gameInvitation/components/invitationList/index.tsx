@@ -2,7 +2,7 @@ import * as React from 'react'
 import { memo, useState, useEffect, Fragment } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
-import { AtAvatar } from 'taro-ui'
+import { AtAvatar, AtNoticebar } from 'taro-ui'
 import { CommonScrollView, EmptyListView } from '@/components'
 import { UseRequest } from '@/hooks'
 import { isValidArray, returnStatusName, returnStyleByStatus } from '@/utils'
@@ -93,40 +93,45 @@ const InvitationList: React.FC<HomePageProps> = () => {
   }
 
   return (
-    <CommonScrollView
-      listLoding={loading}
-      hasReachBottom={hasReachBottom}
-      onRefresh={onScrollToUpper}
-      onScrollToLower={onScrollToLower}
-    >
-      {isValidArray(invitationList) ? (
-        <Fragment>
-          {invitationList.map(x => (
-            <View
-              key={x._id}
-              className="list-card"
-              onClick={() => Taro.navigateTo({ url: `/pages/gameInvitation/detail/index?invitationId=${x._id}` })}
-            >
-              <View className="list-item-header">
-                <AtAvatar circle text="头" image={x?.creatorAvatarUrl} />
-                <Text>{x.creatorName}发起的约球</Text>
-                <View className="status" style={returnStyleByStatus(x.status, true)}>
-                  {returnStatusName(x.status)}
+    <Fragment>
+      <AtNoticebar icon="volume-plus" marquee>
+        非常感谢Endless Stam大佬（群昵称永恒的斯塔姆@徐汇）对本小程序非常重要的付费升级优化的年度赞助支持！！！
+      </AtNoticebar>
+      <CommonScrollView
+        listLoding={loading}
+        hasReachBottom={hasReachBottom}
+        onRefresh={onScrollToUpper}
+        onScrollToLower={onScrollToLower}
+      >
+        {isValidArray(invitationList) ? (
+          <Fragment>
+            {invitationList.map(x => (
+              <View
+                key={x._id}
+                className="list-card"
+                onClick={() => Taro.navigateTo({ url: `/pages/gameInvitation/detail/index?invitationId=${x._id}` })}
+              >
+                <View className="list-item-header">
+                  <AtAvatar circle text="头" image={x?.creatorAvatarUrl} />
+                  <Text>{x.creatorName}发起的约球</Text>
+                  <View className="status" style={returnStyleByStatus(x.status, true)}>
+                    {returnStatusName(x.status)}
+                  </View>
                 </View>
+                <View className="list-item-content">
+                  <View>地址：{x?.locationInfo?.address}</View>
+                  <View>描述：{x.remark ? x.remark : '—'}</View>
+                </View>
+                <View className="list-item-footer">{x.targetTime}</View>
               </View>
-              <View className="list-item-content">
-                <View>地址：{x?.locationInfo?.address}</View>
-                <View>描述：{x.remark ? x.remark : '—'}</View>
-              </View>
-              <View className="list-item-footer">{x.targetTime}</View>
-            </View>
-          ))}
-          <View className="list-last-view" />
-        </Fragment>
-      ) : (
-        <EmptyListView />
-      )}
-    </CommonScrollView>
+            ))}
+            <View className="list-last-view" />
+          </Fragment>
+        ) : (
+          <EmptyListView />
+        )}
+      </CommonScrollView>
+    </Fragment>
   )
 }
 
