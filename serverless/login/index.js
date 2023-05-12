@@ -57,6 +57,7 @@ const createUser = async (ctx, userOpenId) => {
       return error
     }
   } else {
+    // 若存在用户信息 直接更新头像及其上次登录时间
     try {
       await ctx.mpserverless.db.collection('login_users').findOneAndUpdate(
         { userOpenId },

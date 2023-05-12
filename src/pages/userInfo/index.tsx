@@ -99,6 +99,36 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
     })
   }
 
+  // 获取用户信息 无法使用wx.getUserProfile方法
+  const newGetUserProfile = () => {
+    UseRequest('login', {
+      type: 'get',
+    })
+      .then(result => {
+        if (result) {
+          console.log(result, ' login')
+          Taro.hideLoading()
+          Taro.setStorageSync('userInfo', result)
+          setUserInfo(result)
+          Taro.redirectTo({ url: '/pages/index/index?defaultKey=0' })
+        } else {
+          Taro.showToast({
+            title: '暂时不支持新用户登陆，注册功能开发中',
+            mask: true,
+            icon: 'none',
+          })
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        Taro.showToast({
+          title: '暂时不支持新用户登陆，注册功能开发中',
+          mask: true,
+          icon: 'none',
+        })
+      })
+  }
+
   // 跳转到我发起/我参与的活动列表页面
   const goToGameInvitationList = (type: 'creator' | 'participant') => {
     let param = type === 'creator' ? 'searchByCreator=true' : 'searchByParticipants=true'
@@ -111,7 +141,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
       <View className="no-permission-page">
         <Image src="https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/bdb255d2-e26e-4b02-a2c0-19bd397860ea.svg" />
         <View>暂无权限</View>
-        <AtButton type="primary" onClick={getUserProfile} className="user-btn">
+        <AtButton type="primary" onClick={newGetUserProfile} className="user-btn">
           点击授权登录
         </AtButton>
       </View>
