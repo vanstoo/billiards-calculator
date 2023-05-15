@@ -113,7 +113,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
           Taro.redirectTo({ url: '/pages/index/index?defaultKey=0' })
         } else {
           Taro.showToast({
-            title: '暂时不支持新用户登陆，注册功能开发中',
+            title: '出现错误，请联系管理员',
             mask: true,
             icon: 'none',
           })
@@ -121,11 +121,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
       })
       .catch(err => {
         console.log(err)
-        Taro.showToast({
-          title: '暂时不支持新用户登陆，注册功能开发中',
-          mask: true,
-          icon: 'none',
-        })
+        Taro.redirectTo({ url: '/pages/userInfo/userName/index' })
       })
   }
 
@@ -141,8 +137,12 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
       <View className="no-permission-page">
         <Image src="https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/bdb255d2-e26e-4b02-a2c0-19bd397860ea.svg" />
         <View>暂无权限</View>
-        <AtButton type="primary" onClick={newGetUserProfile} className="user-btn">
-          点击授权登录
+        <AtButton
+          type="primary"
+          onClick={() => Taro.navigateTo({ url: '/pages/userInfo/userName/index' })}
+          className="user-btn"
+        >
+          点击注册登录
         </AtButton>
       </View>
     )

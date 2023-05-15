@@ -26,23 +26,8 @@ class App extends Component<PropsWithChildren> {
         type: 'get',
       })
       .then((res: any) => {
-        if (!res?.result) {
-          goToLoginPage()
-        } else {
+        if (res?.result) {
           Taro.setStorageSync('userInfo', res?.result)
-          if (res?.result?.nickName === '微信用户') {
-            Taro.showModal({
-              title: '用户提示',
-              content:
-                '因为微信获取用户方式改变，部分用户昵称显示为微信用户是微信拒绝提供，后面需要重新设计登录方式，仍在排期开发中。',
-            })
-          }
-          // if (dayjs().isAfter(formatDate(res?.result.updateTime), 'month')) {
-          //   Taro.setStorageSync('userInfo', {})
-          //   goToLoginPage()
-          // } else {
-          //   Taro.setStorageSync('userInfo', res?.result)
-          // }
         }
       })
   }

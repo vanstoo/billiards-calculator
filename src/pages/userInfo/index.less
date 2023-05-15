@@ -96,3 +96,41 @@
   opacity: 0.8;
   background-color: #f0f0f0;
 }
+
+.name-avator {
+  background-color: #fff;
+  margin-top: 1px;
+  height: 100vh;
+
+  .avatar-btn {
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    image {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-size: cover;
+      text-align: center;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+    }
+  }
+
+  // 固定按钮
+  .fixed-btns {
+    position: fixed;
+    bottom: 80px;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    z-index: 100;
+
+    .at-button {
+      margin: 0 24px;
+    }
+  }
+}

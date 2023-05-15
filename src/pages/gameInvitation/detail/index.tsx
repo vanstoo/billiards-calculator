@@ -338,6 +338,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
             </AtButton>
           )}
         {detail.status === 'FINISHED' &&
+          userInfo?.userOpenId &&
           (detail.excelFileUrl ? (
             <AtButton type="secondary" size="small" circle onClick={showDownLoadExcelModal}>
               下载excel
