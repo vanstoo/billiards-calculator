@@ -13,14 +13,14 @@ export const UseRequest = async (name: RequestApi, data: any) => {
         Taro.showToast({
           title: `获取失败，请稍后尝试或联系管理员，异常信息：${res.result.errMsg}`,
           icon: 'none',
-          duration: 3000,
+          duration: 5000,
           mask: true,
         })
         let timer = setTimeout(() => {
           Taro.hideLoading()
           clearTimeout(timer)
           return null
-        }, 3000)
+        }, 5000)
       } else {
         return res.result
       }

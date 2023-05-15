@@ -1,18 +1,18 @@
 import * as React from 'react'
+import dayjs from 'dayjs'
 import { memo, useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 import { AtButton, AtAvatar, AtIcon } from 'taro-ui'
 import { UseRequest } from '@/hooks'
 import { UserInfo } from '@/typings'
-import { isValidArray, calDurationByParticipants, calNum, formatDate } from '@/utils'
-import dayjs from 'dayjs'
+import { calNum, formatDate } from '@/utils'
 import './index.less'
 
 export interface UserInfoProps {}
 
 const UserInfoPage: React.FC<UserInfoProps> = () => {
-  const [userInfo, setUserInfo] = useState<UserInfo>(Taro.getStorageSync('userInfo'))
+  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
   const [participantsListCount, setParticipantsListCount] = useState(0) // 我发起的活动
   const [creatorListcount, setCreatorListcount] = useState(0) // 我参与的活动数量
   const [playDuration, setPlayDuration] = useState(0) // 打球时长
@@ -51,54 +51,6 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
     // })
   }, [])
 
-  const getUserProfile = () => {
-    Taro.getUserProfile({
-      desc: '用于完善用户资料', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-      success: detail => {
-        console.log(detail)
-        if (detail.userInfo) {
-          Taro.showLoading({
-            title: '更新用户信息中...',
-            mask: true,
-          })
-          // 新增/更新用户信息
-          UseRequest('login', {
-            type: 'create',
-            nickName: detail.userInfo.nickName,
-            avatarUrl: detail.userInfo.avatarUrl,
-            updateTime: new Date(dayjs().valueOf()),
-          }).then(res => {
-            console.log(res, 'result')
-            if (res) {
-              Taro.hideLoading()
-              // 更新本地用户信息
-              Taro.showLoading({
-                title: '获取用户信息中...',
-                mask: true,
-              })
-              UseRequest('login', {
-                type: 'get',
-              }).then(result => {
-                // console.log(result, " login");
-                Taro.hideLoading()
-                Taro.setStorageSync('userInfo', result)
-                setUserInfo(result)
-                Taro.redirectTo({ url: '/pages/index/index?defaultKey=0' })
-              })
-            }
-          })
-        }
-      },
-      fail: () => {
-        Taro.showToast({
-          title: '只有授权才可登陆！',
-          mask: true,
-          icon: 'none',
-        })
-      },
-    })
-  }
-
   // 跳转到我发起/我参与的活动列表页面
   const goToGameInvitationList = (type: 'creator' | 'participant') => {
     let param = type === 'creator' ? 'searchByCreator=true' : 'searchByParticipants=true'
@@ -111,18 +63,42 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
       <View className="no-permission-page">
         <Image src="https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/bdb255d2-e26e-4b02-a2c0-19bd397860ea.svg" />
         <View>暂无权限</View>
-        <AtButton type="primary" onClick={getUserProfile} className="user-btn">
-          点击授权登录
+        <AtButton
+          type="primary"
+          onClick={() => Taro.navigateTo({ url: '/pages/userInfo/editUserInfo/index' })}
+          className="user-btn"
+        >
+          点击注册登录
         </AtButton>
       </View>
     )
   }
+
+  const gotoUpdatePage = () => {
+    let canEdit = dayjs(userInfo?.updateTime || dayjs())
+      .add(7, 'days')
+      .isBefore(dayjs(), 'days')
+    if (canEdit) {
+      Taro.navigateTo({ url: '/pages/userInfo/editUserInfo/index?type=edit' })
+    } else {
+      Taro.showToast({
+        title: `距离上次修改不足七天，请在${formatDate(dayjs(userInfo.updateTime).add(7, 'days'))}后尝试修改`,
+        icon: 'none',
+        duration: 3000,
+        mask: true,
+      })
+    }
+  }
+
   return (
     <View className="user-page">
       <View className="user-info">
         <View className="user-box">
           <AtAvatar circle text="头" image={userInfo?.avatarUrl} size="large" />
           <View className="user-name">{userInfo?.nickName || '—'}</View>
+          <View className="edit-btn" onClick={gotoUpdatePage}>
+            修改
+          </View>
         </View>
         <View className="invitation-info">
           {userInfo.hasCreatePerm && (

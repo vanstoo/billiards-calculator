@@ -1,16 +1,16 @@
 import * as React from 'react'
+import dayjs from 'dayjs'
+import { UserInfo } from '@/typings'
+import { dateFormatToMin } from '@/constant'
+import { UseRequest } from '@/hooks'
 import { memo, useEffect, useState, Fragment } from 'react'
 import Taro, { useRouter, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
 import { AtButton } from 'taro-ui'
 import { SectionItem, ImgView } from '@/components'
 import { EditSignDate, ParticipantsView } from '../components'
-import { UseRequest } from '@/hooks'
 import { formatDate, returnStatusName, returnStyleByStatus, goToLoginPage, compareDateRange } from '../../../utils'
-import { dateFormatToMin } from '@/constant'
 import { InvitationItem, ParticipantItem } from '../type'
-import { UserInfo } from '@/typings'
-import dayjs from 'dayjs'
 
 export interface InvitationDetailProps {}
 
@@ -338,6 +338,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
             </AtButton>
           )}
         {detail.status === 'FINISHED' &&
+          userInfo?.userOpenId &&
           (detail.excelFileUrl ? (
             <AtButton type="secondary" size="small" circle onClick={showDownLoadExcelModal}>
               下载excel

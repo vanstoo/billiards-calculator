@@ -6,6 +6,7 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import './app.less'
 import './custom-variables.scss'
+
 dayjs.locale('zh-cn')
 
 const mpServerless = new MPServerless(wx, {
@@ -25,15 +26,8 @@ class App extends Component<PropsWithChildren> {
         type: 'get',
       })
       .then((res: any) => {
-        if (!res?.result) {
-          goToLoginPage()
-        } else {
-          if (dayjs().isAfter(formatDate(res?.result.updateTime), 'month')) {
-            Taro.setStorageSync('userInfo', {})
-            goToLoginPage()
-          } else {
-            Taro.setStorageSync('userInfo', res?.result)
-          }
+        if (res?.result) {
+          Taro.setStorageSync('userInfo', res?.result)
         }
       })
   }
