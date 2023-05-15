@@ -6,7 +6,7 @@ export default defineAppConfig({
     'pages/gameInvitation/detail/index',
     'pages/gameInvitation/list/index',
     'pages/gameInvitation/finish/index',
-    'pages/userInfo/userName/index',
+    'pages/userInfo/editUserInfo/index',
   ],
   window: {
     backgroundTextStyle: 'light',

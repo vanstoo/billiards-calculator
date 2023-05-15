@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import { dateFormatToMin } from '@/constant'
-import { ParticipantItem } from '../pages/gameInvitation/type'
-import { InvitationStatus } from '../pages/gameInvitation/type'
+import { ParticipantItem, InvitationStatus } from '../pages/gameInvitation/type'
 
 // 格式化时间
 export const formatDate = (
