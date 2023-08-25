@@ -94,7 +94,15 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
     <View className="user-page">
       <View className="user-info">
         <View className="user-box">
-          <AtAvatar circle text="头" image={userInfo?.avatarUrl} size="large" />
+          <AtAvatar
+            circle
+            text="头"
+            image={
+              userInfo?.avatarUrl ||
+              'https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/5365db08-3858-4ea9-8c1d-3132f399d06f.png'
+            }
+            size="large"
+          />
           <View className="user-name">{userInfo?.nickName || '—'}</View>
           <View className="edit-btn" onClick={gotoUpdatePage}>
             修改

@@ -112,7 +112,14 @@ const InvitationList: React.FC<HomePageProps> = () => {
                 onClick={() => Taro.navigateTo({ url: `/pages/gameInvitation/detail/index?invitationId=${x._id}` })}
               >
                 <View className="list-item-header">
-                  <AtAvatar circle text="头" image={x?.creatorAvatarUrl} />
+                  <AtAvatar
+                    circle
+                    text="头"
+                    image={
+                      x?.creatorAvatarUrl ||
+                      'https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/5365db08-3858-4ea9-8c1d-3132f399d06f.png'
+                    }
+                  />
                   <Text>{x.creatorName}发起的约球</Text>
                   <View className="status" style={returnStyleByStatus(x.status, true)}>
                     {returnStatusName(x.status)}
