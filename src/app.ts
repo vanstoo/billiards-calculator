@@ -1,9 +1,8 @@
 import Taro from '@tarojs/taro'
-import { Component, PropsWithChildren } from 'react'
 import MPServerless from '@alicloud/mpserverless-sdk'
-import { goToLoginPage, formatDate } from './utils'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
+import { Component, PropsWithChildren } from 'react'
 import './app.less'
 import './custom-variables.scss'
 
