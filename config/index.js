@@ -24,13 +24,37 @@ const config = {
     '@/pages': path.resolve(__dirname, '..', 'src/pages'),
     '@/typings': path.resolve(__dirname, '..', 'src/typings'),
     '@/utils': path.resolve(__dirname, '..', 'src/utils'),
+    'taro-ui$': 'taro-ui/lib/index',
   },
   framework: 'react',
   compiler: 'webpack5',
   cache: {
-    enable: false, // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
+    enable: true, // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
   },
   mini: {
+    webpackChain(chain, webpack) {
+      chain.merge({
+        optimization: {
+          splitChunks: {
+            cacheGroups: {
+              lodash: {
+                name: 'lodash',
+                priority: 1000,
+                test(module) {
+                  return /node_modules[\\/]lodash/.test(module.context)
+                },
+              },
+            },
+          },
+        },
+      })
+      // webpack打包体积分析
+      chain.plugin('analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin, [])
+    },
+    commonChunks(commonChunks) {
+      commonChunks.push('lodash')
+      return commonChunks
+    },
     postcss: {
       pxtransform: {
         enable: true,
