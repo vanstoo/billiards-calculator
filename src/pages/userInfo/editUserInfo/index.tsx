@@ -17,11 +17,7 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
   const { type } = useRouter().params
 
   const [nameVal, setNameVal] = useState<string>(() => userInfo?.nickName || '')
-  const [avatarVal, setAvatarVal] = useState<string>(
-    userInfo?.avatarUrl
-      ? userInfo?.avatarUrl
-      : 'https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/5365db08-3858-4ea9-8c1d-3132f399d06f.png',
-  )
+  const [avatarVal, setAvatarVal] = useState<string>(() => userInfo?.avatarUrl || '')
 
   const setUserName = debounce(val => {
     console.log(val, 'setUserName')
@@ -57,8 +53,32 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
         mask: true,
       })
       return
+    } else {
+      if (!avatarVal) {
+        Taro.showModal({
+          content: '未上传头像，将使用默认黑八头像展示，请注意是否确定不上传',
+          success: res => {
+            if (res.cancel) {
+              Taro.showToast({
+                title: '请先上传头像再注册',
+                icon: 'none',
+                mask: true,
+              })
+              return
+            } else {
+              registerUser()
+            }
+          },
+        })
+      } else {
+        registerUser()
+      }
     }
-    console.log(avatarVal, 'avatarVal')
+  }
+
+  // 注册用户
+  const registerUser = () => {
+    console.log(avatarVal, '注册用户')
     Taro.showLoading({
       title: '更新用户信息中...',
       mask: true,
@@ -132,7 +152,14 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
   return (
     <View className="name-avator">
       <View className="avatar-btn">
-        <Image src={avatarVal} onClick={() => chooseImg(uploadFunc)} mode="aspectFill" />
+        <Image
+          src={
+            avatarVal ||
+            'https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/d1cc0c5e-2077-48ff-96e0-494ff9cc5531.png'
+          }
+          onClick={() => chooseImg(uploadFunc)}
+          mode="aspectFill"
+        />
       </View>
 
       <AtInput
