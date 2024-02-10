@@ -82,35 +82,51 @@ const updateUserAuth = async ctx => {
   }
 }
 
-// 根据用户名是否存在判断新增用户
+// 根据userOpenId是否存在判断是否新增用户
 const createUser = async (ctx, userOpenId) => {
   const { nickName, avatarUrl, updateTime } = ctx.args
-  let userCount = await ctx.mpserverless.db.collection('login_users').count({ nickName: nickName })
+  let userCount = await ctx.mpserverless.db.collection('login_users').count({
+    userOpenId: userOpenId,
+  })
   ctx.logger.info('userCount', userCount)
-  if (userCount && userCount.result === 0) {
-    try {
-      await ctx.mpserverless.db.collection('login_users').insertOne({
-        createTime: updateTime, // 创建时间
-        updateTime: updateTime, // 更新时间
-        userOpenId, // openID
-        nickName, // 昵称
-        avatarUrl, // 头像
-        hasCreatePerm: false, // 默认无创建权限
-      })
-      return true
-    } catch (error) {
-      console.info(error)
-      return error
+  try {
+    if (userCount) {
+      if (userCount.result === 0) {
+        await ctx.mpserverless.db.collection('login_users').insertOne({
+          createTime: updateTime, // 创建时间
+          updateTime: updateTime, // 更新时间
+          userOpenId, // openID
+          nickName, // 昵称
+          avatarUrl, // 头像
+          hasCreatePerm: false, // 默认无创建权限
+        })
+        return true
+      } else {
+        await ctx.mpserverless.db.collection('login_users').findOneAndUpdate(
+          {
+            userOpenId: userOpenId,
+          },
+          {
+            $set: {
+              nickName: nickName,
+              avatarUrl: avatarUrl,
+              updateTime: updateTime,
+            },
+          },
+        )
+        return true
+      }
+    } else {
+      return {
+        errMsg: '获取用户count失败，请刷新小程序后重试',
+      }
     }
-  } else {
-    // 若存在用户信息名称相同，报错
-    return {
-      errMsg: '该用户名称已存在，请更换后再重试',
-    }
+  } catch (error) {
+    console.info(error)
+    return error
   }
 }
 
-//
 const updateUserInfo = async ctx => {
   const { nickName, avatarUrl, targetId, updateTime } = ctx.args
   try {
@@ -128,7 +144,7 @@ const updateUserInfo = async ctx => {
     )
     return true
   } catch (error) {
-    console.info(error)
+    ctx.logger.info('updateUserInfo', error)
     return error
   }
 }

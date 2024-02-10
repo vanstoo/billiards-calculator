@@ -1,12 +1,11 @@
 import * as React from 'react'
-import dayjs from 'dayjs'
 import { memo, useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 import { AtButton, AtAvatar, AtIcon } from 'taro-ui'
 import { UseRequest } from '@/hooks'
 import { UserInfo } from '@/typings'
-import { calNum, formatDate } from '@/utils'
+import { calNum } from '@/utils'
 import './index.less'
 
 export interface UserInfoProps {}
@@ -49,7 +48,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
     //     setPlayDuration(durationSum)
     //   }
     // })
-  }, [])
+  }, [userInfo.userOpenId])
 
   // 跳转到我发起/我参与的活动列表页面
   const goToGameInvitationList = (type: 'creator' | 'participant') => {
@@ -75,19 +74,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
   }
 
   const gotoUpdatePage = () => {
-    let canEdit = dayjs(userInfo?.updateTime || dayjs())
-      .add(7, 'days')
-      .isBefore(dayjs(), 'days')
-    if (canEdit) {
-      Taro.navigateTo({ url: '/pages/userInfo/editUserInfo/index?type=edit' })
-    } else {
-      Taro.showToast({
-        title: `距离上次修改不足七天，请在${formatDate(dayjs(userInfo.updateTime).add(7, 'days'))}后尝试修改`,
-        icon: 'none',
-        duration: 3000,
-        mask: true,
-      })
-    }
+    Taro.navigateTo({ url: '/pages/userInfo/editUserInfo/index?type=edit' })
   }
 
   return (
