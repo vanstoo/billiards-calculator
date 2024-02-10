@@ -27,7 +27,7 @@ export const UseRequest = async (name: RequestApi, data: any) => {
     })
     .catch(err => {
       console.log(err, 'catctError')
-      if (err?.message?.includes('Command failed with error 11000')) {
+      if (err?.message?.includes('E11000 duplicate key error') && err?.message?.includes('nickName')) {
         Taro.showToast({
           title: `该昵称已被使用，请更换昵称后再提交`,
           icon: 'none',
