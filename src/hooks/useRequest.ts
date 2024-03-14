@@ -27,12 +27,21 @@ export const UseRequest = async (name: RequestApi, data: any) => {
     })
     .catch(err => {
       console.log(err, 'catctError')
-      Taro.showToast({
-        title: `获取失败，请稍后尝试或联系管理员`,
-        icon: 'none',
-        duration: 3000,
-        mask: true,
-      })
+      if (err?.message?.includes('E11000 duplicate key error') && err?.message?.includes('nickName')) {
+        Taro.showToast({
+          title: `该昵称已被使用，请更换昵称后再提交`,
+          icon: 'none',
+          duration: 3000,
+          mask: true,
+        })
+      } else {
+        Taro.showToast({
+          title: `获取失败，请稍后尝试或联系管理员`,
+          icon: 'none',
+          duration: 3000,
+          mask: true,
+        })
+      }
       let timer = setTimeout(() => {
         Taro.hideLoading()
         clearTimeout(timer)

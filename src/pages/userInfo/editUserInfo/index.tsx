@@ -23,7 +23,7 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
     console.log(val, 'setUserName')
     setNameVal(val)
     return val
-  }, 50)
+  }, 100)
 
   // 上传头像
   const uploadFunc = async (tempFilePaths: string[]) => {
@@ -35,7 +35,7 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
 
   const onComfirm = () => {
     Taro.showModal({
-      content: '请确定头像及昵称，确认注册/修改后7天内不可变更',
+      content: '请确定头像及昵称',
       success: res => {
         if (res.confirm) {
           type === 'edit' ? onComfirmUpdate() : onComfirmLogin()
