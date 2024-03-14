@@ -11,14 +11,21 @@ module.exports = async ctx => {
           : createUser(ctx, userOpenId)
         : '不存在openId,出错了'
     }
-    case 'search': {
-      return searchUsers(ctx)
+    case 'search':
+    case 'searchNoPermissionUsers': {
+      return searchNoPermissionUsers(ctx)
+    }
+    case 'searchUserByName': {
+      return searchUserByName(ctx)
     }
     case 'updateAuth': {
       return updateUserAuth(ctx)
     }
     case 'updateUserInfo': {
       return updateUserInfo(ctx)
+    }
+    case 'updateLevel': {
+      return updateUserLevelInfo(ctx)
     }
     default: {
       return null
@@ -43,7 +50,7 @@ const getUserInfo = async (ctx, userOpenId) => {
   return info
 }
 
-const searchUsers = async ctx => {
+const searchNoPermissionUsers = async ctx => {
   const { fuzzyName } = ctx.args
   try {
     // 根据fuzzyName获取login_users下未开通权限用户
@@ -63,6 +70,7 @@ const searchUsers = async ctx => {
   }
 }
 
+// 更新用户创建权限
 const updateUserAuth = async ctx => {
   const { targetId } = ctx.args
   try {
@@ -99,6 +107,8 @@ const createUser = async (ctx, userOpenId) => {
           nickName, // 昵称
           avatarUrl, // 头像
           hasCreatePerm: false, // 默认无创建权限
+          level: 'D', // 默认等级D
+          lastUpdateLevelDate: '', // 更新默认等级时间
         })
         return true
       } else {
@@ -122,11 +132,11 @@ const createUser = async (ctx, userOpenId) => {
       }
     }
   } catch (error) {
-    console.info(error)
+    ctx.logger.info(error)
     return error
   }
 }
-
+// 更新用户信息
 const updateUserInfo = async ctx => {
   const { nickName, avatarUrl, targetId, updateTime } = ctx.args
   try {
@@ -145,6 +155,48 @@ const updateUserInfo = async ctx => {
     return true
   } catch (error) {
     ctx.logger.info('updateUserInfo', error)
+    return error
+  }
+}
+
+// 更新用户等级
+const updateUserLevelInfo = async ctx => {
+  const { targetId, level, lastUpdateLevelDate } = ctx.args
+  try {
+    await ctx.mpserverless.db.collection('login_users').findOneAndUpdate(
+      {
+        userOpenId: targetId,
+      },
+      {
+        $set: {
+          level: level,
+          lastUpdateLevelDate: lastUpdateLevelDate,
+        },
+      },
+    )
+    return true
+  } catch (error) {
+    ctx.logger.info(error)
+    return error
+  }
+}
+
+// 模糊搜索用户名
+const searchUserByName = async ctx => {
+  const { fuzzyName } = ctx.args
+  try {
+    // 根据fuzzyName获取login_users下未开通权限用户
+    let loginUsers = await ctx.mpserverless.db.collection('login_users').find(
+      {
+        nickName: {
+          $regex: '.*' + fuzzyName + '.*', // 使用 $regex 进行模糊搜索，
+          $options: 'i', // $options: "i" 表示不区分大小写
+        },
+      },
+      { limit: 5 }, // 限制返回结果为五条
+    )
+    return (loginUsers && loginUsers.result) || []
+  } catch (error) {
     return error
   }
 }
