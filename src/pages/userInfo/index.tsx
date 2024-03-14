@@ -6,6 +6,7 @@ import { AtButton, AtAvatar, AtIcon } from 'taro-ui'
 import { UseRequest } from '@/hooks'
 import { UserInfo } from '@/typings'
 import { calNum } from '@/utils'
+import { LevelTag } from '@/components'
 import './index.less'
 
 export interface UserInfoProps {}
@@ -91,6 +92,9 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
             size="large"
           />
           <View className="user-name">{userInfo?.nickName || '—'}</View>
+          <View>
+            <LevelTag type="primary" />
+          </View>
           <View className="edit-btn" onClick={gotoUpdatePage}>
             修改
           </View>

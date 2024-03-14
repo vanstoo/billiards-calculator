@@ -3,7 +3,7 @@ import { memo, Fragment, useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text, ScrollView } from '@tarojs/components'
 import { AtAvatar } from 'taro-ui'
-import { SectionItem } from '../../../../components'
+import { SectionItem, LevelTag } from '@/components'
 import { isValidArray, formatDate, calNum, calDurationByParticipants } from '../../../../utils'
 import { ParticipantItem, InvitationStatus } from '../../type'
 import { UserInfo } from '../../../../typings'
@@ -125,7 +125,12 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
                             'https://mp-1323a910-dca2-4115-8f03-bb5a391ab617.cdn.bspapp.com/cloudstorage/5365db08-3858-4ea9-8c1d-3132f399d06f.png'
                           }
                         />
-                        <Text style={returnMaxWidthStyle()}>{item?.name}</Text>
+                        <View>
+                          <Text style={returnMaxWidthStyle()}>{item?.name}</Text>
+                        </View>
+                        <View>
+                          <LevelTag />
+                        </View>
                       </View>
                       {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}
                       {!hideEditbtn &&
