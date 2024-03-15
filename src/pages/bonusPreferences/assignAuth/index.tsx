@@ -53,7 +53,7 @@ const AssignAuth: React.FC<AssignAuthProps> = () => {
   const comfirmUpdateUserAuth = () => {
     Taro.showLoading({
       mask: true,
-      title: '跟新中',
+      title: '更新中',
     })
     // 更新用户权限
     UseRequest('login', {
