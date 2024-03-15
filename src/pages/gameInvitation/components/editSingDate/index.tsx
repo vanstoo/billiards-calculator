@@ -1,13 +1,14 @@
 import * as React from 'react'
 import { memo, useState } from 'react'
 import Taro from '@tarojs/taro'
+import cloneDeep from 'lodash/cloneDeep'
+import dayjs from 'dayjs'
 import { View, Picker } from '@tarojs/components'
 import { AtButton, AtFloatLayout, AtList, AtListItem } from 'taro-ui'
 import { returnNowTime } from '@/utils'
 import { UseRequest } from '@/hooks'
 import { ParticipantItem } from '../../type'
-import cloneDeep from 'lodash/cloneDeep'
-import dayjs from 'dayjs'
+
 export interface EditSignDateProps {
   editRecord: ParticipantItem // 正在编辑的信息
   setEditRecord: (val: any) => void // 修改父层信息

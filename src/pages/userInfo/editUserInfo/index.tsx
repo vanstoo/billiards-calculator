@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { memo, useState } from 'react'
+import { memo, useState, useEffect } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 import { AtButton, AtInput } from 'taro-ui'
@@ -18,6 +18,14 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
 
   const [nameVal, setNameVal] = useState<string>(() => userInfo?.nickName || '')
   const [avatarVal, setAvatarVal] = useState<string>(() => userInfo?.avatarUrl || '')
+
+  useEffect(() => {
+    if (type === 'edit') {
+      Taro.setNavigationBarTitle({
+        title: '更新用户信息',
+      })
+    }
+  }, [type])
 
   const setUserName = debounce(val => {
     console.log(val, 'setUserName')
@@ -169,7 +177,7 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
         placeholder="建议直接使用微信昵称"
         value={nameVal}
         onChange={setUserName}
-        maxLength={15}
+        maxLength={10}
       />
 
       <View className="fixed-btns">

@@ -1,4 +1,4 @@
-.assign-auth {
+.bonus-preferences {
   background-color: #fff;
   margin-top: 1px;
   height: 100vh;
@@ -25,10 +25,6 @@
     }
   }
 
-  .dropdown-hide {
-    display: none;
-  }
-
   .user-info {
     padding: 24px;
     display: flex;
@@ -44,20 +40,30 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      margin-right: 16px;
     }
   }
 
-  // 固定按钮
-  .fixed-btns {
-    position: fixed;
-    bottom: 80px;
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    z-index: 100;
+  .level-picker {
+    color: rgba(51, 51, 51, 1);
+    height: 60px;
+    margin-left: 32px;
+    padding: 24px 0;
+    font-size: 32px;
 
-    .at-button {
-      margin: 0 24px;
+    .pick-label {
+      width: 172px;
+      margin-right: 16px;
+      display: inline-block;
     }
+
+    .target-level {
+      color: #05f;
+      font-weight: 600;
+    }
+  }
+
+  .color999 {
+    color: #999;
   }
 }

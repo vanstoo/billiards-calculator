@@ -147,6 +147,7 @@ const getInvitationDetail = async ctx => {
           ...item,
           name: usr.nickName, // 参与人姓名
           avatarUrl: usr.avatarUrl, // 参与人头像
+          level: usr.level, // 参与人等级
         }
       })
       ctx.logger.info('getInvitationDetail participants', usrList, res.result)

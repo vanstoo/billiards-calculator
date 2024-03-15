@@ -2,13 +2,13 @@ import * as React from 'react'
 import { useState, memo } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
-import { AtButton, AtInput, AtAvatar } from 'taro-ui'
+import { AtButton, AtInput, AtAvatar, AtNoticebar } from 'taro-ui'
 import { UseRequest } from '@/hooks'
 import { UserInfo } from '@/typings'
 import debounce from 'lodash/debounce'
 import throttle from 'lodash/throttle'
 import { isValidArray } from '@/utils'
-import './index.less'
+import '../index.less'
 
 export interface AssignAuthProps {}
 
@@ -37,7 +37,7 @@ const AssignAuth: React.FC<AssignAuthProps> = () => {
       })
       // 模糊搜索用户信息
       UseRequest('login', {
-        type: 'search',
+        type: 'searchNoPermissionUsers',
         fuzzyName: inputval,
       }).then(result => {
         if (result) {
@@ -53,7 +53,7 @@ const AssignAuth: React.FC<AssignAuthProps> = () => {
   const comfirmUpdateUserAuth = () => {
     Taro.showLoading({
       mask: true,
-      title: '搜索中',
+      title: '更新中',
     })
     // 更新用户权限
     UseRequest('login', {
@@ -73,7 +73,10 @@ const AssignAuth: React.FC<AssignAuthProps> = () => {
   }
 
   return (
-    <View className="assign-auth">
+    <View className="bonus-preferences">
+      <AtNoticebar>
+        此页面用于给没有发起约球权限的用户开通权限，输入对应用户名后再点击搜索按钮即可搜索用户，选中后点击确认提交即可
+      </AtNoticebar>
       <AtInput
         name="value1"
         title="待授权用户"
@@ -81,6 +84,7 @@ const AssignAuth: React.FC<AssignAuthProps> = () => {
         placeholder="微信昵称关键字"
         value={inputval}
         onChange={value => fuzzySearchUsers(value)}
+        placeholderClass="color999"
       >
         <AtButton size="small" type="secondary" customStyle={{ marginRight: '8px' }} onClick={onSearchUser}>
           搜索
@@ -96,7 +100,7 @@ const AssignAuth: React.FC<AssignAuthProps> = () => {
       {selectedUser?.userOpenId && (
         <View>
           <View className="user-info">
-            <AtAvatar circle text="头" image={selectedUser?.avatarUrl} />
+            <AtAvatar circle text={selectedUser?.nickName || '头像'} image={selectedUser?.avatarUrl} />
             <Text space="nbsp">
               {selectedUser?.nickName}
               {selectedUser.hasCreatePerm ? '（已有权限，无需更新）' : '（暂无权限）'}
