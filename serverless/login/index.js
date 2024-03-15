@@ -27,6 +27,9 @@ module.exports = async ctx => {
     case 'updateLevel': {
       return updateUserLevelInfo(ctx)
     }
+    case 'getUpdateLevelLogList': {
+      return getUpdateLevelLogList(ctx)
+    }
     default: {
       return null
     }
@@ -109,6 +112,7 @@ const createUser = async (ctx, userOpenId) => {
           hasCreatePerm: false, // 默认无创建权限
           level: 'D', // 默认等级D
           lastUpdateLevelDate: '', // 更新默认等级时间
+          isManager: false, // 是否管理员
         })
         return true
       } else {
@@ -161,11 +165,11 @@ const updateUserInfo = async ctx => {
 
 // 更新用户等级
 const updateUserLevelInfo = async ctx => {
-  const { targetId, level, lastUpdateLevelDate } = ctx.args
+  const { updatedUserOpenID, level, lastUpdateLevelDate, oldLevel, updaterOpenId } = ctx.args
   try {
     await ctx.mpserverless.db.collection('login_users').findOneAndUpdate(
       {
-        userOpenId: targetId,
+        userOpenId: updatedUserOpenID,
       },
       {
         $set: {
@@ -174,6 +178,13 @@ const updateUserLevelInfo = async ctx => {
         },
       },
     )
+    await ctx.mpserverless.db.collection('update_level_log').insertOne({
+      updatedUserOpenId: updatedUserOpenID, // 被修改人id
+      updaterOpenId: updaterOpenId, // 修改人id
+      oldLevel: oldLevel, // 原等级
+      level: level, // 新等级
+      updateTime: lastUpdateLevelDate, // 更新等级时间
+    })
     return true
   } catch (error) {
     ctx.logger.info(error)
@@ -199,4 +210,76 @@ const searchUserByName = async ctx => {
   } catch (error) {
     return error
   }
+}
+
+// 查询更新档位列表
+const getUpdateLevelLogList = async ctx => {
+  const { pageNum, pageSize } = ctx.args
+  let searchParam = {}
+  let totalCount = 0
+  try {
+    let res = await ctx.mpserverless.db.collection('update_level_log').count({ _id: { $exists: true } })
+    totalCount = res.result || 0
+    // 分页查询
+    let pageCount = pageSize * (pageNum - 1)
+    ctx.logger.info(searchParam, 'searchParam')
+    const groups = await ctx.mpserverless.db.collection('update_level_log').find(
+      {},
+      {
+        sort: { updateTime: -1 }, // 更新时间降序
+        skip: pageCount,
+        limit: pageSize,
+      },
+    )
+    let list = groups.result || []
+    let userOpenIds = []
+    list.forEach(x => {
+      userOpenIds.push(x.updatedUserOpenId)
+      userOpenIds.push(x.updaterOpenId)
+    })
+    let usrList = await getUserInfoByUserOpenIdList(ctx, userOpenIds)
+    ctx.logger.info('update_level_log usrList', usrList)
+    list = list.map(item => {
+      let updatedUser = findUsrById(item.updatedUserOpenId, usrList)
+      let updater = findUsrById(item.updaterOpenId, usrList)
+      return {
+        ...item,
+        updatedUserName: updatedUser.nickName, // 被更新人姓名
+        updatedUserAvatarUrl: updatedUser.avatarUrl, // 被更新人头像
+        updaterName: updater.nickName, // 更新人姓名
+        updaterAvatarUrl: updater.avatarUrl, // 更新人头像
+      }
+    })
+    return {
+      list: list,
+      totalCount: totalCount,
+      pageNum,
+      pageSize,
+    }
+  } catch (error) {
+    ctx.logger.error(error)
+    return error
+  }
+}
+
+// 批量获取用户
+const getUserInfoByUserOpenIdList = async (ctx, ids) => {
+  let userOpenIds = [...new Set(ids)]
+  const userInfoList = await ctx.mpserverless.db.collection('login_users').find({
+    userOpenId: {
+      $in: userOpenIds,
+    },
+  })
+  if (userInfoList && userInfoList.result) {
+    return userInfoList.result
+  } else {
+    return null
+  }
+}
+const findUsrById = (id, usrList) => {
+  let tar
+  if (Array.isArray(usrList)) {
+    tar = usrList.find(z => z.userOpenId === id)
+  }
+  return tar || {}
 }

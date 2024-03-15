@@ -78,6 +78,15 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
     Taro.navigateTo({ url: '/pages/userInfo/editUserInfo/index?type=edit' })
   }
 
+  const goToAssignAuthPage = () => Taro.navigateTo({ url: '/pages/bonusPreferences/assignAuth/index' })
+
+  // 跳转编辑档位页面 普通用户半年才可更新一次 管理员随时可更新
+  const goToUpdateUserLevelPage = () => {
+    Taro.navigateTo({ url: '/pages/bonusPreferences/editUserLevel/index' })
+  }
+
+  const goToUpdateUserLevelLogListPage = () => Taro.navigateTo({ url: '/pages/bonusPreferences/levelLogList/index' })
+
   return (
     <View className="user-page">
       <View className="user-info">
@@ -135,22 +144,35 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
           </View>
         </View>
       </View>
-      {userInfo.hasCreatePerm && (
-        <View className="user-service">
-          <View className="service-title">用户服务</View>
-          <View className="service-box">
-            <View
-              className="service-item"
-              hoverClass="item-hovered"
-              hoverStayTime={200}
-              onClick={() => Taro.navigateTo({ url: '/pages/assignAuth/index' })}
-            >
+      <View className="user-service">
+        <View className="service-title">附加功能</View>
+        <View className="service-box">
+          {userInfo.hasCreatePerm && (
+            <View className="service-item" hoverClass="item-hovered" hoverStayTime={200} onClick={goToAssignAuthPage}>
               <AtIcon value="lock" size="30" />
-              <View>帮新用户开通发起约球权限</View>
+              <View>开通约球权限</View>
             </View>
+          )}
+          <View
+            className="service-item"
+            hoverClass="item-hovered"
+            hoverStayTime={200}
+            onClick={goToUpdateUserLevelPage}
+          >
+            <AtIcon value="equalizer" size="30" />
+            <View>修改档位</View>
+          </View>
+          <View
+            className="service-item"
+            hoverClass="item-hovered"
+            hoverStayTime={200}
+            onClick={goToUpdateUserLevelLogListPage}
+          >
+            <AtIcon value="search" size="30" />
+            <View>修改档位记录</View>
           </View>
         </View>
-      )}
+      </View>
     </View>
   )
 }

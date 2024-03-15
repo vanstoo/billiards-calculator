@@ -1,12 +1,14 @@
 export default defineAppConfig({
   pages: [
     'pages/index/index',
-    'pages/assignAuth/index',
     'pages/gameInvitation/create/index',
     'pages/gameInvitation/detail/index',
     'pages/gameInvitation/list/index',
     'pages/gameInvitation/finish/index',
     'pages/userInfo/editUserInfo/index',
+    'pages/bonusPreferences/assignAuth/index',
+    'pages/bonusPreferences/editUserLevel/index',
+    'pages/bonusPreferences/levelLogList/index',
   ],
   window: {
     backgroundTextStyle: 'light',

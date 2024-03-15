@@ -6,8 +6,9 @@ export interface UserInfo {
   nickName: string // 用户昵称
   avatarUrl: string // 用户头像
   hasCreatePerm: boolean // 是否有新增权限
-  level:string // 用户等级
+  level: string // 用户等级
   lastUpdateLevelDate: string // 更新默认等级时间
+  isManager: boolean // 是否管理员
 }
 
 // 地址信息

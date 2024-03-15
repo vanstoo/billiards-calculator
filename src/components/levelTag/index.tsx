@@ -10,14 +10,15 @@ export interface TagInfo {
   active: boolean
 }
 
-interface LevelTagProps extends AtTagProps {}
+interface LevelTagProps extends AtTagProps {
+  level?: string
+}
 
-const userInfo: UserInfo = Taro.getStorageSync('userInfo')
-
-const LevelTag: React.FC<LevelTagProps> = ({ onClick, active = true, circle = true, type }) => {
+const LevelTag: React.FC<LevelTagProps> = ({ onClick, active = true, circle = true, type, level }) => {
+  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
   return (
-    <AtTag name={userInfo.level} type={type} active={active} circle={circle} onClick={onClick} size="small">
-      {userInfo.level}级
+    <AtTag name={level || userInfo.level} type={type} active={active} circle={circle} onClick={onClick} size="small">
+      {level || userInfo.level}级
     </AtTag>
   )
 }
