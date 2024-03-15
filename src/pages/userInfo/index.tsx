@@ -102,7 +102,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
           />
           <View className="user-name">{userInfo?.nickName || '—'}</View>
           <View>
-            <LevelTag type="primary" />
+            <LevelTag type="primary" level={userInfo.level} />
           </View>
           <View className="edit-btn" onClick={gotoUpdatePage}>
             修改

@@ -33,4 +33,5 @@ export interface ParticipantItem {
   invitationId: string // 活动id
   createTime: Date // 创建时间
   updateTime: Date // 更新时间
+  level: string // 参与人等级
 }

@@ -129,7 +129,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
                           <Text style={returnMaxWidthStyle()}>{item?.name}</Text>
                         </View>
                         <View>
-                          <LevelTag />
+                          <LevelTag level={item.level} />
                         </View>
                       </View>
                       {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}
