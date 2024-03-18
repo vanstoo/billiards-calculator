@@ -81,7 +81,7 @@ const AssignAuth: React.FC<AssignAuthProps> = () => {
         name="value1"
         title="待授权用户"
         type="text"
-        placeholder="微信昵称关键字"
+        placeholder="小程序内用户名关键字"
         value={inputval}
         onChange={value => fuzzySearchUsers(value)}
         placeholderClass="color999"

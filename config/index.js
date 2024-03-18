@@ -49,7 +49,7 @@ const config = {
         },
       })
       // webpack打包体积分析
-      chain.plugin('analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin, [])
+      // chain.plugin('analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin, [])
     },
     commonChunks(commonChunks) {
       commonChunks.push('lodash')

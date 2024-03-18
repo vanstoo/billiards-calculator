@@ -62,6 +62,13 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
   }
 
   const comfirmEditUserLevel = () => {
+    if (selectedUser?.level === levelList[targetLevelIdx]) {
+      Taro.atMessage({
+        message: '前后档位一致，请确认后再修改！',
+        type: 'error',
+      })
+      return
+    }
     if (!userInfo.isManager) {
       if (selectedUser?.userOpenId !== userInfo.userOpenId) {
         Taro.atMessage({
@@ -130,7 +137,7 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
         name="value1"
         title="待更新用户"
         type="text"
-        placeholder="微信昵称关键字"
+        placeholder="小程序内用户名关键字"
         value={inputval}
         onChange={value => fuzzySearchUsers(value)}
         placeholderClass="color999"
