@@ -6,6 +6,3 @@ node_modules/
 .DS_Store
 # yarn
 yarn-error.log*
-
-# local env files
-.env.local
