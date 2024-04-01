@@ -119,7 +119,7 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
             Taro.setStorage({
               data: res,
               key: 'userInfo',
-              complete: () => Taro.redirectTo({ url: '/pages/index/index?defaultKey=1' }),
+              complete: () => Taro.redirectTo({ url: '/pages/index/index?defaultKey=2' }),
             })
           })
         }
@@ -127,11 +127,15 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
     })
   }
 
+  const goToIssueDetail = () => {
+    Taro.navigateTo({ url: `/pages/issueList/userLevel/index` })
+  }
+
   return (
     <View className="bonus-preferences">
       <AtMessage />
-      <AtNoticebar>
-        此页面用于更新用户档位，普通用户半年才可更新自己的档位一次，如在限制期限内有档位问题请联系群管理更新
+      <AtNoticebar single showMore moreText="关于档位" onGotoMore={goToIssueDetail}>
+        档位半年才可更新一次，有问题请联系群管理。
       </AtNoticebar>
       <AtInput
         name="value1"
