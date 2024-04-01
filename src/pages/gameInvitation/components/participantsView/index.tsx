@@ -99,6 +99,11 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
 
   const changeViewMode = () => setViewMode(viewMode === 'detail' ? 'list' : 'detail')
 
+  const goToUpdateUserLevelLogListPage = (user: ParticipantView) =>
+    Taro.navigateTo({
+      url: `/pages/bonusPreferences/levelLogList/index?userOpenId=${user.userOpenId}&userName=${user.name}`,
+    })
+
   return (
     <View style={{ marginTop: '1px' }}>
       <View className="detail-card">
@@ -129,7 +134,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
                           <Text style={returnMaxWidthStyle()}>{item?.name}</Text>
                         </View>
                         <View>
-                          <LevelTag level={item.level} />
+                          <LevelTag level={item.level} onClick={() => goToUpdateUserLevelLogListPage(item)} />
                         </View>
                       </View>
                       {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { memo, useState, useEffect, Fragment } from 'react'
-import Taro from '@tarojs/taro'
+import Taro, { useRouter } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { CommonScrollView, EmptyListView } from '@/components'
 import { UseRequest } from '@/hooks'
@@ -16,6 +16,15 @@ const LevelLogList: React.FC<LevelLogListProps> = () => {
   const [loading, setLoading] = useState(false)
   const [hasReachBottom, setHasReachBottom] = useState(false)
   const [levelLogList, setLevelLogList] = useState<LevelLogItem[]>([])
+  const { userOpenId, userName } = useRouter().params
+
+  useEffect(() => {
+    if (userName) {
+      Taro.setNavigationBarTitle({
+        title: `${userName}的档位更新记录`,
+      })
+    }
+  }, [userName])
 
   useEffect(() => {
     console.log(current, 'useEffect')
@@ -32,6 +41,7 @@ const LevelLogList: React.FC<LevelLogListProps> = () => {
       type: 'getUpdateLevelLogList',
       pageNum: pageNum,
       pageSize: pageSize,
+      updaterOpenId: userOpenId,
     }).then(result => {
       // console.log(result, "UseRequest");
       setLoading(false)
@@ -78,7 +88,7 @@ const LevelLogList: React.FC<LevelLogListProps> = () => {
     <Fragment>
       <CommonScrollView
         listLoding={loading}
-        hasReachBottom={hasReachBottom}
+        hasReachBottom={hasReachBottom && isValidArray(levelLogList)}
         onRefresh={onScrollToUpper}
         onScrollToLower={onScrollToLower}
       >

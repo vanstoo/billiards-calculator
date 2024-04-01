@@ -214,23 +214,25 @@ const searchUserByName = async ctx => {
 
 // 查询更新档位列表
 const getUpdateLevelLogList = async ctx => {
-  const { pageNum, pageSize } = ctx.args
-  let searchParam = {}
+  const { pageNum, pageSize, updaterOpenId } = ctx.args
+  let searchParam = {
+    _id: { $exists: true },
+  }
+  if (updaterOpenId) {
+    searchParam.updaterOpenId = updaterOpenId
+  }
   let totalCount = 0
   try {
-    let res = await ctx.mpserverless.db.collection('update_level_log').count({ _id: { $exists: true } })
+    let res = await ctx.mpserverless.db.collection('update_level_log').count(searchParam)
     totalCount = res.result || 0
     // 分页查询
     let pageCount = pageSize * (pageNum - 1)
     ctx.logger.info(searchParam, 'searchParam')
-    const groups = await ctx.mpserverless.db.collection('update_level_log').find(
-      {},
-      {
-        sort: { updateTime: -1 }, // 更新时间降序
-        skip: pageCount,
-        limit: pageSize,
-      },
-    )
+    const groups = await ctx.mpserverless.db.collection('update_level_log').find(searchParam, {
+      sort: { updateTime: -1 }, // 更新时间降序
+      skip: pageCount,
+      limit: pageSize,
+    })
     let list = groups.result || []
     let userOpenIds = []
     list.forEach(x => {
