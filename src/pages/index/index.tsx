@@ -2,15 +2,17 @@ import { FC, useState, memo, useEffect } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtTabBar, AtButton } from 'taro-ui'
-import UserInfo from '../userInfo'
-import { InvitationList } from '../gameInvitation/components'
 import { UserInfo as UserInfoType } from '@/typings'
 import { goToLoginPage } from '@/utils'
+import UserInfo from '../userInfo'
+import IssueList from '../issueList'
+import { InvitationList } from '../gameInvitation/components'
 
 interface IndexProps {}
 
 const tabMenu = [
   { title: '首页', iconType: 'home' },
+  { title: 'Q&A', iconType: 'help' },
   { title: '信息', iconType: 'user' },
 ]
 
@@ -57,7 +59,8 @@ const Index: FC<IndexProps> = () => {
           )}
         </View>
       )}
-      {tabKey === 1 && <UserInfo />}
+      {tabKey === 1 && <IssueList />}
+      {tabKey === 2 && <UserInfo />}
       <AtTabBar
         color="#999"
         selectedColor="#0055ff"

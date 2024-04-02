@@ -147,7 +147,7 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
             Taro.setStorage({
               data: result,
               key: 'userInfo',
-              complete: () => Taro.redirectTo({ url: '/pages/index/index?defaultKey=1' }),
+              complete: () => Taro.redirectTo({ url: '/pages/index/index?defaultKey=2' }),
             })
           })
         }
