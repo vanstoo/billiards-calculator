@@ -1,37 +1,24 @@
-import Taro from '@tarojs/taro'
-import MPServerless from '@alicloud/mpserverless-sdk'
+import Taro, { useDidShow } from '@tarojs/taro'
+import React, { useEffect, PropsWithChildren } from 'react'
+import { getMpServerless } from '@/utils'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
-import { Component, PropsWithChildren } from 'react'
 import './app.less'
 import './custom-variables.scss'
 
 dayjs.locale('zh-cn')
 
-const mpServerless = new MPServerless(wx, {
-  appId: 'wx1bb44f3cd0747acd', // 小程序应用标识
-  spaceId: 'mp-1323a910-dca2-4115-8f03-bb5a391ab617', // 服务空间标识
-  clientSecret: '0t05H+uwwHTD5c/Dw/wjag==', // 服务空间 secret key
-  endpoint: 'https://api.next.bspapp.com', // 服务空间地址，从小程序 serverless 控制台处获得
-})
-
-class App extends Component<PropsWithChildren> {
-  mpServerless = mpServerless
-
-  async componentDidMount() {
+const App: React.FC<PropsWithChildren> = ({ children }) => {
+  const mpServerless = getMpServerless()
+  const init = async () => {
     await mpServerless.init()
-    mpServerless.function
-      .invoke('login', {
-        type: 'get',
-      })
-      .then((res: any) => {
-        if (res?.result) {
-          Taro.setStorageSync('userInfo', res?.result)
-        }
-      })
   }
 
-  componentDidShow() {
+  useEffect(() => {
+    init()
+  }, [])
+
+  useDidShow(() => {
     const updateManager = Taro.getUpdateManager()
     if (typeof updateManager === 'undefined') {
       return
@@ -61,17 +48,9 @@ class App extends Component<PropsWithChildren> {
         mask: true,
       })
     })
-  }
+  })
 
-  componentDidHide() {}
-
-  componentDidCatchError(error) {
-    console.log(error, 'componentDidCatchError')
-  }
-
-  render() {
-    return this.props.children
-  }
+  return children
 }
 
 export default App

@@ -11,3 +11,4 @@ export {
 export { subscribeInfo } from './subscribe'
 export { chooseImg, uploadImg } from './upload'
 export { goToLoginPage } from './checkLogin'
+export { getMpServerless } from './mpServelss'

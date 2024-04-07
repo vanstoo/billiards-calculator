@@ -4,9 +4,9 @@ import Taro from '@tarojs/taro'
 import { View, Text, ScrollView } from '@tarojs/components'
 import { AtAvatar } from 'taro-ui'
 import { SectionItem, LevelTag } from '@/components'
-import { isValidArray, formatDate, calNum, calDurationByParticipants } from '../../../../utils'
+import { isValidArray, formatDate, calNum, calDurationByParticipants } from '@/utils'
+import { useUserInfo } from '@/hooks'
 import { ParticipantItem, InvitationStatus } from '../../type'
-import { UserInfo } from '../../../../typings'
 
 export interface ParticipantsViewProps {
   participants: ParticipantItem[]
@@ -37,7 +37,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
   const [viewMode, setViewMode] = useState(mode)
   const [particapantList, setParticapantList] = useState<ParticipantView[]>([])
   const [totalTime, setTotalTime] = useState(0)
-  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
+  const { userInfo } = useUserInfo()
   // 处理时间及占比
   useEffect(() => {
     const { durationSum, newList } = calDurationByParticipants(participants)
@@ -80,7 +80,7 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
   const returnMaxWidthStyle = () => {
     if (hideEditbtn || status !== 'OPENING') {
       return { maxWidth: '500rpx' }
-    } else if (adminUsers.includes(userInfo.userOpenId)) {
+    } else if (adminUsers.includes(userInfo?.userOpenId)) {
       return { maxWidth: '300rpx' }
     }
   }
@@ -140,9 +140,9 @@ const ParticipantsView: React.FC<ParticipantsViewProps> = ({
                       {/* 状态为进行中且发起人或当前参与人才可编辑自己的时间 */}
                       {!hideEditbtn &&
                         status === 'OPENING' &&
-                        (item.userOpenId === userInfo.userOpenId || adminUsers.includes(userInfo.userOpenId)) && (
+                        (item.userOpenId === userInfo?.userOpenId || adminUsers.includes(userInfo?.userOpenId)) && (
                           <View className="operate-btns">
-                            {adminUsers.includes(userInfo.userOpenId) && !adminUsers.includes(item.userOpenId) && (
+                            {adminUsers.includes(userInfo?.userOpenId) && !adminUsers.includes(item.userOpenId) && (
                               <View className="link-col edit-btn" onClick={() => showAuthModal(item)}>
                                 授权
                               </View>

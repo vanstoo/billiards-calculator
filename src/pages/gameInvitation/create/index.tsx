@@ -4,8 +4,8 @@ import Taro from '@tarojs/taro'
 import { View, Picker } from '@tarojs/components'
 import { AtList, AtListItem, AtTextarea, AtFloatLayout, AtButton } from 'taro-ui'
 import { formatDate, returnNowTime } from '@/utils'
-import { UseRequest } from '@/hooks'
-import { MapLocationInfo, UserInfo } from '@/typings'
+import { UseRequest, useUserInfo } from '@/hooks'
+import { MapLocationInfo } from '@/typings'
 import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 import '../index.scss'
@@ -26,7 +26,7 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
   const [locationInfo, setLocationInfo] = useState<MapLocationInfo>(EmptyLocation) // 地址信息
   const [showRemark, setShowRemark] = useState(false)
   const [remark, setRemark] = useState('') // 描述
-  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
+  const { userInfo } = useUserInfo()
 
   const onDateChange = e => {
     console.log(e.detail, 'onDateChange')
@@ -57,7 +57,7 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
         locationInfo: locationInfo,
         targetTime: `${targetDate} ${targetTime}`,
         remark: remark,
-        userOpenId: userInfo.userOpenId,
+        userOpenId: userInfo?.userOpenId,
         updateTime: new Date(dayjs().valueOf()),
       }
       console.log(param)
@@ -92,7 +92,7 @@ const InvitationCreate: React.FC<InvitationCreateProps> = () => {
     })
   }
 
-  if (userInfo.hasCreatePerm) {
+  if (userInfo?.hasCreatePerm) {
     return (
       <View className="new-invitation">
         <View className="form-title">发起约球</View>

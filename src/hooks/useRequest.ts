@@ -1,10 +1,10 @@
 import Taro from '@tarojs/taro'
 import { RequestApi } from '@/typings'
-import { MPServerless } from '@alicloud/mpserverless-sdk/dist/esm/mpserverless'
+import { getMpServerless } from '@/utils'
 
 // 默认POST请求
 export const UseRequest = async (name: RequestApi, data: any) => {
-  const mpServerless: MPServerless = Taro.getApp()?.$app?.mpServerless || ''
+  const mpServerless = getMpServerless()
   return mpServerless?.function
     .invoke(name, data)
     .then((res: any) => {

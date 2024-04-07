@@ -4,18 +4,17 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 import { AtButton, AtInput } from 'taro-ui'
 import { chooseImg, uploadImg } from '@/utils'
-import { UseRequest } from '@/hooks'
+import { UseRequest, useUserInfo } from '@/hooks'
 import dayjs from 'dayjs'
 import debounce from 'lodash/debounce'
-import { UserInfo } from '@/typings'
+
 import '../index.less'
 
 interface UserNameAndAvatorProps {}
 
 const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
-  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
+  const { userInfo, getUserInfo } = useUserInfo()
   const { type } = useRouter().params
-
   const [nameVal, setNameVal] = useState<string>(() => userInfo?.nickName || '')
   const [avatarVal, setAvatarVal] = useState<string>(() => userInfo?.avatarUrl || '')
 
@@ -105,12 +104,8 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
           title: '获取用户信息中...',
           mask: true,
         })
-        UseRequest('login', {
-          type: 'get',
-        }).then(result => {
-          // console.log(result, " login");
+        getUserInfo(() => {
           Taro.hideLoading()
-          Taro.setStorageSync('userInfo', result)
           Taro.redirectTo({ url: '/pages/index/index?defaultKey=0' })
         })
       }
@@ -139,16 +134,9 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
             title: '获取用户信息中...',
             mask: true,
           })
-          UseRequest('login', {
-            type: 'get',
-          }).then(result => {
-            console.log(result, ' login result')
+          getUserInfo(() => {
             Taro.hideLoading()
-            Taro.setStorage({
-              data: result,
-              key: 'userInfo',
-              complete: () => Taro.redirectTo({ url: '/pages/index/index?defaultKey=2' }),
-            })
+            Taro.redirectTo({ url: '/pages/index/index?defaultKey=2' })
           })
         }
       })

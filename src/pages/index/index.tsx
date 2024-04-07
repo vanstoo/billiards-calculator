@@ -2,8 +2,8 @@ import { FC, useState, memo, useEffect } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtTabBar, AtButton } from 'taro-ui'
-import { UserInfo as UserInfoType } from '@/typings'
 import { goToLoginPage } from '@/utils'
+import { useUserInfo } from '@/hooks'
 import UserInfo from '../userInfo'
 import IssueList from '../issueList'
 import { InvitationList } from '../gameInvitation/components'
@@ -19,7 +19,7 @@ const tabMenu = [
 const Index: FC<IndexProps> = () => {
   const [tabKey, setTabKey] = useState<number>(0)
   const { defaultKey } = useRouter().params
-  const userInfo: UserInfoType = Taro.getStorageSync('userInfo')
+  const { userInfo } = useUserInfo()
 
   useEffect(() => {
     // console.log(defaultKey, 'defaultKey')
@@ -27,6 +27,10 @@ const Index: FC<IndexProps> = () => {
       setTabKey(Number(defaultKey))
     }
   }, [defaultKey])
+
+  useEffect(() => {
+    console.log(userInfo, 'userInfo Index useEffectuseEffectuseEffect')
+  }, [userInfo])
 
   // tab 切换
   const handleTabClick = (value: number) => {
@@ -50,7 +54,7 @@ const Index: FC<IndexProps> = () => {
       {tabKey === 0 && (
         <View className="initation-list-box">
           <InvitationList />
-          {userInfo.hasCreatePerm && (
+          {userInfo?.hasCreatePerm && (
             <View className="fixed-btn" style={{ paddingBottom: '170rpx' }}>
               <AtButton type="primary" circle onClick={goToCreateInvitation}>
                 发起约球
