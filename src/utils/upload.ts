@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { MPServerless } from '@alicloud/mpserverless-sdk/dist/esm/mpserverless'
+import { getMpServerless } from '@/utils'
 
 // 上传图片
 export const chooseImg = (callback: Function, onlyCamera: boolean = false) => {
@@ -23,7 +23,7 @@ export const chooseImg = (callback: Function, onlyCamera: boolean = false) => {
 
 // 上传图片
 export const uploadImg = (filePath: string[]): Promise<string[]> => {
-  const mpServerless: MPServerless = Taro.getApp()?.$app?.mpServerless || ''
+  const mpServerless = getMpServerless()
   Taro.showLoading({
     title: '上传中',
     mask: true,

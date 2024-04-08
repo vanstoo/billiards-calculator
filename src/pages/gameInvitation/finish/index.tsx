@@ -4,12 +4,11 @@ import Taro, { useRouter } from '@tarojs/taro'
 import { View } from '@tarojs/components'
 import { AtInput, AtButton } from 'taro-ui'
 import { ImgUpload } from '@/components'
-import { ParticipantsView } from '../components'
-import { UseRequest } from '@/hooks'
+import { UseRequest, useUserInfo } from '@/hooks'
 import { isValidArray, uploadImg } from '@/utils'
-import { InvitationItem } from '../type'
-import { UserInfo } from '@/typings'
 import dayjs from 'dayjs'
+import { ParticipantsView } from '../components'
+import { InvitationItem } from '../type'
 
 export interface FinishInvitationProps {}
 
@@ -37,7 +36,7 @@ const FinishInvitation: React.FC<FinishInvitationProps> = () => {
   const [detail, setDetail] = useState<InvitationItem>(EmptyData)
   const [totalFee, setTotalFee] = useState(undefined) // 费用总计
   const [uploadList, setUploadList] = useState<string[]>([]) // 费用凭证
-  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
+  const { userInfo } = useUserInfo()
 
   const getDetails = () => {
     Taro.showLoading({
@@ -133,7 +132,7 @@ const FinishInvitation: React.FC<FinishInvitationProps> = () => {
     }
   }
 
-  if (userInfo.hasCreatePerm) {
+  if (userInfo?.hasCreatePerm) {
     return (
       <View className="finish-invitation">
         {/* 参与人员 */}

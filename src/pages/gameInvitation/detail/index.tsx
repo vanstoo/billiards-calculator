@@ -1,15 +1,14 @@
 import * as React from 'react'
 import dayjs from 'dayjs'
-import { UserInfo } from '@/typings'
 import { dateFormatToMin } from '@/constant'
-import { UseRequest } from '@/hooks'
+import { UseRequest, useUserInfo } from '@/hooks'
 import { memo, useEffect, useState, Fragment } from 'react'
 import Taro, { useRouter, usePullDownRefresh, useShareAppMessage } from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
 import { AtButton } from 'taro-ui'
 import { SectionItem, ImgView } from '@/components'
+import { formatDate, returnStatusName, returnStyleByStatus, goToLoginPage, compareDateRange } from '@/utils'
 import { EditSignDate, ParticipantsView } from '../components'
-import { formatDate, returnStatusName, returnStyleByStatus, goToLoginPage, compareDateRange } from '../../../utils'
 import { InvitationItem, ParticipantItem } from '../type'
 
 export interface InvitationDetailProps {}
@@ -36,7 +35,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
   const { invitationId } = useRouter().params
   const [detail, setDetail] = useState<InvitationItem>(EmptyData)
   const [editRecord, setEditRecord] = useState<ParticipantItem>()
-  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
+  const { userInfo } = useUserInfo()
 
   const getDetails = () => {
     Taro.showLoading({
@@ -134,13 +133,13 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
 
   // 增加参与者
   const addPartcapant = () => {
-    if (userInfo.userOpenId) {
+    if (userInfo?.userOpenId) {
       let param = {
         type: 'addParticipantInfo',
         invitationId: invitationId,
         startTime: '',
         endTime: '',
-        OPENID: userInfo.userOpenId,
+        OPENID: userInfo?.userOpenId,
         updateTime: new Date(dayjs().valueOf()),
       }
       Taro.showLoading({
@@ -310,7 +309,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
         {detail.status === 'OPENING' && (
           <Fragment>
             {/* 约球发起者才可取消或结束 */}
-            {userInfo.hasCreatePerm && detail.adminUsers.includes(userInfo.userOpenId) && (
+            {userInfo?.hasCreatePerm && detail.adminUsers.includes(userInfo?.userOpenId) && (
               <Fragment>
                 <AtButton type="primary" size="small" circle onClick={goToFinish}>
                   结束活动
@@ -321,7 +320,7 @@ const InvitationDetailView: React.FC<InvitationDetailProps> = () => {
               </Fragment>
             )}
             {/* 非参与人员才可加入 */}
-            {!detail.participants.some(x => x.userOpenId === userInfo.userOpenId) && (
+            {!detail.participants.some(x => x.userOpenId === userInfo?.userOpenId) && (
               <AtButton type="primary" size="small" circle onClick={addPartcapant}>
                 加我一个
               </AtButton>

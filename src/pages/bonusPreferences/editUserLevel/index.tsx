@@ -3,7 +3,7 @@ import { useState, memo } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text, Picker } from '@tarojs/components'
 import { AtButton, AtInput, AtAvatar, AtNoticebar, AtMessage } from 'taro-ui'
-import { UseRequest } from '@/hooks'
+import { UseRequest, useUserInfo } from '@/hooks'
 import { UserInfo } from '@/typings'
 import debounce from 'lodash/debounce'
 import throttle from 'lodash/throttle'
@@ -20,7 +20,7 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
   const [selectedUser, setSelectedUser] = useState<UserInfo>()
   const [targetLevelIdx, setTargetLevelIdx] = useState('')
   const levelList = ['D', 'C', 'B', 'A', 'A+', 'S', 'S+']
-  const userInfo: UserInfo = Taro.getStorageSync('userInfo')
+  const { userInfo, getUserInfo } = useUserInfo()
 
   const fuzzySearchUsers = debounce(val => {
     console.log(val, 'fuzzySearchUsers')
@@ -69,8 +69,8 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
       })
       return
     }
-    if (!userInfo.isManager) {
-      if (selectedUser?.userOpenId !== userInfo.userOpenId) {
+    if (!userInfo?.isManager) {
+      if (selectedUser?.userOpenId !== userInfo?.userOpenId) {
         Taro.atMessage({
           message: '只能修改自己的档位，不可修改其他用户档位！',
           type: 'error',
@@ -111,16 +111,9 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
         setTargetLevelIdx('')
         // 需要更新用户信息
         if (selectedUser?.userOpenId === userInfo.userOpenId) {
-          UseRequest('login', {
-            type: 'get',
-          }).then(res => {
-            console.log(res, ' login result')
+          getUserInfo(() => {
             Taro.hideLoading()
-            Taro.setStorage({
-              data: res,
-              key: 'userInfo',
-              complete: () => Taro.redirectTo({ url: '/pages/index/index?defaultKey=2' }),
-            })
+            Taro.redirectTo({ url: '/pages/index/index?defaultKey=2' })
           })
         }
       }
