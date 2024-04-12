@@ -18,7 +18,7 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
   const [playDuration, setPlayDuration] = useState(0) // 打球时长
 
   useEffect(() => {
-    if (userInfo.userOpenId) {
+    if (userInfo?.userOpenId) {
       // 获取发起数量
       UseRequest('invitation', {
         type: 'getListCountByCreator',

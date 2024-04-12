@@ -11,7 +11,7 @@ export const useUserInfo = () => {
     UseRequest('login', {
       type: 'get',
     }).then(result => {
-      if (result.userOpenId) {
+      if (result?.userOpenId) {
         console.log(result, ' getUserInfo result')
         globalUserInfo = result
         setUserInfo(result)
@@ -26,5 +26,5 @@ export const useUserInfo = () => {
     }
   }, [])
 
-  return { userInfo, getUserInfo }
+  return { userInfo: userInfo || {}, getUserInfo }
 }

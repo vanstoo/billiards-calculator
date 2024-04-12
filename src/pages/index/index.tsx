@@ -28,10 +28,6 @@ const Index: FC<IndexProps> = () => {
     }
   }, [defaultKey])
 
-  useEffect(() => {
-    console.log(userInfo, 'userInfo Index useEffectuseEffectuseEffect')
-  }, [userInfo])
-
   // tab 切换
   const handleTabClick = (value: number) => {
     // console.log(value, typeof value);
@@ -41,7 +37,7 @@ const Index: FC<IndexProps> = () => {
   // 创建约球
   const goToCreateInvitation = () => {
     if (userInfo) {
-      if (userInfo.hasCreatePerm && userInfo.userOpenId) {
+      if (userInfo?.hasCreatePerm && userInfo?.userOpenId) {
         Taro.navigateTo({ url: '/pages/gameInvitation/create/index' })
       }
     } else {

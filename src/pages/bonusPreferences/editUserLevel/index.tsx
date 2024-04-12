@@ -76,10 +76,10 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
           type: 'error',
         })
         return
-      } else if (compareDateRange(userInfo.lastUpdateLevelDate, 180)) {
+      } else if (compareDateRange(userInfo?.lastUpdateLevelDate, 180)) {
         Taro.atMessage({
           message: `${formatDate(
-            dayjs(userInfo.lastUpdateLevelDate).add(180, 'D'),
+            dayjs(userInfo?.lastUpdateLevelDate).add(180, 'D'),
             'YYYY-MM-DD HH:mm:ss',
           )}之后才可修改自己的档位！`,
           type: 'error',
@@ -98,7 +98,7 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
       level: levelList[targetLevelIdx], // 目标档位
       lastUpdateLevelDate: new Date(dayjs().valueOf()), // 更新时间
       oldLevel: selectedUser?.level, // 原档位
-      updaterOpenId: userInfo.userOpenId, // 修改人id
+      updaterOpenId: userInfo?.userOpenId, // 修改人id
     }).then(result => {
       if (result) {
         Taro.hideLoading()
@@ -110,7 +110,7 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
         setSelectedUser(undefined)
         setTargetLevelIdx('')
         // 需要更新用户信息
-        if (selectedUser?.userOpenId === userInfo.userOpenId) {
+        if (selectedUser?.userOpenId === userInfo?.userOpenId) {
           getUserInfo(() => {
             Taro.hideLoading()
             Taro.redirectTo({ url: '/pages/index/index?defaultKey=2' })
