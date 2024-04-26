@@ -1,19 +1,22 @@
 import Taro from '@tarojs/taro'
-import { getMpServerless } from '@/utils'
+import { getMpServerless, formatDate } from '@/utils'
+import { FilePrefix } from '@/typings'
+import dayjs from 'dayjs'
 
 // 上传图片
-export const chooseImg = (callback: Function, onlyCamera: boolean = false) => {
+export const chooseImg = (callback: Function, count: number = 1) => {
   Taro.showActionSheet({
-    itemList: onlyCamera ? ['拍摄照片'] : ['拍摄照片', '从手机相册选择'],
+    itemList: ['拍摄照片', '从手机相册选择'],
     success: (res: any) => {
       if (!res.cancel) {
-        Taro.chooseImage({
-          count: 3,
+        Taro.chooseMedia({
+          count: count,
+          mediaType: ['image'],
           sizeType: ['compressed'], // 默认传压缩图
           sourceType: res.tapIndex === 0 ? ['camera'] : ['album'],
           success: imgRes => {
             console.log(imgRes, 'Taro.chooseImage')
-            callback(imgRes.tempFilePaths)
+            callback(imgRes.tempFiles)
           },
         })
       }
@@ -22,40 +25,48 @@ export const chooseImg = (callback: Function, onlyCamera: boolean = false) => {
 }
 
 // 上传图片
-export const uploadImg = (filePath: string[]): Promise<string[]> => {
+export const uploadImg = async (
+  tempFiles: Taro.chooseMedia.ChooseMedia[],
+  filePrefix: FilePrefix,
+): Promise<string[]> => {
   const mpServerless = getMpServerless()
   Taro.showLoading({
     title: '上传中',
     mask: true,
   })
-  let task = filePath.map(file => {
-    return new Promise((resolve, reject) => {
+  let task = tempFiles.map(({ tempFilePath }, idx) => {
+    let fileSplit = tempFilePath.split('.')
+    let fileSuffix = fileSplit[fileSplit.length - 1]
+    let cloudPath = `/${filePrefix}/${formatDate(dayjs(), 'YYYYMMDDHHmmssSSS')}_${idx + 1}.${fileSuffix}`
+    console.log(filePrefix, cloudPath, 'cloudPath')
+    return new Promise<string>((resolve, reject) => {
       mpServerless.file
-        .uploadFile({ filePath: file })
+        .uploadFile({
+          filePath: tempFilePath,
+          cloudPath, // 云端文件路径
+        })
         .then(res => resolve(res.fileUrl))
         .catch(() => reject(new Error('上传失败')))
     })
   })
-  return Promise.all(task)
-    .then((res: string[]) => {
+  try {
+    const res_1 = await Promise.all(task)
+    Taro.showToast({
+      icon: 'success',
+      title: '上传成功',
+      mask: true,
+    })
+    return res_1
+  } catch (err) {
+    console.log(err)
+    let timer = setTimeout(() => {
       Taro.showToast({
-        icon: 'success',
-        title: '上传成功',
+        title: '上传失败',
+        icon: 'none',
         mask: true,
       })
-      // console.log(res, 'finall')
-      return res
-    })
-    .catch(err => {
-      console.log(err)
-      let timer = setTimeout(() => {
-        Taro.showToast({
-          title: '上传失败',
-          icon: 'none',
-          mask: true,
-        })
-        clearTimeout(timer)
-      }, 1500)
-      return []
-    })
+      clearTimeout(timer)
+    }, 1500)
+    return []
+  }
 }

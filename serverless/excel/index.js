@@ -2,7 +2,6 @@
 const dayjs = require('dayjs')
 const xlsx = require('node-xlsx')
 const fs = require('fs')
-const getDirName = require('path').dirname
 
 // 格式化时间
 const formatDate = (date, formatType = 'YYYY-MM-DD', emptyStr) => {
@@ -170,18 +169,13 @@ const createParticipantsInfoExcel = async ctx => {
         ],
         options,
       )
-      let isExist = await getStat('./excelInfo')
-      if (!isExist) {
-        fs.mkdirSync('./excelInfo', 0777)
-      }
-      ctx.logger.info('isExist', isExist)
-
-      let filePath = `./excelInfo/invitation_excel_${formatDate(dayjs(), 'YYYYMMDDHHmmssSSS')}.xlsx`
+      let filePath = `invitation_excel_${formatDate(dayjs(), 'YYYYMMDDHHmmssSSS')}.xlsx`
       fs.writeFileSync(filePath, buffer, { flag: 'w' }) // 如果文件存在，覆盖
       let res = await ctx.mpserverless.file.uploadFile({
         filePath: filePath,
+        cloudPath: `/excel/${filePath}`, // 云端文件路径
       })
-      ctx.logger.info('excelData url', res)
+      ctx.logger.info('excelData url', res, filePath)
       await ctx.mpserverless.db.collection('invitation_groups').findOneAndUpdate(
         { _id: id },
         {
