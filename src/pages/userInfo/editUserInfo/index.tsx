@@ -33,9 +33,9 @@ const UserNameAndAvator: React.FC<UserNameAndAvatorProps> = () => {
   }, 100)
 
   // 上传头像
-  const uploadFunc = async (tempFilePaths: string[]) => {
-    console.log(tempFilePaths, 'tempFilePaths')
-    let fileRes = await uploadImg(tempFilePaths)
+  const uploadFunc = async (tempFiles: Taro.chooseMedia.ChooseMedia[]) => {
+    console.log(tempFiles, 'tempFiles')
+    let fileRes = await uploadImg(tempFiles, 'avatarImg')
     console.log(fileRes, 'fileList')
     setAvatarVal(fileRes[0])
   }
