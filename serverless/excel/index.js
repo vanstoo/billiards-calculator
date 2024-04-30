@@ -88,18 +88,6 @@ const getUserInfoByUserOpenIdList = async (ctx, ids) => {
   }
 }
 
-const getStat = path => {
-  return new Promise((resolve, reject) => {
-    fs.stat(path, (err, stats) => {
-      if (err) {
-        resolve(false)
-      } else {
-        resolve(stats)
-      }
-    })
-  })
-}
-
 // 云函数入口函数
 module.exports = async ctx => {
   let type = ctx.args.type
@@ -169,7 +157,7 @@ const createParticipantsInfoExcel = async ctx => {
         ],
         options,
       )
-      let filePath = `invitation_excel_${formatDate(dayjs(), 'YYYYMMDDHHmmssSSS')}.xlsx`
+      let filePath = `invitation_excel_${dayjs().format('YYYYMMDDHHmmssSSS')}.xlsx`
       fs.writeFileSync(filePath, buffer, { flag: 'w' }) // 如果文件存在，覆盖
       let res = await ctx.mpserverless.file.uploadFile({
         filePath: filePath,
