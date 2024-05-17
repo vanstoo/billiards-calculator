@@ -3,6 +3,7 @@ import { UseRequest } from '@/hooks'
 import { UserInfo } from '@/typings'
 
 let globalUserInfo: UserInfo
+const AdminOpenID = 'oz3MD5Q6pZycSv7ilkwo1NqfjLBk'
 
 export const useUserInfo = () => {
   const [userInfo, setUserInfo] = useState<UserInfo>(globalUserInfo)
@@ -26,5 +27,9 @@ export const useUserInfo = () => {
     }
   }, [])
 
-  return { userInfo: userInfo || {}, getUserInfo }
+  return {
+    userInfo: userInfo || {},
+    getUserInfo,
+    isAdmin: userInfo?.userOpenId === AdminOpenID,
+  }
 }

@@ -8,3 +8,15 @@ export interface LevelLogItem {
   updaterName: string // 更新人姓名
   updaterAvatarUrl: string // 更新人头像
 }
+
+export interface SponsorInfoItem {
+  _id: string // 唯一id
+  sponsorUserOpenId: string
+  sponsorUserName: string
+  sponsorUserAvatarUrl: string
+  startDate: string
+  endDate: string
+  sponsorshipType: string
+  sponsorshipImgs: string[]
+  updateTime: string
+}

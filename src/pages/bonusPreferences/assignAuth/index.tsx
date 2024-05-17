@@ -2,53 +2,16 @@ import * as React from 'react'
 import { useState, memo } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text } from '@tarojs/components'
-import { AtButton, AtInput, AtAvatar, AtNoticebar } from 'taro-ui'
+import { AtButton, AtAvatar, AtNoticebar } from 'taro-ui'
 import { UseRequest } from '@/hooks'
 import { UserInfo } from '@/typings'
-import debounce from 'lodash/debounce'
-import throttle from 'lodash/throttle'
-import { isValidArray } from '@/utils'
+import { SelectUser } from '@/components'
 import '../index.less'
 
 export interface AssignAuthProps {}
 
 const AssignAuth: React.FC<AssignAuthProps> = () => {
-  const [inputval, setInputval] = useState<any>(null)
-  const [userList, setUserList] = useState<UserInfo[]>([])
   const [selectedUser, setSelectedUser] = useState<UserInfo>()
-
-  const fuzzySearchUsers = debounce(val => {
-    console.log(val, 'fuzzySearchUsers')
-    setInputval(val)
-    return val
-  }, 300)
-
-  const onSelect = (item: UserInfo) => {
-    setInputval(null) // 清除输入框
-    setSelectedUser(item) // 选中项
-    setUserList([]) // 清除列表
-  }
-
-  const onSearchUser = throttle(() => {
-    if (inputval) {
-      Taro.showLoading({
-        mask: true,
-        title: '搜索中',
-      })
-      // 模糊搜索用户信息
-      UseRequest('login', {
-        type: 'searchNoPermissionUsers',
-        fuzzyName: inputval,
-      }).then(result => {
-        if (result) {
-          Taro.hideLoading()
-          setUserList(isValidArray(result) ? result : [])
-        }
-      })
-    } else {
-      setUserList([])
-    }
-  }, 300)
 
   const comfirmUpdateUserAuth = () => {
     Taro.showLoading({
@@ -77,26 +40,7 @@ const AssignAuth: React.FC<AssignAuthProps> = () => {
       <AtNoticebar>
         此页面用于给没有发起约球权限的用户开通权限，输入对应用户名后再点击搜索按钮即可搜索用户，选中后点击确认提交即可
       </AtNoticebar>
-      <AtInput
-        name="value1"
-        title="待授权用户"
-        type="text"
-        placeholder="小程序内用户名关键字"
-        value={inputval}
-        onChange={value => fuzzySearchUsers(value)}
-        placeholderClass="color999"
-      >
-        <AtButton size="small" type="secondary" customStyle={{ marginRight: '8px' }} onClick={onSearchUser}>
-          搜索
-        </AtButton>
-      </AtInput>
-      <View className={isValidArray(userList) ? 'dropdown-content' : 'dropdown-content '}>
-        {userList.map(item => (
-          <View key={item.userOpenId} onClick={() => onSelect(item)} className="search-item">
-            {item.nickName}
-          </View>
-        ))}
-      </View>
+      <SelectUser label="待授权用户" searchUserType="searchNoPermissionUsers" onSelect={setSelectedUser} />
       {selectedUser?.userOpenId && (
         <View>
           <View className="user-info">

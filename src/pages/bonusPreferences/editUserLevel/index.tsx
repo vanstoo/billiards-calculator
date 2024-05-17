@@ -2,60 +2,21 @@ import * as React from 'react'
 import { useState, memo } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text, Picker } from '@tarojs/components'
-import { AtButton, AtInput, AtAvatar, AtNoticebar, AtMessage } from 'taro-ui'
+import { AtButton, AtAvatar, AtNoticebar, AtMessage } from 'taro-ui'
 import { UseRequest, useUserInfo } from '@/hooks'
 import { UserInfo } from '@/typings'
-import debounce from 'lodash/debounce'
-import throttle from 'lodash/throttle'
-import { isValidArray, compareDateRange, formatDate } from '@/utils'
-import { LevelTag } from '@/components'
+import { compareDateRange, formatDate } from '@/utils'
+import { LevelTag, SelectUser } from '@/components'
 import dayjs from 'dayjs'
 import '../index.less'
 
 interface EditUserLevelProps {}
 
 const EditUserLevel: React.FC<EditUserLevelProps> = () => {
-  const [inputval, setInputval] = useState<any>(null)
-  const [userList, setUserList] = useState<UserInfo[]>([])
   const [selectedUser, setSelectedUser] = useState<UserInfo>()
   const [targetLevelIdx, setTargetLevelIdx] = useState('')
   const levelList = ['D', 'C', 'B', 'A', 'A+', 'S', 'S+']
   const { userInfo, getUserInfo } = useUserInfo()
-
-  const fuzzySearchUsers = debounce(val => {
-    console.log(val, 'fuzzySearchUsers')
-    setInputval(val)
-    return val
-  }, 300)
-
-  const onSelect = (item: UserInfo) => {
-    setInputval(null) // 清除输入框
-    setSelectedUser(item) // 选中项
-    setUserList([]) // 清除列表
-    let idx = levelList.indexOf(item.level)
-    setTargetLevelIdx(idx + '')
-  }
-
-  const onSearchUser = throttle(() => {
-    if (inputval) {
-      Taro.showLoading({
-        mask: true,
-        title: '搜索中',
-      })
-      // 模糊搜索用户信息
-      UseRequest('login', {
-        type: 'searchUserByName',
-        fuzzyName: inputval,
-      }).then(result => {
-        if (result) {
-          Taro.hideLoading()
-          setUserList(isValidArray(result) ? result : [])
-        }
-      })
-    } else {
-      setUserList([])
-    }
-  }, 300)
 
   const onChangeLevel = e => {
     setTargetLevelIdx(e.detail.value)
@@ -130,26 +91,7 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
       <AtNoticebar single showMore moreText="关于档位" onGotoMore={goToIssueDetail}>
         档位半年才可更新一次，有问题请联系群管理。
       </AtNoticebar>
-      <AtInput
-        name="value1"
-        title="待更新用户"
-        type="text"
-        placeholder="小程序内用户名关键字"
-        value={inputval}
-        onChange={value => fuzzySearchUsers(value)}
-        placeholderClass="color999"
-      >
-        <AtButton size="small" type="secondary" customStyle={{ marginRight: '8px' }} onClick={onSearchUser}>
-          搜索
-        </AtButton>
-      </AtInput>
-      <View className="dropdown-content">
-        {userList.map(item => (
-          <View key={item.userOpenId} onClick={() => onSelect(item)} className="search-item">
-            {item.nickName}
-          </View>
-        ))}
-      </View>
+      <SelectUser label="待更新用户" searchUserType="searchUserByName" onSelect={setSelectedUser} />
       {selectedUser?.userOpenId && (
         <View>
           <View className="user-info">
@@ -169,7 +111,6 @@ const EditUserLevel: React.FC<EditUserLevelProps> = () => {
           )}
         </View>
       </Picker>
-
       <View className="fixed-btns">
         <AtButton type="secondary" size="normal" circle onClick={() => Taro.navigateBack()}>
           返回

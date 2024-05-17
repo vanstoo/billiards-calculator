@@ -52,6 +52,12 @@
     display: flex;
     justify-content: flex-end;
   }
+
+  .list-item-img {
+    .img-item {
+      margin-top: 16px;
+    }
+  }
 }
 
 .detail {

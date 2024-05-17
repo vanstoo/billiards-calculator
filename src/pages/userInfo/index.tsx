@@ -8,14 +8,61 @@ import { calNum } from '@/utils'
 import { LevelTag } from '@/components'
 import './index.less'
 
+type MenuItem = {
+  title: string
+  icon: string
+  path: string
+  permission: boolean
+  sort: number
+}
+
 export interface UserInfoProps {}
 
 const UserInfoPage: React.FC<UserInfoProps> = () => {
-  const { userInfo } = useUserInfo()
+  const { userInfo, isAdmin } = useUserInfo()
 
   const [participantsListCount, setParticipantsListCount] = useState(0) // 我发起的活动
   const [creatorListcount, setCreatorListcount] = useState(0) // 我参与的活动数量
   const [playDuration, setPlayDuration] = useState(0) // 打球时长
+
+  const MenuList: MenuItem[] = [
+    {
+      title: '开通约球权限',
+      icon: 'lock',
+      path: '/pages/bonusPreferences/assignAuth/index',
+      permission: userInfo?.hasCreatePerm,
+      sort: 1,
+    },
+    {
+      title: '修改档位',
+      icon: 'equalizer',
+      // 跳转编辑档位页面 普通用户半年才可更新一次 管理员随时可更新
+      path: '/pages/bonusPreferences/editUserLevel/index',
+      permission: true,
+      sort: 2,
+    },
+    {
+      title: '修改档位记录',
+      icon: 'search',
+      path: '/pages/bonusPreferences/levelLogList/index',
+      permission: true,
+      sort: 3,
+    },
+    {
+      title: '赞助信息记录',
+      icon: 'heart',
+      path: '/pages/bonusPreferences/sponsor/sponsorList/index',
+      permission: true,
+      sort: 4,
+    },
+    {
+      title: '修改赞助人',
+      icon: 'shopping-bag',
+      path: '/pages/bonusPreferences/sponsor/sponsorUpdate/index',
+      permission: isAdmin,
+      sort: 5,
+    },
+  ]
 
   useEffect(() => {
     if (userInfo?.userOpenId) {
@@ -76,18 +123,12 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
     )
   }
 
+  const onMenuItemClick = (path: string) => {
+    Taro.navigateTo({ url: path })
+  }
   const gotoUpdatePage = () => {
     Taro.navigateTo({ url: '/pages/userInfo/editUserInfo/index?type=edit' })
   }
-
-  const goToAssignAuthPage = () => Taro.navigateTo({ url: '/pages/bonusPreferences/assignAuth/index' })
-
-  // 跳转编辑档位页面 普通用户半年才可更新一次 管理员随时可更新
-  const goToUpdateUserLevelPage = () => {
-    Taro.navigateTo({ url: '/pages/bonusPreferences/editUserLevel/index' })
-  }
-
-  const goToUpdateUserLevelLogListPage = () => Taro.navigateTo({ url: '/pages/bonusPreferences/levelLogList/index' })
 
   return (
     <View className="user-page">
@@ -149,30 +190,20 @@ const UserInfoPage: React.FC<UserInfoProps> = () => {
       <View className="user-service">
         <View className="service-title">附加功能</View>
         <View className="service-box">
-          {userInfo?.hasCreatePerm && (
-            <View className="service-item" hoverClass="item-hovered" hoverStayTime={200} onClick={goToAssignAuthPage}>
-              <AtIcon value="lock" size="30" />
-              <View>开通约球权限</View>
-            </View>
-          )}
-          <View
-            className="service-item"
-            hoverClass="item-hovered"
-            hoverStayTime={200}
-            onClick={goToUpdateUserLevelPage}
-          >
-            <AtIcon value="equalizer" size="30" />
-            <View>修改档位</View>
-          </View>
-          <View
-            className="service-item"
-            hoverClass="item-hovered"
-            hoverStayTime={200}
-            onClick={goToUpdateUserLevelLogListPage}
-          >
-            <AtIcon value="search" size="30" />
-            <View>修改档位记录</View>
-          </View>
+          {MenuList.filter(({ permission }) => permission).map(item => {
+            return (
+              <View
+                key={item.title}
+                className="service-item"
+                hoverClass="item-hovered"
+                hoverStayTime={200}
+                onClick={() => onMenuItemClick(item.path)}
+              >
+                <AtIcon value={item.icon} size="30" />
+                <View>{item.title}</View>
+              </View>
+            )
+          })}
         </View>
       </View>
     </View>
