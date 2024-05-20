@@ -9,8 +9,6 @@ export interface ImgViewProps {
   uploadList: string[] // 附件列表
 }
 
-export interface ImgViewProps {}
-
 const ImgView: React.FC<ImgViewProps> = ({ uploadList }) => {
   // 预览图片
   const previewImage = (index: number) => {

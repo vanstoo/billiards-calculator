@@ -20,7 +20,7 @@ export interface MapLocationInfo {
 }
 
 // 云函数方法
-export type RequestApi = 'login' | 'invitation' | 'participant' | 'excel'
+export type RequestApi = 'login' | 'invitation' | 'participant' | 'excel' | 'sponsor'
 
 // 上传云存储文件夹
-export type FilePrefix = 'avatarImg' | 'billImg' | 'excel'
+export type FilePrefix = 'avatarImg' | 'billImg' | 'excel' | 'sponsorImg'

@@ -9,6 +9,6 @@ export {
   calDurationByParticipants,
 } from './dataTrans'
 export { subscribeInfo } from './subscribe'
-export { chooseImg, uploadImg } from './upload'
+export { chooseImg, uploadImg, previewImg } from './upload'
 export { goToLoginPage } from './checkLogin'
 export { getMpServerless } from './mpServelss'

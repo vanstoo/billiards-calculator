@@ -3,14 +3,12 @@ import { memo } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Image } from '@tarojs/components'
 import { chooseImg, isValidArray } from '@/utils'
-import { FilePrefix } from '@/typings'
 import './index.scss'
 
 export interface ImgUploadProps {
   uploadList: string[] // 附件列表
   uploadFile: (tempFiles: Taro.chooseMedia.ChooseMedia[]) => Promise<void> // 上传图片
   delFileItem: (file: string) => void // 删除图片
-  filePrefix?: FilePrefix
 }
 
 const ImgUpload: React.FC<ImgUploadProps> = ({ uploadList, delFileItem, uploadFile }) => {

@@ -9,7 +9,11 @@ export default defineAppConfig({
     'pages/bonusPreferences/assignAuth/index',
     'pages/bonusPreferences/editUserLevel/index',
     'pages/bonusPreferences/levelLogList/index',
+    'pages/bonusPreferences/sponsor/sponsorUpdate/index',
+    'pages/bonusPreferences/sponsor/sponsorList/index',
     'pages/issueList/userLevel/index',
+    'pages/issueList/aliyunData/index',
+    'pages/issueList/weChatVerify/index',
   ],
   window: {
     backgroundTextStyle: 'light',
