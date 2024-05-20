@@ -2,11 +2,12 @@ import * as React from 'react'
 import { useState, memo } from 'react'
 import Taro from '@tarojs/taro'
 import { View, Text, Picker } from '@tarojs/components'
-import { AtList, AtListItem, AtButton, AtAvatar } from 'taro-ui'
+import { AtList, AtListItem, AtButton, AtAvatar, AtInput } from 'taro-ui'
 import { UseRequest } from '@/hooks'
 import { SelectUser, ImgUpload } from '@/components'
 import { UserInfo } from '@/typings'
 import { formatDate, uploadImg, isValidArray } from '@/utils'
+import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 
 const SponsorTypeList = ['小程序云数据', '小程序认证']
@@ -19,6 +20,7 @@ const SponsorUpdate: React.FC<SponsorUpdateProps> = () => {
   const [endDate, setEndDate] = useState(formatDate(dayjs().add(1, 'year')))
   const [uploadList, setUploadList] = useState<string[]>([]) // 费用凭证
   const [sponsorTypeIdx, setSponsorTypeIdx] = useState('0')
+  const [sponsorshipAmount, setSponsorshipAmount] = useState()
 
   const onStartDateChange = e => {
     console.log(e.detail, 'onStartDateChange')
@@ -51,7 +53,13 @@ const SponsorUpdate: React.FC<SponsorUpdateProps> = () => {
   }
 
   const onComfirm = () => {
-    if (dayjs(startDate).isAfter(dayjs(endDate))) {
+    if (!sponsorshipAmount || sponsorshipAmount > 99999 || sponsorshipAmount <= 0) {
+      Taro.showToast({
+        title: '请输入正确的赞助金额',
+        mask: true,
+        icon: 'none',
+      })
+    } else if (dayjs(startDate).isAfter(dayjs(endDate))) {
       Taro.showToast({
         title: '结束时间需要大于开始时间',
         mask: true,
@@ -73,6 +81,7 @@ const SponsorUpdate: React.FC<SponsorUpdateProps> = () => {
       let param = {
         type: 'addSponsorInfo',
         targetId: selectedUser?.userOpenId,
+        sponsorshipAmount,
         startDate,
         endDate,
         sponsorshipType: SponsorTypeList[sponsorTypeIdx],
@@ -98,6 +107,11 @@ const SponsorUpdate: React.FC<SponsorUpdateProps> = () => {
     }
   }
 
+  const onChangeSponsorFee = debounce(val => {
+    console.log(val, typeof val)
+    setSponsorshipAmount(val)
+  }, 200)
+
   return (
     <View className="bonus-preferences">
       <AtList hasBorder>
@@ -110,6 +124,14 @@ const SponsorUpdate: React.FC<SponsorUpdateProps> = () => {
             </View>
           </View>
         )}
+        <AtInput
+          name="sum"
+          title="赞助金额"
+          type="digit"
+          placeholder="请输入赞助金额"
+          value={sponsorshipAmount}
+          onChange={onChangeSponsorFee}
+        />
         <Picker mode="selector" range={SponsorTypeList} onChange={onChangeSponsorType}>
           <View className="level-picker sponsor-type-picker">
             <Text className="pick-label">赞助类型</Text>

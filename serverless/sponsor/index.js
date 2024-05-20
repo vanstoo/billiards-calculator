@@ -18,15 +18,16 @@ module.exports = async ctx => {
 
 // 添加赞助人信息
 const addSponsorInfo = async ctx => {
-  const { targetId, startDate, endDate, sponsorshipType, sponsorshipImgs, updateTime } = ctx.args
+  const { targetId, startDate, endDate, sponsorshipType, sponsorshipImgs, updateTime, sponsorshipAmount } = ctx.args
   try {
     await ctx.mpserverless.db.collection('sponsorship_info').insertOne({
       sponsorUserOpenId: targetId,
-      startDate,
-      endDate,
-      sponsorshipType,
-      sponsorshipImgs,
-      updateTime,
+      startDate, // 赞助开始时间
+      endDate, // 赞助结束时间
+      sponsorshipType, // 赞助类型
+      sponsorshipImgs, // 赞助凭证
+      updateTime, // 数据更新时间
+      sponsorshipAmount, // 赞助金额
     })
     return true
   } catch (error) {
