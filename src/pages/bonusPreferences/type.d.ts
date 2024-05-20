@@ -19,4 +19,5 @@ export interface SponsorInfoItem {
   sponsorshipType: string
   sponsorshipImgs: string[]
   updateTime: string
+  sponsorshipAmount: string
 }

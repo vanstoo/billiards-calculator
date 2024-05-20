@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { memo, useState, useEffect, Fragment } from 'react'
 import Taro from '@tarojs/taro'
-import { View, Text } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { CommonScrollView, EmptyListView, ImgView } from '@/components'
 import { UseRequest } from '@/hooks'
 import { isValidArray } from '@/utils'
@@ -93,6 +93,7 @@ const SponsorInfoList: React.FC<SponsorInfoListProps> = () => {
                   <View>
                     赞助日期：{x.startDate}～{x.endDate}
                   </View>
+                  <View>赞助金额：{x.sponsorshipAmount}元</View>
                   <View className="list-item-img">
                     赞助凭证:
                     <ImgView uploadList={x.sponsorshipImgs} />

@@ -12,6 +12,8 @@ export default defineAppConfig({
     'pages/bonusPreferences/sponsor/sponsorUpdate/index',
     'pages/bonusPreferences/sponsor/sponsorList/index',
     'pages/issueList/userLevel/index',
+    'pages/issueList/aliyunData/index',
+    'pages/issueList/weChatVerify/index',
   ],
   window: {
     backgroundTextStyle: 'light',
