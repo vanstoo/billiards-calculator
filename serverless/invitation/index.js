@@ -171,8 +171,13 @@ const getInvitationList = async ctx => {
   const { pageNum, pageSize, searchByCreator, searchByParticipants } = ctx.args
   let searchParam = {}
   let totalCount = 0
+  let searchByParticipantsVal = searchByParticipants
+  // 默认搜索的时候 改成默认根据参与人搜索
+  if (searchByParticipants === false && searchByCreator === false && userOpenId !== 'oz3MD5Q6pZycSv7ilkwo1NqfjLBk') {
+    searchByParticipantsVal = true
+  }
   // 根据参与人搜索
-  if (searchByParticipants) {
+  if (searchByParticipantsVal) {
     // 获取匹配的活动id （查询的文档数量限制，最大值和默认值均为500。）
     let partRes = await ctx.mpserverless.db.collection('participants_info').find({ userOpenId: userOpenId })
     if (partRes && partRes.result) {
